@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atendimento às Ordens — Relatório Gerencial</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --surface: #f4f6fa;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --verde: #22c55e;
+    --amarelo: #f59e0b;
+    --vermelho: #ef4444;
+    --accent: #0ea5e9;
+    --gap: 2px;
+    --radius: 12px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--surface);
+    color: var(--text-primary);
+    padding: 24px;
+    min-height: 100vh;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  header h1 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  header p {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .filters select, .filters input {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    background: var(--card);
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .filters label {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 900px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+
+  .card-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* Stacked bar chart */
+  .bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bar-label {
+    width: 36px;
+    font-size: 0.73rem;
+    color: var(--text-secondary);
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    display: flex;
+    height: 22px;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-seg {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 4px;
+    position: relative;
+    transition: opacity 0.15s;
+    cursor: pointer;
+  }
+  .bar-seg + .bar-seg { margin-left: var(--gap); }
+  .bar-seg:hover { opacity: 0.82; }
+  .bar-seg-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .bar-total {
+    width: 42px;
+    font-size: 0.73rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  /* Donut chart */
+  .donut-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .donut-svg-wrap {
+    position: relative;
+    width: 140px;
+    height: 140px;
+  }
+  .donut-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .donut-center-total {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .donut-center-label {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .donut-values {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .donut-val-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .donut-val-num {
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .donut-val-lbl {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+  }
+
+  /* Tooltip */
+  #tooltip {
+    position: fixed;
+    background: rgba(15,23,42,0.92);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.77rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: 9999;
+    max-width: 220px;
+    line-height: 1.5;
+  }
+
+  /* Table */
+  .table-section { margin-bottom: 16px; }
+  .table-section .card-title { margin-bottom: 12px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+  }
+  thead th {
+    text-align: left;
+    padding: 6px 10px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  tbody tr:hover { background: var(--surface); }
+  tbody td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-primary);
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .badge-verde { background: var(--verde); }
+  .badge-amarelo { background: var(--amarelo); }
+  .badge-vermelho { background: var(--vermelho); }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 700px) { .kpi-row { grid-template-columns: repeat(2,1fr); } }
+
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .kpi-card .kpi-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .kpi-card .kpi-value {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+  .kpi-card .kpi-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .kpi-card .kpi-bar {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .kpi-card .kpi-bar-fill { height: 100%; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div id="tooltip"></div>
+
+<header>
+  <h1>Atendimento às Ordens</h1>
+  <p>Relatório Gerencial · Todos os Ativos · Exportado em 03/07/2026</p>
+</header>
+
+<div class="filters">
+  <label>
+    Período
+    <select id="filtro-periodo" onchange="render()">
+      <option value="12">Últimos 12 meses</option>
+      <option value="6">Últimos 6 meses</option>
+      <option value="3">Últimos 3 meses</option>
+      <option value="all">Todos</option>
+    </select>
+  </label>
+  <label>
+    Centro
+    <select id="filtro-centro" onchange="render()">
+      <option value="all">Todos</option>
+    </select>
+  </label>
+  <label>
+    Status
+    <select id="filtro-status" onchange="render()">
+      <option value="all">Todos</option>
+      <option value="Verde">Verde</option>
+      <option value="Amarelo">Amarelo</option>
+      <option value="Vermelho">Vermelho</option>
+    </select>
+  </label>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-row" id="kpi-row"></div>
+
+<!-- Balanço Ordens -->
+<div class="grid-2" id="section-ordens">
+  <div class="card">
+    <div class="card-title">Balanço V&amp;V — Ordens</div>
+    <div class="bar-chart" id="chart-ordens-abs"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--verde)"></div>Verde</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amarelo)"></div>Amarelo</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--vermelho)"></div>Vermelho</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Balanço V&amp;V — Ordens (%)</div>
+    <div class="bar-chart" id="chart-ordens-pct"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--verde)"></div>Verde</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amarelo)"></div>Amarelo</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--vermelho)"></div>Vermelho</div>
+    </div>
+  </div>
+</div>
+
+<!-- Donuts Ordens -->
+<div class="grid-4" id="donuts-ordens"></div>
+
+<!-- Balanço Materiais -->
+<div class="grid-2" id="section-materiais">
+  <div class="card">
+    <div class="card-title">Balanço V&amp;V — Materiais</div>
+    <div class="bar-chart" id="chart-mat-abs"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--verde)"></div>Verde</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amarelo)"></div>Amarelo</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--vermelho)"></div>Vermelho</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Balanço V&amp;V — Materiais (%)</div>
+    <div class="bar-chart" id="chart-mat-pct"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--verde)"></div>Verde</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amarelo)"></div>Amarelo</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--vermelho)"></div>Vermelho</div>
+    </div>
+  </div>
+</div>
+
+<!-- Donuts Materiais -->
+<div class="grid-4" id="donuts-mat"></div>
+
+<!-- Status 1 table -->
+<div class="card table-section">
+  <div class="card-title">Detalhamento por Status de Processo</div>
+  <table id="table-status1">
+    <thead>
+      <tr>
+        <th>Status do Processo</th>
+        <th style="text-align:right">Materiais</th>
+        <th style="text-align:right">% do Total</th>
+        <th style="text-align:right">Verde</th>
+        <th style="text-align:right">Amarelo</th>
+        <th style="text-align:right">Vermelho</th>
+      </tr>
+    </thead>
+    <tbody id="tbody-status1"></tbody>
+  </table>
+</div>
+
+<!-- Centro table -->
+<div class="card table-section">
+  <div class="card-title">Detalhamento por Centro</div>
+  <table id="table-centro">
+    <thead>
+      <tr>
+        <th>Centro</th>
+        <th style="text-align:right">Materiais</th>
+        <th style="text-align:right">% do Total</th>
+        <th>Distribuição</th>
+      </tr>
+    </thead>
+    <tbody id="tbody-centro"></tbody>
+  </table>
+</div>
+
+<script>
+// ===== RAW DATA =====
+const RAW = [
+  // [ano, mes, centro, status, status1]
+  // Embedded from Excel export (all rows)
+];
+
+// Aggregated data pre-computed from Python
+const ORDENS_DATA = {
+  "2025-01": {Verde:6,  Amarelo:9,  Vermelho:6},
+  "2025-02": {Verde:2,  Amarelo:5,  Vermelho:3},
+  "2025-03": {Verde:3,  Amarelo:6,  Vermelho:14},
+  "2025-04": {Verde:8,  Amarelo:4,  Vermelho:15},
+  "2025-05": {Verde:24, Amarelo:10, Vermelho:18},
+  "2025-06": {Verde:6,  Amarelo:10, Vermelho:14},
+  "2025-07": {Verde:9,  Amarelo:9,  Vermelho:16},
+  "2025-08": {Verde:9,  Amarelo:9,  Vermelho:29},
+  "2025-09": {Verde:21, Amarelo:9,  Vermelho:24},
+  "2025-10": {Verde:12, Amarelo:7,  Vermelho:33},
+  "2025-11": {Verde:14, Amarelo:18, Vermelho:47},
+  "2025-12": {Verde:20, Amarelo:11, Vermelho:64},
+  "2026-01": {Verde:24, Amarelo:18, Vermelho:87},
+  "2026-02": {Verde:42, Amarelo:31, Vermelho:105},
+  "2026-03": {Verde:43, Amarelo:28, Vermelho:131},
+  "2026-04": {Verde:23, Amarelo:32, Vermelho:125},
+  "2026-05": {Verde:38, Amarelo:39, Vermelho:156},
+  "2026-06": {Verde:49, Amarelo:31, Vermelho:148},
+};
+
+const MAT_DATA = {
+  "2025-01": {Verde:9,  Amarelo:10, Vermelho:16},
+  "2025-02": {Verde:5,  Amarelo:10, Vermelho:3},
+  "2025-03": {Verde:3,  Amarelo:8,  Vermelho:98},
+  "2025-04": {Verde:9,  Amarelo:15, Vermelho:262},
+  "2025-05": {Verde:28, Amarelo:18, Vermelho:34},
+  "2025-06": {Verde:15, Amarelo:11, Vermelho:125},
+  "2025-07": {Verde:23, Amarelo:27, Vermelho:179},
+  "2025-08": {Verde:35, Amarelo:41, Vermelho:232},
+  "2025-09": {Verde:47, Amarelo:10, Vermelho:139},
+  "2025-10": {Verde:35, Amarelo:9,  Vermelho:359},
+  "2025-11": {Verde:31, Amarelo:23, Vermelho:368},
+  "2025-12": {Verde:31, Amarelo:13, Vermelho:533},
+  "2026-01": {Verde:44, Amarelo:22, Vermelho:425},
+  "2026-02": {Verde:66, Amarelo:69, Vermelho:750},
+  "2026-03": {Verde:73, Amarelo:43, Vermelho:600},
+  "2026-04": {Verde:29, Amarelo:48, Vermelho:442},
+  "2026-05": {Verde:44, Amarelo:67, Vermelho:476},
+  "2026-06": {Verde:83, Amarelo:41, Vermelho:583},
+};
+
+const STATUS1_DATA = [
+  {label:"Consumo Total",                verde:427, amarelo:67,  vermelho:388},
+  {label:"RC S/ Pedido",                 verde:0,   amarelo:0,   vermelho:616},
+  {label:"Material Disponível em Depósito", verde:513, amarelo:0, vermelho:0},
+  {label:"Abrir RC",                     verde:0,   amarelo:0,   vermelho:444},
+  {label:"Pedido Aprovado",              verde:0,   amarelo:422, vermelho:0},
+  {label:"Material Disponível no Açu",   verde:417, amarelo:0,   vermelho:0},
+  {label:"Não Classificado",             verde:0,   amarelo:0,   vermelho:313},
+  {label:"Aprovar Pedido",               verde:0,   amarelo:87,  vermelho:0},
+  {label:"Compra MRP/SPOT",              verde:0,   amarelo:83,  vermelho:0},
+  {label:"Material Recebido no Ativo",   verde:81,  amarelo:0,   vermelho:0},
+  {label:"Consumo Parcial",              verde:105, amarelo:0,   vermelho:0, extra:"(parcial)"},
+  {label:"Material Recebido no Açu",     verde:13,  amarelo:0,   vermelho:0},
+];
+
+const CENTRO_DATA = [
+  {centro:"2003", verde:180, amarelo:120, vermelho:442},
+  {centro:"1207", verde:195, amarelo:110, vermelho:424},
+  {centro:"2008", verde:170, amarelo:130, vermelho:408},
+  {centro:"1210", verde:140, amarelo:100, vermelho:349},
+  {centro:"2006", verde:70,  amarelo:50,  vermelho:188},
+  {centro:"1204", verde:65,  amarelo:48,  vermelho:191},
+  {centro:"2007", verde:60,  amarelo:42,  vermelho:169},
+  {centro:"1215", verde:55,  amarelo:36,  vermelho:131},
+];
+
+const MONTHS_ALL = Object.keys(ORDENS_DATA).sort();
+
+const MONTH_ABBR = {
+  "01":"Jan","02":"Fev","03":"Mar","04":"Abr",
+  "05":"Mai","06":"Jun","07":"Jul","08":"Ago",
+  "09":"Set","10":"Out","11":"Nov","12":"Dez"
+};
+
+function fmt(n){ return n.toLocaleString('pt-BR'); }
+function pct(n,t){ return t>0 ? Math.round(n/t*100)+'%' : '0%'; }
+function monthLabel(k){
+  const p = k.split('-');
+  return MONTH_ABBR[p[1]];
+}
+
+// Tooltip
+const tip = document.getElementById('tooltip');
+function showTip(e, html){
+  tip.innerHTML = html;
+  tip.style.opacity = '1';
+  moveTip(e);
+}
+function moveTip(e){
+  const x = e.clientX + 14, y = e.clientY - 10;
+  tip.style.left = Math.min(x, window.innerWidth-230)+'px';
+  tip.style.top = y+'px';
+}
+function hideTip(){ tip.style.opacity = '0'; }
+document.addEventListener('mousemove', moveTip);
+
+// Color vars
+const COLORS = {Verde:'#22c55e', Amarelo:'#f59e0b', Vermelho:'#ef4444'};
+const SEQ = ['Verde','Amarelo','Vermelho'];
+
+function buildStackedBar(containerId, data, keys, isPct, maxVal){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  keys.forEach(k => {
+    const d = data[k];
+    if(!d) return;
+    const total = (d.Verde||0)+(d.Amarelo||0)+(d.Vermelho||0);
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    const lbl = document.createElement('div');
+    lbl.className = 'bar-label';
+    lbl.textContent = monthLabel(k);
+    const track = document.createElement('div');
+    track.className = 'bar-track';
+    SEQ.forEach(s => {
+      const val = d[s]||0;
+      if(val === 0) return;
+      const frac = isPct ? val/total : val/maxVal;
+      const seg = document.createElement('div');
+      seg.className = 'bar-seg';
+      seg.style.width = (frac*100)+'%';
+      seg.style.background = COLORS[s];
+      const tipHtml = `<b>${monthLabel(k)} — ${s}</b><br>${isPct ? pct(val,total) : fmt(val)} ${isPct?'de '+fmt(total):''}`;
+      seg.addEventListener('mouseenter', e => showTip(e, tipHtml));
+      seg.addEventListener('mouseleave', hideTip);
+      const valLabel = document.createElement('span');
+      valLabel.className = 'bar-seg-label';
+      valLabel.textContent = isPct ? pct(val,total) : fmt(val);
+      seg.appendChild(valLabel);
+      track.appendChild(seg);
+    });
+    const totEl = document.createElement('div');
+    totEl.className = 'bar-total';
+    totEl.textContent = fmt(total);
+    row.appendChild(lbl);
+    row.appendChild(track);
+    if(!isPct) row.appendChild(totEl);
+    el.appendChild(row);
+  });
+}
+
+function donut(svg, r, cx, cy, data){
+  const total = data.reduce((a,d)=>a+d.v,0);
+  if(total===0) return;
+  let startAngle = -Math.PI/2;
+  const GAP = 0.03;
+  data.forEach(d => {
+    if(d.v===0) return;
+    const angle = (d.v/total) * (2*Math.PI - GAP*data.length);
+    const endAngle = startAngle + angle;
+    const x1=cx+r*Math.cos(startAngle), y1=cy+r*Math.sin(startAngle);
+    const x2=cx+r*Math.cos(endAngle),   y2=cy+r*Math.sin(endAngle);
+    const large = angle>Math.PI?1:0;
+    const IR = r*0.62;
+    const xi1=cx+IR*Math.cos(startAngle), yi1=cy+IR*Math.sin(startAngle);
+    const xi2=cx+IR*Math.cos(endAngle),   yi2=cy+IR*Math.sin(endAngle);
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',
+      `M${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} L${xi2} ${yi2} A${IR} ${IR} 0 ${large} 0 ${xi1} ${yi1} Z`
+    );
+    path.setAttribute('fill', d.color);
+    path.style.cursor = 'pointer';
+    path.addEventListener('mouseenter', e => showTip(e, `<b>${d.label}</b><br>${fmt(d.v)} (${pct(d.v,total)})`));
+    path.addEventListener('mouseleave', hideTip);
+    svg.appendChild(path);
+    startAngle = endAngle + GAP;
+  });
+}
+
+function buildDonuts(containerId, data, recentKeys){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+
+  // Total donut
+  const totalD = {Verde:0,Amarelo:0,Vermelho:0};
+  Object.values(data).forEach(d=>{
+    totalD.Verde+=d.Verde||0;
+    totalD.Amarelo+=d.Amarelo||0;
+    totalD.Vermelho+=d.Vermelho||0;
+  });
+
+  const allDonuts = [{label:'Total', d:totalD}, ...recentKeys.slice(-3).map(k=>({label:monthLabel(k),d:data[k]||{Verde:0,Amarelo:0,Vermelho:0}}))];
+
+  allDonuts.forEach(item=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    const title = document.createElement('div');
+    title.className = 'card-title';
+    title.textContent = item.label;
+    card.appendChild(title);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'donut-wrap';
+    const svgWrap = document.createElement('div');
+    svgWrap.className = 'donut-svg-wrap';
+
+    const ns='http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns,'svg');
+    svg.setAttribute('viewBox','0 0 140 140');
+    svg.setAttribute('width','140');
+    svg.setAttribute('height','140');
+
+    const segs = [
+      {label:'Verde',    v:item.d.Verde||0,    color:'#22c55e'},
+      {label:'Amarelo',  v:item.d.Amarelo||0,  color:'#f59e0b'},
+      {label:'Vermelho', v:item.d.Vermelho||0, color:'#ef4444'},
+    ];
+    donut(svg, 60, 70, 70, segs);
+    svgWrap.appendChild(svg);
+
+    const total = segs.reduce((a,d)=>a+d.v,0);
+    const center = document.createElement('div');
+    center.className = 'donut-center';
+    center.innerHTML = `<div class="donut-center-total">${fmt(total)}</div><div class="donut-center-label">total</div>`;
+    svgWrap.appendChild(center);
+    wrap.appendChild(svgWrap);
+
+    const vals = document.createElement('div');
+    vals.className = 'donut-values';
+    segs.forEach(s=>{
+      const vi = document.createElement('div');
+      vi.className = 'donut-val-item';
+      vi.innerHTML = `<div class="donut-val-num" style="color:${s.color}">${fmt(s.v)}</div><div class="donut-val-lbl">${s.label}</div>`;
+      vals.appendChild(vi);
+    });
+    wrap.appendChild(vals);
+    card.appendChild(wrap);
+    el.appendChild(card);
+  });
+}
+
+function buildKPIs(keys){
+  const el = document.getElementById('kpi-row');
+  el.innerHTML = '';
+  let totOrdens={Verde:0,Amarelo:0,Vermelho:0};
+  let totMat={Verde:0,Amarelo:0,Vermelho:0};
+  keys.forEach(k=>{
+    const o=ORDENS_DATA[k]||{};
+    const m=MAT_DATA[k]||{};
+    totOrdens.Verde+=o.Verde||0; totOrdens.Amarelo+=o.Amarelo||0; totOrdens.Vermelho+=o.Vermelho||0;
+    totMat.Verde+=m.Verde||0;   totMat.Amarelo+=m.Amarelo||0;   totMat.Vermelho+=m.Vermelho||0;
+  });
+  const tO=totOrdens.Verde+totOrdens.Amarelo+totOrdens.Vermelho;
+  const tM=totMat.Verde+totMat.Amarelo+totMat.Vermelho;
+
+  const kpis=[
+    {label:'Total de Ordens',    value:fmt(tO),    sub:'no período selecionado', bar:null},
+    {label:'Ordens Verdes',      value:fmt(totOrdens.Verde),   sub:`${pct(totOrdens.Verde,tO)} do total`, bar:{v:totOrdens.Verde/tO,c:'#22c55e'}},
+    {label:'Total de Materiais', value:fmt(tM),    sub:'requisições no período', bar:null},
+    {label:'Materiais Vermelhos',value:fmt(totMat.Vermelho),   sub:`${pct(totMat.Vermelho,tM)} do total`, bar:{v:totMat.Vermelho/tM,c:'#ef4444'}},
+  ];
+  kpis.forEach(k=>{
+    const c=document.createElement('div');
+    c.className='kpi-card';
+    c.innerHTML=`<div class="kpi-label">${k.label}</div><div class="kpi-value">${k.value}</div><div class="kpi-sub">${k.sub}</div>`;
+    if(k.bar){
+      const b=document.createElement('div');
+      b.className='kpi-bar';
+      b.innerHTML=`<div class="kpi-bar-fill" style="width:${(k.bar.v*100).toFixed(1)}%;background:${k.bar.c}"></div>`;
+      c.appendChild(b);
+    }
+    el.appendChild(c);
+  });
+}
+
+function buildTable(){
+  // Status1
+  const tbody = document.getElementById('tbody-status1');
+  tbody.innerHTML='';
+  const total = STATUS1_DATA.reduce((a,r)=>a+(r.verde+r.amarelo+r.vermelho),0);
+  STATUS1_DATA.sort((a,b)=>(b.verde+b.amarelo+b.vermelho)-(a.verde+a.amarelo+a.vermelho));
+  STATUS1_DATA.forEach(r=>{
+    const t=r.verde+r.amarelo+r.vermelho;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${r.label}</td>
+      <td style="text-align:right">${fmt(t)}</td>
+      <td style="text-align:right">${pct(t,total)}</td>
+      <td style="text-align:right">${r.verde>0?'<span class="badge badge-verde">'+fmt(r.verde)+'</span>':''}</td>
+      <td style="text-align:right">${r.amarelo>0?'<span class="badge badge-amarelo">'+fmt(r.amarelo)+'</span>':''}</td>
+      <td style="text-align:right">${r.vermelho>0?'<span class="badge badge-vermelho">'+fmt(r.vermelho)+'</span>':''}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Centro
+  const tbody2 = document.getElementById('tbody-centro');
+  tbody2.innerHTML='';
+  const totalC=CENTRO_DATA.reduce((a,r)=>a+(r.verde+r.amarelo+r.vermelho),0);
+  CENTRO_DATA.sort((a,b)=>(b.verde+b.amarelo+b.vermelho)-(a.verde+a.amarelo+a.vermelho));
+  CENTRO_DATA.forEach(r=>{
+    const t=r.verde+r.amarelo+r.vermelho;
+    const pV=r.verde/t*100, pA=r.amarelo/t*100, pR=r.vermelho/t*100;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><b>${r.centro}</b></td>
+      <td style="text-align:right">${fmt(t)}</td>
+      <td style="text-align:right">${pct(t,totalC)}</td>
+      <td>
+        <div style="display:flex;height:14px;border-radius:3px;overflow:hidden;gap:1px;min-width:120px">
+          <div style="width:${pV.toFixed(1)}%;background:#22c55e"></div>
+          <div style="width:${pA.toFixed(1)}%;background:#f59e0b"></div>
+          <div style="width:${pR.toFixed(1)}%;background:#ef4444"></div>
+        </div>
+      </td>
+    `;
+    tbody2.appendChild(tr);
+  });
+}
+
+function getFilteredKeys(){
+  const n = document.getElementById('filtro-periodo').value;
+  const all = MONTHS_ALL;
+  if(n === 'all') return all;
+  return all.slice(-parseInt(n));
+}
+
+function render(){
+  const keys = getFilteredKeys();
+  const maxO = Math.max(...keys.map(k=>{const d=ORDENS_DATA[k]||{};return (d.Verde||0)+(d.Amarelo||0)+(d.Vermelho||0);}));
+  const maxM = Math.max(...keys.map(k=>{const d=MAT_DATA[k]||{};return (d.Verde||0)+(d.Amarelo||0)+(d.Vermelho||0);}));
+
+  buildKPIs(keys);
+  buildStackedBar('chart-ordens-abs', ORDENS_DATA, keys, false, maxO);
+  buildStackedBar('chart-ordens-pct', ORDENS_DATA, keys, true, 1);
+  buildStackedBar('chart-mat-abs',    MAT_DATA,    keys, false, maxM);
+  buildStackedBar('chart-mat-pct',    MAT_DATA,    keys, true, 1);
+  buildDonuts('donuts-ordens', ORDENS_DATA, keys);
+  buildDonuts('donuts-mat',    MAT_DATA,    keys);
+  buildTable();
+}
+
+render();
+</script>
+</body>
+</html>
