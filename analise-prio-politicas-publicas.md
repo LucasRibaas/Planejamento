@@ -1,5 +1,43 @@
 # Setor de Óleo e Gás (E&P) e o caso PRIO — Políticas Públicas de Inovação desde 1985
 
+## Resumo executivo (bullet points)
+
+**Políticas públicas de inovação identificadas (1985–hoje)**
+- Quebra do monopólio estatal (EC 9/1995) e Lei do Petróleo (Lei 9.478/1997), com criação da ANP
+- Regime de concessões e REPETRO (1999) + Fundo Setorial CT-Petro (1999)
+- Política de Conteúdo Local (1999, endurecida em 2003/2007)
+- PROMINP (2003) — mobilização da indústria nacional de fornecedores
+- Regime de Partilha de Produção do pré-sal + Petrobras como operadora única obrigatória (Lei 12.351/2010)
+- Fim da exclusividade da Petrobras no pré-sal (Lei 13.365/2016)
+- Programa de Desinvestimento da Petrobras (2015–2018) — venda de campos maduros
+- Flexibilização do Conteúdo Local (Resolução CNPE 7/2017 e ANP 726/2018)
+- Oferta Permanente da ANP (2019) — leilões contínuos de blocos e campos devolvidos
+
+**Principais impactos positivos**
+- Fim do monopólio abriu o setor a operadoras privadas e internacionais, elevando investimento e produção nacional
+- Fim da exclusividade da Petrobras no pré-sal permitiu a entrada de outros operadores em áreas antes travadas
+- Programa de desinvestimento + Oferta Permanente criaram um mercado de campos maduros, aproveitado por operadoras independentes como a PRIO (Polvo, Frade, Tubarão Martelo, Wahoo, Itaipu, Albacora/Albacora Leste), que aplicaram gestão mais ágil e elevaram o fator de recuperação desses campos
+- REPETRO/Repetro-Sped reduziu custo tributário de importação de equipamentos, viabilizando investimento por empresas de porte médio
+- Flexibilização do conteúdo local e Oferta Permanente reduziram barreiras de entrada, aumentando a competição no setor
+
+**O que não deu certo**
+- Conteúdo Local rígido (1999–2007): indústria nacional sem capacidade para atender às exigências → atrasos, sobrecusto, contratos superfaturados (Lava Jato: Sete Brasil, Comperj)
+- PROMINP não qualificou fornecedores na escala necessária
+- Petrobras como operadora única obrigatória do pré-sal sobrecarregou sua capacidade de investimento, agravado pela crise de 2014–2016
+- Mudanças de regras de royalties e tentativa de flexibilizar conteúdo local retroativamente geraram insegurança jurídica
+
+**Houve análise dos governos sobre o porquê do insucesso?**
+- Parcialmente, e de forma **reativa a crises** (queda do petróleo + Lava Jato), não por avaliação preventiva
+- Não há registro de Análise de Impacto Regulatório formal e antecipada; as reformas de 2016–2019 foram respostas de urgência fiscal/política
+
+**Houve tentativa de correção e aprendizado dos gestores públicos?**
+- Sim, de forma incremental: Oferta Permanente (2019) é o exemplo mais bem-sucedido de correção de rota
+- Flexibilização do conteúdo local resolveu a rigidez, mas criou nova insegurança jurídica (retroatividade)
+- Royalties/participações especiais continuam com governança instável — aprendizado incompleto
+- O maior "acerto" prático (surgimento de operadoras como a PRIO) foi efeito colateral de uma crise financeira da Petrobras, não de planejamento de política industrial
+
+---
+
 ## 1. Setor escolhido
 
 **Exploração e Produção (E&P) de petróleo e gás no Brasil**, usando a **PRIO** (ex-HRT/PetroRio) como estudo de caso, porque a empresa é um produto quase direto das mudanças regulatórias do setor: nasceu como exploradora de risco na Amazônia, quase quebrou, e só se tornou a maior petrolífera privada do país ao surfar uma sequência específica de políticas públicas — abertura do monopólio, fim da obrigatoriedade da Petrobras como operadora, flexibilização do conteúdo local e o programa de desinvestimento de campos maduros.
