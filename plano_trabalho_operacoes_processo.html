@@ -185,7 +185,7 @@
 
   /* Stepper (process flow) */
   .stepper{
-    display:grid; grid-template-columns:repeat(6,1fr); gap:0; position:relative;
+    display:grid; grid-template-columns:repeat(5,1fr); gap:0; position:relative;
   }
   .step{
     position:relative; padding:0 14px 0 0; border-left:2px solid var(--border);
@@ -283,8 +283,8 @@
   /* Gantt / calendar timeline */
   .gantt{overflow-x:auto; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); background:var(--surface)}
   .gantt-grid{
-    display:grid; grid-template-columns:168px repeat(10,minmax(64px,1fr));
-    min-width:860px;
+    display:grid; grid-template-columns:168px repeat(9,minmax(64px,1fr));
+    min-width:780px;
   }
   .gantt-grid > div{border-bottom:1px solid var(--border-soft); padding:10px 10px; font-size:11.5px; display:flex; align-items:center}
   .gantt-grid > div.head{
@@ -348,7 +348,7 @@
   <header class="hero">
     <div class="eyebrow">Processo · Diretoria de Operações</div>
     <h1>Como o plano de trabalho de cada área é construído</h1>
-    <p class="lede">Material de apoio para a reunião solicitada por Jean Calvi: não é o plano em si, é o <strong>processo</strong> que o gera — quais inputs entram, de onde vêm, como priorizamos, qual ferramenta usamos e o que sai no final. Horizonte de 2 anos, com todo escopo amarrado a uma Diretriz Estratégica da Gerência Executiva correspondente.</p>
+    <p class="lede">Um único rito, aplicado a todos os ativos: transforma a Diretriz Estratégica de cada Gerência Executiva em escopo, prioridade e orçamento. Este documento não é o plano em si — é o <strong>processo</strong> que o sustenta: os inputs que o alimentam, a forma como priorizamos, a ferramenta que usamos e o que a companhia recebe como resultado. Horizonte de 2 anos, com todo escopo formalmente vinculado à diretriz estratégica correspondente.</p>
     <div class="stat-row">
       <div class="stat"><b>2 anos</b><span>Horizonte do plano</span></div>
       <div class="stat"><b>7</b><span>Unidades: Frade, Forte, Bravo, Polvo A, Peregrino, Peregrino A/B/C</span></div>
@@ -362,7 +362,7 @@
     <section id="fluxo">
       <div class="sec-head">
         <div class="sec-num">01 — Visão geral</div>
-        <h2>O processo tem seis etapas</h2>
+        <h2>O processo tem cinco etapas</h2>
         <p class="sec-sub">Da comunicação inicial até o plano oficial divulgado, cada escopo passa pela mesma esteira — independente da área que o solicitou.</p>
       </div>
       <div class="stepper">
@@ -380,24 +380,18 @@
         </div>
         <div class="step">
           <div class="step-num">3</div>
-          <h3>Leveling</h3>
-          <p>Planejamento nivela a demanda pela matriz de priorização, pelo POB total disponível e pelo capex disponível. Gera o esboço V0.</p>
-          <span class="who">Eng. Planejamento</span>
+          <h3>Leveling &amp; Challenge</h3>
+          <p>Eng. Planejamento nivela a demanda pela matriz de priorização, pelo POB total disponível e pelo capex disponível, e já consolida o contraponto das propostas de cada área frente à diretriz estratégica da Gerência Executiva. Gera o esboço V0.</p>
+          <span class="who">Eng. Planejamento / Coordenador do Ativo</span>
         </div>
         <div class="step">
           <div class="step-num">4</div>
           <h3>Workshop com Gerentes Executivos</h3>
-          <p>Depois do crivo do Coordenador de Operações sobre a V0, o Eng. Planejamento do Ativo apresenta o plano a todos os Gerentes Executivos para discussão e alinhamento. Sai daqui uma V0 já aprovada pelos Gerentes.</p>
-          <span class="who">Eng. Planejamento do Ativo / Gerentes Executivos</span>
+          <p>Depois do crivo do Coordenador de Operações sobre a V0, o Eng. Planejamento do Ativo apresenta o plano ao OIM e a todos os Gerentes Executivos para discussão e alinhamento. Sai daqui uma V0 já aprovada pelos Gerentes.</p>
+          <span class="who">Eng. Planejamento do Ativo / Gerentes Executivos / OIM</span>
         </div>
         <div class="step">
           <div class="step-num">5</div>
-          <h3>Challenge</h3>
-          <p>Consolidação e contraponto das propostas de cada área frente à diretriz estratégica da Gerência Executiva. Gera V1.</p>
-          <span class="who">Eng. Planejamento / Coordenador do Ativo</span>
-        </div>
-        <div class="step">
-          <div class="step-num">6</div>
           <h3>Aprovação &amp; divulgação</h3>
           <p>Gerente e Coordenador do Ativo revisam e aprovam (V2); plano final (VF) é enviado e divulgado a todas as áreas.</p>
           <span class="who">Gerente do Ativo</span>
@@ -415,7 +409,7 @@
         <div class="role"><span class="tag">Solicita</span><h3>Engenheiro de disciplina</h3><p>Levanta e cadastra o escopo no STAR: dados básicos, POB mensal, custo de material/serviço e responde a priorização.</p></div>
         <div class="role"><span class="tag">Facilita</span><h3>Eng. Planejamento</h3><p>Dono do processo. Treina, nivela POB/capex, consolida propostas e monta as versões do plano (V0 → VF).</p></div>
         <div class="role"><span class="tag">Prioriza</span><h3>Coordenador de Operações</h3><p>Avalia a solicitação priorizada contra a diretriz estratégica do ativo e aprova, recusa ou devolve para ajuste.</p></div>
-        <div class="role"><span class="tag">Alinha</span><h3>Gerentes Executivos</h3><p>Participam do workshop de V0, apresentado pelo Eng. Planejamento do Ativo, para discutir e alinhar o plano com a diretriz estratégica de cada Gerência Executiva.</p></div>
+        <div class="role"><span class="tag">Alinha</span><h3>Gerentes Executivos</h3><p>Participam, junto ao OIM do ativo, do workshop de V0 apresentado pelo Eng. Planejamento do Ativo, para discutir e alinhar o plano com a diretriz estratégica de cada Gerência Executiva.</p></div>
         <div class="role"><span class="tag">Aprova</span><h3>Gerente do Ativo</h3><p>Revisão final do plano consolidado (POB + custo) antes do envio e divulgação oficial.</p></div>
         <div class="role"><span class="tag">Suporta</span><h3>Accenture</h3><p>Mantém e evolui o software STAR; conduz o treinamento macro junto ao Eng. Planejamento.</p></div>
       </div>
@@ -436,12 +430,12 @@
             <tr><td>Manutenção e Confiabilidade</td><td class="wide">Ordens preventivas e corretivas (SAP), campanhas de manutenção</td><td class="wide">Sempre que exigir <code>POB terceiro (vendor)</code> — entra independente de ser OPEX ou CAPEX</td><td><span class="pill confirmed">confirmado</span></td></tr>
             <tr><td>Projetos</td><td class="wide">Modificação de Eficiência da Produção; Desenvolvimento da Produção</td><td class="wide">Fase de maturidade mínima <code>PML2</code></td><td><span class="pill confirmed">confirmado</span></td></tr>
             <tr><td>Construção e TA</td><td class="wide">Intervenções estruturais e de turnaround</td><td class="wide">Ordens corretivas <code>M1</code> e <code>M5</code></td><td><span class="pill confirmed">confirmado</span></td></tr>
-            <tr><td>Integridade (estrutural / naval)</td><td class="wide">Inspeções, campanhas de integridade, Parada Programada</td><td class="wide">Ordens de <code>Parada Programada (Z17)</code>; risco a barreira crítica</td><td><span class="pill assume">a validar</span></td></tr>
+            <tr><td>Integridade (estrutural / naval)</td><td class="wide">Inspeções e campanhas de integridade estrutural/naval</td><td class="wide">Ordens de campanha naval: tanques, mangotes, vasos de pressão, amarras e casco; risco a barreira crítica</td><td><span class="pill assume">a validar</span></td></tr>
             <tr><td>SMS — Segurança Ocupacional, Processos, Saúde e Qualidade</td><td class="wide">Ações corretivas de risco, adequação a barreiras críticas</td><td class="wide">Potencial de lesão/fatalidade ou dano ambiental relevante</td><td><span class="pill assume">a validar</span></td></tr>
             <tr><td>Processos e Químicos</td><td class="wide">Otimização de processo, tratamento químico</td><td class="wide">Impacto em confiabilidade de processo ou consumo químico</td><td><span class="pill assume">a validar</span></td></tr>
             <tr><td>Suporte Técnico e Trading</td><td class="wide">Estudos técnicos, otimização comercial de óleo/gás</td><td class="wide">Impacto direto em receita ou eficiência de escoamento</td><td><span class="pill assume">a validar</span></td></tr>
             <tr><td>Reservatório / Produção (GP)</td><td class="wide">Escopos com impacto direto na produção de óleo</td><td class="wide">Perda evitada validada pela Gestão da Produção</td><td><span class="pill assume">a validar</span></td></tr>
-            <tr><td>Regulatório</td><td class="wide">Adequações a condicionantes ANP / IBAMA / Marinha / NR</td><td class="wide">Obrigação formal com prazo ou evidência externa</td><td><span class="pill assume">a validar</span></td></tr>
+            <tr><td>Regulatório</td><td class="wide">Adequações a condicionantes ANP / IBAMA / Marinha / NR / Classificadoras (ABS, DNV)</td><td class="wide">Obrigação formal com prazo ou evidência externa, incluindo requisitos de classe (ABS, DNV)</td><td><span class="pill assume">a validar</span></td></tr>
             <tr><td>Planejamento Integrado</td><td class="wide">Consolidação, nivelamento e versionamento do plano</td><td class="wide">Dono do processo — não solicita escopo próprio</td><td><span class="pill confirmed">papel de processo</span></td></tr>
             <tr><td>Logística Marítima e Log de Pessoas</td><td class="wide">Embarque/desembarque, acomodação de POB terceiro</td><td class="wide">Stakeholder de capacidade — não solicitante primário</td><td><span class="pill assume">a validar</span></td></tr>
             <tr><td>Comunicação, BPs, TI (ADM 3º/4º andar)</td><td class="wide">Suporte administrativo e de sistemas ao rito</td><td class="wide">Stakeholder de suporte — não solicitante primário</td><td><span class="pill assume">a validar</span></td></tr>
@@ -517,10 +511,10 @@
       </div>
       <div class="crit-grid">
         <div class="crit"><div class="num">→</div><div><h4>Crivo do Coordenador</h4><p>Cada solicitação priorizada é avaliada pelo Coordenador de Operações do ativo, que aprova, recusa ou devolve para ajuste com base na prioridade e na diretriz estratégica vinculada.</p></div></div>
-        <div class="crit"><div class="num">→</div><div><h4>Workshop com Gerentes Executivos</h4><p>Com a V0 já aprovada pelo Coordenador, o Eng. Planejamento do Ativo apresenta o plano a todos os Gerentes Executivos para discussão e alinhamento — sai daqui uma V0 também aprovada pelos Gerentes.</p></div></div>
+        <div class="crit"><div class="num">→</div><div><h4>Workshop com Gerentes Executivos</h4><p>Com a V0 já aprovada pelo Coordenador, o Eng. Planejamento do Ativo apresenta o plano ao OIM e a todos os Gerentes Executivos para discussão e alinhamento — sai daqui uma V0 também aprovada pelos Gerentes.</p></div></div>
         <div class="crit"><div class="num">→</div><div><h4>Nivelamento de capacidade</h4><p>O plano aprovado é nivelado contra a capacidade de POB/dia do ativo, sinalizando meses acima da capacidade ou subutilizados.</p></div></div>
         <div class="crit"><div class="num">→</div><div><h4>Plano de POB + Custo</h4><p>Saída final por ativo/ano: POB total, custo de material e serviço, e a divisão CAPEX × OPEX resultante.</p></div></div>
-        <div class="crit"><div class="num">→</div><div><h4>Versionamento</h4><p>O plano evolui em versões (V0 Construção → V0 aprovada pelo Coordenador e pelos Gerentes → V1 Challenge → V2 Revisão → VF Oficial), rastreadas no STAR.</p></div></div>
+        <div class="crit"><div class="num">→</div><div><h4>Versionamento</h4><p>O plano evolui em versões (V0 Leveling &amp; Challenge → V0 aprovada pelo Coordenador e pelos Gerentes → V2 Revisão → VF Oficial), rastreadas no STAR.</p></div></div>
       </div>
     </section>
 
@@ -542,47 +536,41 @@
           <div class="head">Out S2</div>
           <div class="head">Out S3</div>
           <div class="head">Nov S1</div>
-          <div class="head">Nov S2</div>
 
           <div class="rowlabel">Comunicação &amp; treinamento</div>
           <div class="cell"><div class="bar b1"></div></div>
           <div class="cell"><div class="bar b1"></div><span class="flag" title="Público de 04/09 (tarde) ainda em definição">🚩</span></div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
           <div class="rowlabel">Building — preenchimento</div>
           <div class="cell"></div>
           <div class="cell"><div class="bar b1"></div></div>
           <div class="cell"><div class="bar b1"></div></div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
           <div class="rowlabel">Workshop Orçamento</div>
           <div class="cell"></div><div class="cell"></div>
           <div class="cell"><div class="bar b2"></div><span class="pin">$</span></div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
-          <div class="rowlabel">Leveling</div>
+          <div class="rowlabel">Leveling &amp; Challenge</div>
           <div class="cell"></div><div class="cell"></div><div class="cell"></div>
           <div class="cell"><div class="bar b1"></div></div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
           <div class="rowlabel">Workshop c/ Gerentes Executivos</div>
           <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
           <div class="cell"><div class="bar b1"></div><span class="pin">25</span></div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-
-          <div class="rowlabel">Challenge</div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-          <div class="cell"><div class="bar b1"></div></div>
           <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
           <div class="rowlabel">Revisar &amp; aprovar (V2)</div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
           <div class="cell"><div class="bar b2"></div></div>
           <div class="cell"><div class="bar b2"></div></div>
           <div class="cell"></div><div class="cell"></div>
 
           <div class="rowlabel">Envio do plano (VF)</div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
           <div class="cell"><div class="bar b1"></div></div>
           <div class="cell"><div class="bar b1"></div></div>
         </div>
