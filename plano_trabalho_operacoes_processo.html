@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Plano Integrado de Operações</title>
+<title>Planejamento Integrado Operações Topside</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -260,6 +260,24 @@
   .crit p{margin:0; font-size:12.5px; color:var(--ink-soft)}
   @media (max-width:760px){.crit-grid{grid-template-columns:1fr}}
 
+  /* Racional info cards */
+  .info-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px}
+  .info-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    padding:18px 20px; box-shadow:var(--shadow);
+  }
+  .info-card h4{
+    font-size:14.5px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border-soft);
+  }
+  .info-card ul{margin:0; padding:0; list-style:none; display:grid; gap:9px}
+  .info-card li{
+    font-size:13px; color:var(--ink-soft); padding-left:16px; position:relative;
+  }
+  .info-card li::before{
+    content:""; position:absolute; left:0; top:7px; width:6px; height:6px; border-radius:50%; background:var(--accent);
+  }
+  @media (max-width:760px){.info-grid{grid-template-columns:1fr}}
+
   /* Priority matrix */
   .matrix-note{
     background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
@@ -330,8 +348,9 @@
 
   <div class="topbar">
     <div class="topbar-inner">
-      <div class="brandmark"><span class="dot"></span>Plano Integrado · Operações</div>
+      <div class="brandmark"><span class="dot"></span>Planejamento Integrado · Operações Topside</div>
       <nav class="topnav">
+        <a href="#racional">O que é</a>
         <a href="#fluxo">Fluxo</a>
         <a href="#papeis">Papéis</a>
         <a href="#areas">Áreas</a>
@@ -347,17 +366,44 @@
 
   <header class="hero">
     <div class="eyebrow">Processo · Diretoria de Operações</div>
-    <h1>Como o plano de trabalho de cada área é construído</h1>
-    <p class="lede">Um único rito, aplicado a todos os ativos: transforma a Diretriz Estratégica de cada Gerência Executiva em escopo, prioridade e orçamento. Este documento não é o plano em si — é o <strong>processo</strong> que o sustenta: os inputs que o alimentam, a forma como priorizamos, a ferramenta que usamos e o que a companhia recebe como resultado. Horizonte de 2 anos, com todo escopo formalmente vinculado à diretriz estratégica correspondente.</p>
+    <h1>Como construímos o Planejamento Integrado de Operações Topside</h1>
+    <p class="lede">Um único rito, aplicado a todos os ativos: transforma a Diretriz Estratégica de cada Gerência Executiva em escopo, prioridade e orçamento. Este documento não é o plano em si — é o <strong>processo</strong> que o sustenta: os inputs que o alimentam, a forma como priorizamos, e o que a companhia recebe como resultado. Horizonte de 1 ano, com todo escopo formalmente vinculado à diretriz estratégica correspondente.</p>
     <div class="stat-row">
-      <div class="stat"><b>2 anos</b><span>Horizonte do plano</span></div>
-      <div class="stat"><b>7</b><span>Unidades: Frade, Forte, Bravo, Polvo A, Peregrino, Peregrino A/B/C</span></div>
+      <div class="stat"><b>1 ano</b><span>Horizonte do plano</span></div>
+      <div class="stat"><b>8</b><span>Unidades: FPSO Frade, FPSO Forte, FPSO Bravo, Polvo A, FPSO Peregrino, Peregrino A, Peregrino B, Peregrino C</span></div>
       <div class="stat"><b>12</b><span>Áreas solicitantes mapeadas</span></div>
-      <div class="stat"><b>STAR</b><span>App Plano Integrado (Accenture)</span></div>
+      <div class="stat"><b>Semestral</b><span>Ciclo de construção (emissões de março e setembro)</span></div>
     </div>
   </header>
 
   <div class="wrap">
+
+    <section id="racional">
+      <div class="sec-head">
+        <h2>O que é o Planejamento Integrado de Operações Topside?</h2>
+        <p class="sec-sub">Instrumento que consolida, em um horizonte de <strong>1 ano</strong>, os Projetos de Modificação de Eficiência Operacional e Adequação Topside para Desenvolvimento da Produção, Grandes Manutenções, Escopos de Integridade Estrutural e Naval, Parada Programada, Medição Fiscal e Sustentabilidade.</p>
+        <p class="sec-sub">O processo de construção ocorre em ciclos semestrais recorrentes, estruturados a partir das emissões realizadas ao final dos meses de março e setembro.</p>
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>Direcionador de Prontidão + Controle de Tarefas</h4>
+          <ul>
+            <li>Tempo para compra de equipamentos e contratação de serviços</li>
+            <li>Dimensionamento e alocação de POB</li>
+            <li>Tempo de maturidade dos escopos</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Filtro / Priorizador de Execução</h4>
+          <ul>
+            <li>Impacto em Segurança</li>
+            <li>Impacto Regulatório</li>
+            <li>Impacto Financeiro e Patrimonial</li>
+            <li>Impacto na Produção de Óleo</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
     <section id="fluxo">
       <div class="sec-head">
@@ -369,13 +415,13 @@
         <div class="step">
           <div class="step-num">1</div>
           <h3>Comunicação &amp; treinamento</h3>
-          <p>Divulgação do rito e do software STAR para toda a PRIO; treinamento macro e, na sequência, treinamento intensivo por disciplina.</p>
+          <p>Divulgação do rito para toda a PRIO; treinamento macro e, na sequência, treinamento intensivo por disciplina.</p>
           <span class="who">Eng. Planejamento / Accenture</span>
         </div>
         <div class="step">
           <div class="step-num">2</div>
           <h3>Building</h3>
-          <p>Cada engenheiro de disciplina solicita escopo no STAR <strong>com base na Diretriz Estratégica já definida para sua Gerência Executiva</strong>, e só então define custo, POB, ano; sincroniza ordens SAP ou importa planilha em massa.</p>
+          <p>Cada engenheiro de disciplina solicita escopo <strong>com base na Diretriz Estratégica já definida para sua Gerência Executiva</strong>, e só então define custo, POB, ano; sincroniza ordens SAP ou importa planilha em massa.</p>
           <span class="who">Engenheiros de disciplina</span>
         </div>
         <div class="step">
@@ -406,12 +452,12 @@
         <p class="sec-sub">Seis perfis sustentam o rito de ponta a ponta — do lançamento do escopo à aprovação final.</p>
       </div>
       <div class="role-grid">
-        <div class="role"><span class="tag">Solicita</span><h3>Engenheiro de disciplina</h3><p>Levanta e cadastra o escopo no STAR: dados básicos, POB mensal, custo de material/serviço e responde a priorização.</p></div>
+        <div class="role"><span class="tag">Solicita</span><h3>Engenheiro de disciplina</h3><p>Levanta e cadastra o escopo: dados básicos, POB mensal, custo de material/serviço e responde a priorização.</p></div>
         <div class="role"><span class="tag">Facilita</span><h3>Eng. Planejamento</h3><p>Dono do processo. Treina, nivela POB/capex, consolida propostas e monta as versões do plano (V0 → VF).</p></div>
         <div class="role"><span class="tag">Prioriza</span><h3>Coordenador de Operações</h3><p>Avalia a solicitação priorizada contra a diretriz estratégica do ativo e aprova, recusa ou devolve para ajuste.</p></div>
         <div class="role"><span class="tag">Alinha</span><h3>Gerentes Executivos</h3><p>Participam, junto ao OIM do ativo, do workshop de V0 apresentado pelo Eng. Planejamento do Ativo, para discutir e alinhar o plano com a diretriz estratégica de cada Gerência Executiva.</p></div>
         <div class="role"><span class="tag">Aprova</span><h3>Gerente do Ativo</h3><p>Revisão final do plano consolidado (POB + custo) antes do envio e divulgação oficial.</p></div>
-        <div class="role"><span class="tag">Suporta</span><h3>Accenture</h3><p>Mantém e evolui o software STAR; conduz o treinamento macro junto ao Eng. Planejamento.</p></div>
+        <div class="role"><span class="tag">Suporta</span><h3>Accenture</h3><p>Apoia a implantação e evolução da ferramenta de levantamento de escopo; conduz o treinamento macro junto ao Eng. Planejamento.</p></div>
       </div>
     </section>
 
@@ -466,11 +512,11 @@
       <div class="sec-head">
         <div class="sec-num">05 — Levantamento</div>
         <h2>Dados básicos por escopo</h2>
-        <p class="sec-sub">Campos preenchidos pelo engenheiro de disciplina ao abrir a atividade no STAR, organizados pelas mesmas abas do app.</p>
+        <p class="sec-sub">Campos preenchidos pelo engenheiro de disciplina ao abrir a atividade no sistema de levantamento de escopo, organizados pelas mesmas etapas do formulário.</p>
       </div>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>Aba no STAR</th><th class="wide">Campos</th></tr></thead>
+          <thead><tr><th>Etapa do formulário</th><th class="wide">Campos</th></tr></thead>
           <tbody>
             <tr><td>Dados Básicos</td><td class="wide">Nome da atividade, solicitante, equipe demandante, categoria do escopo, aplicação (OPEX/CAPEX), equipe executora, fornecedor, localidade funcional, fase FEL, ano, recorrência, ordem de serviço, tipo de ordem, centro de trabalho, terceiro fixo</td></tr>
             <tr><td>POB Mensal</td><td class="wide">Distribuição de POB (pessoas·dia) mês a mês ao longo do ano do plano</td></tr>
@@ -488,7 +534,7 @@
         <p class="sec-sub">100 pontos em quatro blocos, com trava automática para risco crítico de SMS ou regulatório.</p>
       </div>
       <div class="matrix-note">
-        <b>Proposta em avaliação.</b> O app STAR hoje pontua com uma matriz própria já em produção (3 blocos / 180 pts: Segurança &amp; Integridade, Produção &amp; Operação, Confiabilidade &amp; Melhoria — escala Baixo/Médio/Alto). A matriz abaixo é a evolução que queremos levar à Accenture e à Gestão da Produção antes de qualquer substituição.
+        <b>Proposta em avaliação.</b> O sistema de levantamento hoje pontua com uma matriz própria já em produção (3 blocos / 180 pts: Segurança &amp; Integridade, Produção &amp; Operação, Confiabilidade &amp; Melhoria — escala Baixo/Médio/Alto). A matriz abaixo é a evolução que queremos levar à validação da Gestão da Produção antes de qualquer substituição.
       </div>
       <div class="weight-grid">
         <div class="weight-card veto"><h4>Segurança</h4><b>30 pts</b><div class="weight-bar"><i style="width:100%"></i></div><p style="font-size:11.5px;color:var(--ink-soft);margin-top:8px">Trava P1 se houver risco de fatalidade</p></div>
@@ -516,7 +562,7 @@
         <div class="crit"><div class="num">→</div><div><h4>Workshop com Gerentes Executivos</h4><p>Com a V0 já aprovada pelo Coordenador, o Eng. Planejamento do Ativo apresenta o plano ao OIM e a todos os Gerentes Executivos para discussão e alinhamento — sai daqui uma V0 também aprovada pelos Gerentes.</p></div></div>
         <div class="crit"><div class="num">→</div><div><h4>Nivelamento de capacidade</h4><p>O plano aprovado é nivelado contra a capacidade de POB/dia do ativo, sinalizando meses acima da capacidade ou subutilizados.</p></div></div>
         <div class="crit"><div class="num">→</div><div><h4>Plano de POB + Custo</h4><p>Saída final por ativo/ano: POB total, custo de material e serviço, e a divisão CAPEX × OPEX resultante.</p></div></div>
-        <div class="crit"><div class="num">→</div><div><h4>Versionamento</h4><p>O plano evolui em versões (V0 Leveling &amp; Challenge → V0 aprovada pelo Coordenador e pelos Gerentes → V2 Revisão → VF Oficial), rastreadas no STAR.</p></div></div>
+        <div class="crit"><div class="num">→</div><div><h4>Versionamento</h4><p>O plano evolui em versões (V0 Leveling &amp; Challenge → V0 aprovada pelo Coordenador e pelos Gerentes → V2 Revisão → VF Oficial), rastreadas ao longo do processo.</p></div></div>
       </div>
     </section>
 
