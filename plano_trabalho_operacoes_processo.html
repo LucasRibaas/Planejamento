@@ -262,6 +262,12 @@
 
   /* Racional info cards */
   .info-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px}
+  .info-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+  @media (max-width:860px){.info-grid.cols-3{grid-template-columns:1fr}}
+  .info-card .stage-tag{
+    display:inline-flex; font-size:10.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+    color:var(--accent2); background:var(--accent2-soft); padding:3px 8px; border-radius:5px; margin-bottom:10px;
+  }
   .info-card{
     background:var(--surface); border:1px solid var(--border); border-radius:10px;
     padding:18px 20px; box-shadow:var(--shadow);
@@ -351,9 +357,11 @@
       <div class="brandmark"><span class="dot"></span>Planejamento Integrado · Operações Topside</div>
       <nav class="topnav">
         <a href="#racional">O que é</a>
+        <a href="#ciclovida">Ciclo de vida</a>
         <a href="#fluxo">Fluxo</a>
         <a href="#papeis">Papéis</a>
         <a href="#areas">Áreas</a>
+        <a href="#equipes">Equipes</a>
         <a href="#criterios">Critérios</a>
         <a href="#dados">Dados</a>
         <a href="#priorizacao">Priorização</a>
@@ -403,6 +411,41 @@
           </ul>
         </div>
       </div>
+    </section>
+
+    <section id="ciclovida">
+      <div class="sec-head">
+        <h2>Ciclo de Vida do Planejamento Integrado</h2>
+        <p class="sec-sub">O Planejamento Integrado é composto por escopos em três estágios de maturidade. <strong>Proposta a validar</strong> — segue a mesma lógica do Plano de Desenvolvimento, adaptada aos critérios do Topside.</p>
+      </div>
+      <div class="info-grid cols-3">
+        <div class="info-card">
+          <span class="stage-tag">Estágio 1</span>
+          <h4>Projetos Firmes e Escopos já Aprovados</h4>
+          <ul>
+            <li>Escopos já priorizados e aprovados pelo Coordenador de Operações</li>
+            <li>Inclui projetos firmes, como projetos de adequação no Topside para projetos de Desenvolvimento da Produção já aprovados</li>
+            <li>Seguem o rito de nivelamento e execução do plano</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <span class="stage-tag">Estágio 2</span>
+          <h4>Escopos Condicionados</h4>
+          <ul>
+            <li>Dependem de evento ou validação de premissa crítica: janela de Parada Programada, aprovação regulatória, disponibilidade de recurso ou orçamento</li>
+            <li>Ex.: campanhas atreladas à Parada Programada</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <span class="stage-tag">Estágio 3</span>
+          <h4>Backlog de Oportunidade</h4>
+          <ul>
+            <li>Escopos que ainda precisam seguir o rito de análise de oportunidade</li>
+            <li>Avaliados quanto à viabilidade e ao potencial de conversão em escopo aprovado</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sec-sub" style="margin-top:16px">Uma vez aprovado, cada escopo segue o rito abaixo — já detalhado na Visão Geral:</div>
     </section>
 
     <section id="fluxo">
@@ -492,9 +535,41 @@
       </div>
     </section>
 
+    <section id="equipes">
+      <div class="sec-head">
+        <div class="sec-num">04 — Quadro de equipes</div>
+        <h2>Quem responde por cada área, em cada unidade</h2>
+        <p class="sec-sub">Mesmo modelo de segregação por departamento do Plano de Desenvolvimento — adaptado aos departamentos do Topside e às 8 unidades. Estrutura em branco: nomes a preencher pelas coordenações.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Área</th><th>ABL<br><span style="font-weight:400;color:var(--muted);text-transform:none">FPSO Forte</span></th><th>Cluster<br><span style="font-weight:400;color:var(--muted);text-transform:none">FPSO Bravo, Polvo A</span></th><th>Frade<br><span style="font-weight:400;color:var(--muted);text-transform:none">FPSO Frade</span></th><th>Peregrino<br><span style="font-weight:400;color:var(--muted);text-transform:none">FPSO Peregrino, A, B, C</span></th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Coordenador de Operações</strong></td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Manutenção e Confiabilidade</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Projetos</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Construção e TA</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Integridade (estrutural)</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Naval</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Medição Fiscal</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Parada Programada</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>SMS / Sustentabilidade</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Processos e Químicos</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Suporte Técnico e Trading</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Reservatório / Produção (GP)</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Planejamento Integrado</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Logística Marítima e Log de Pessoas</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Comunicação, BPs, TI</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <section id="criterios">
       <div class="sec-head">
-        <div class="sec-num">04 — Regras transversais</div>
+        <div class="sec-num">05 — Regras transversais</div>
         <h2>Critérios gerais de elegibilidade</h2>
         <p class="sec-sub">Valem para qualquer área, antes dos critérios específicos de cada uma.</p>
       </div>
@@ -510,7 +585,7 @@
 
     <section id="dados">
       <div class="sec-head">
-        <div class="sec-num">05 — Levantamento</div>
+        <div class="sec-num">06 — Levantamento</div>
         <h2>Dados básicos por escopo</h2>
         <p class="sec-sub">Campos preenchidos pelo engenheiro de disciplina ao abrir a atividade no sistema de levantamento de escopo, organizados pelas mesmas etapas do formulário.</p>
       </div>
@@ -529,7 +604,7 @@
 
     <section id="priorizacao">
       <div class="sec-head">
-        <div class="sec-num">06 — Priorização</div>
+        <div class="sec-num">07 — Priorização</div>
         <h2>Matriz de priorização proposta</h2>
         <p class="sec-sub">100 pontos em quatro blocos, com trava automática para risco crítico de SMS ou regulatório.</p>
       </div>
@@ -553,7 +628,7 @@
 
     <section id="aprovacao">
       <div class="sec-head">
-        <div class="sec-num">07 — Consolidação</div>
+        <div class="sec-num">08 — Consolidação</div>
         <h2>Do escopo priorizado ao plano aprovado</h2>
         <p class="sec-sub">O Coordenador de Operações confronta prioridade com diretriz estratégica; o resultado é alinhado com os Gerentes Executivos antes de virar plano de POB e custo por ativo/ano.</p>
       </div>
@@ -568,7 +643,7 @@
 
     <section id="calendario">
       <div class="sec-head">
-        <div class="sec-num">08 — Calendário</div>
+        <div class="sec-num">09 — Calendário</div>
         <h2>Linha do tempo consolidada</h2>
         <p class="sec-sub">Amarra o rito acima ao cronograma corporativo — inclui os marcos fixos de orçamento e as duas entregas de V0.</p>
       </div>
@@ -634,7 +709,7 @@
 
     <section id="pendencias">
       <div class="sec-head">
-        <div class="sec-num">09 — Antes da reunião</div>
+        <div class="sec-num">10 — Antes da reunião</div>
         <h2>Pendências abertas</h2>
         <p class="sec-sub">Pontos que precisam de validação do Diretor ou das áreas antes de o processo virar padrão.</p>
       </div>
