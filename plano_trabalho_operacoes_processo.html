@@ -369,6 +369,7 @@
         <a href="#calendario">Calendário</a>
         <a href="#esforco">Esforço</a>
         <a href="#priorizacao">Priorização</a>
+        <a href="#criterios-priorizacao">Nota da matriz</a>
         <a href="#papeis">Papéis</a>
         <a href="#areas">Áreas</a>
         <a href="#criterios">Critérios</a>
@@ -604,7 +605,7 @@
       <div class="sec-head">
         <div class="sec-num">04 — O que está por trás do plano</div>
         <h2>Matriz Prioridade × Esforço</h2>
-        <p class="sec-sub">Adaptação da matriz Prêmio × Esforço do Plano de Desenvolvimento: no eixo vertical, a mesma pontuação de Prioridade da seção 05 (Segurança, Regulatório, Financeiro e Patrimônio, Produção de Óleo); no eixo horizontal, o Esforço medido em <strong>cama-dia</strong> (POB necessário × duração do escopo), já levantado na seção 09. O tamanho da bolha é o Custo Total; a cor distingue OPEX de CAPEX.</p>
+        <p class="sec-sub">Adaptação da matriz Prêmio × Esforço do Plano de Desenvolvimento: no eixo vertical, a mesma pontuação de Prioridade da seção 05 (Segurança, Regulatório, Financeiro e Patrimônio, Produção de Óleo); no eixo horizontal, o Esforço medido em <strong>cama-dia</strong> (POB necessário × duração do escopo), já levantado na seção 10. O tamanho da bolha é o Custo Total; a cor distingue OPEX de CAPEX.</p>
       </div>
       <div class="matrix-note">
         <b>Proposta ilustrativa — pontos de exemplo, não dados reais.</b> Cama-dia mede quanto da capacidade de POB o escopo consome, não a complexidade técnica de execução — diferente do Esforço do Plano de Desenvolvimento, que combina notas de engenharia, ambiental e regulatório. Mantivemos essa simplificação de propósito; ver ressalva abaixo do gráfico.
@@ -693,7 +694,7 @@
         <b>Ressalva desta versão</b>
         <ul>
           <li>Cama-dia mede consumo de capacidade de POB, não dificuldade técnica — um escopo simples com muita gente por muito tempo pontua "alto esforço" mesmo sem ser complexo. O Plano de Desenvolvimento resolve isso com notas de engenharia por disciplina; não replicamos esse detalhamento aqui.</li>
-          <li>Não plotamos a capacidade de POB/dia do ativo como linha de referência neste gráfico — a unidade não bate (cama-dia é por escopo; capacidade é por mês). Essa comparação já existe no nivelamento da seção 10.</li>
+          <li>Não plotamos a capacidade de POB/dia do ativo como linha de referência neste gráfico — a unidade não bate (cama-dia é por escopo; capacidade é por mês). Essa comparação já existe no nivelamento da seção 11.</li>
           <li>Os 8 pontos acima são ilustrativos, para validar a leitura da matriz — não são escopos reais do ciclo atual.</li>
         </ul>
       </div>
@@ -701,11 +702,11 @@
     <section id="priorizacao">
       <div class="sec-head">
         <div class="sec-num">05 — Priorização</div>
-        <h2>Matriz de priorização proposta</h2>
+        <h2>Matriz de priorização</h2>
         <p class="sec-sub">100 pontos em quatro blocos, com trava automática para risco crítico de SMS ou regulatório.</p>
       </div>
       <div class="matrix-note">
-        <b>Proposta em avaliação.</b> O sistema de levantamento hoje pontua com uma matriz própria já em produção (3 blocos / 180 pts: Segurança &amp; Integridade, Produção &amp; Operação, Confiabilidade &amp; Melhoria — escala Baixo/Médio/Alto). A matriz abaixo é a evolução que queremos levar à validação da Gestão da Produção antes de qualquer substituição.
+        <b>Matriz validada.</b> Metodologia oficial do sistema de levantamento de escopo (STAR) — regras de cálculo, travas e critério de cada bloco documentados e detalhados na seção 06.
       </div>
       <div class="weight-grid">
         <div class="weight-card veto"><h4>Segurança</h4><b>30 pts</b><div class="weight-bar"><i style="width:100%"></i></div><p style="font-size:11.5px;color:var(--ink-soft);margin-top:8px">Trava P1 se houver risco de fatalidade</p></div>
@@ -721,9 +722,161 @@
         <span class="class-chip" style="background:var(--muted)">P4 Baixa · &lt; 50</span>
       </div>
     </section>
+    <section id="criterios-priorizacao">
+      <div class="sec-head">
+        <div class="sec-num">06 — O que está por trás da nota</div>
+        <h2>Critérios que compõem a pontuação</h2>
+        <p class="sec-sub">Regras oficiais da Matriz de Priorização STAR (arquivo de referência <code>star_priorizacao_integrada.html</code>): pesos, travas, critérios de cada bloco e fórmula final — os mesmos 4 blocos e 100 pontos da seção 05.</p>
+      </div>
+
+      <div class="matrix-note">
+        <b>Travas automáticas.</b> Não dependem da nota total. Quando qualquer condição abaixo é selecionada, o projeto é elevado para <strong>P1 — Crítica</strong>, independente da pontuação.
+      </div>
+      <div class="crit-grid" style="margin-bottom:22px">
+        <div class="crit">
+          <div class="num">⚠</div>
+          <div>
+            <h4>Trava de Segurança</h4>
+            <p>Fatalidade, explosão, incêndio, H2S ou grande acidente (10 pts no campo) · Barreira crítica indisponível ou degradada (8 pts no campo)</p>
+          </div>
+        </div>
+        <div class="crit">
+          <div class="num">⚠</div>
+          <div>
+            <h4>Trava Regulatória</h4>
+            <p>Prazo regulatório vencido (7 pts no campo) · Embargo, interdição ou perda de licença (7 pts no campo)</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:15.5px;margin:24px 0 8px">1 · Segurança — 30 pts</h3>
+      <p class="sec-sub" style="margin-bottom:10px">Soma simples dos 5 critérios abaixo, limitada a 30 pontos.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Critério</th><th class="wide">Opções</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td>Severidade do pior cenário</td><td class="wide">Sem impacto de SMS · lesão leve · lesão grave · fatalidade/grande acidente</td><td>0 · 3 · 6 · 10</td></tr>
+            <tr><td>Barreira crítica</td><td class="wide">Não se aplica · barreira de suporte · barreira importante degradada · barreira crítica indisponível</td><td>0 · 3 · 5 · 8</td></tr>
+            <tr><td>Histórico de incidente ou recorrência</td><td class="wide">Sem registro · desvio isolado · near miss/recorrência · incidente com ação aberta</td><td>0 · 2 · 4 · 5</td></tr>
+            <tr><td>Abrangência da exposição</td><td class="wide">Pontual · equipe pequena · módulo/turno/operação recorrente · unidade inteira</td><td>0 · 1 · 3 · 4</td></tr>
+            <tr><td>Urgência da mitigação</td><td class="wide">Ciclo normal · até 180 dias · até 90 dias · imediato/próxima janela</td><td>0 · 1 · 2 · 3</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:15.5px;margin:24px 0 8px">2 · Regulatório — 25 pts</h3>
+      <p class="sec-sub" style="margin-bottom:10px">Soma simples dos 5 critérios abaixo, limitada a 25 pontos.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Critério</th><th class="wide">Opções</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td>Obrigação legal ou normativa</td><td class="wide">Sem obrigação · recomendação interna · requisito aplicável · obrigação formal externa</td><td>0 · 2 · 4 · 6</td></tr>
+            <tr><td>Prazo regulatório</td><td class="wide">Sem prazo · acima de 90 dias · 31 a 90 dias · até 30 dias · vencido</td><td>0 · 2 · 4 · 6 · 7</td></tr>
+            <tr><td>Consequência do não atendimento</td><td class="wide">Baixo impacto · retrabalho · não conformidade · multa/restrição · embargo/interdição</td><td>0 · 2 · 4 · 6 · 7</td></tr>
+            <tr><td>Evidência formal</td><td class="wide">Não · registro interno · evidência interna validada · evidência externa</td><td>0 · 1 · 2 · 3</td></tr>
+            <tr><td>Abrangência regulatória</td><td class="wide">Pontual · unidade específica · múltiplas unidades/processo corporativo</td><td>0 · 1 · 2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:15.5px;margin:24px 0 8px">3 · Financeiro &amp; Patrimônio — 20 pts</h3>
+      <p class="sec-sub" style="margin-bottom:10px">O bloco tem duas avaliações internas — a nota final é <strong>a maior entre as duas</strong>, não a soma.</p>
+
+      <p class="sec-sub" style="margin:16px 0 8px"><strong>3.1 Avaliação Financeira Econômica</strong> — soma até 20 pts:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Critério</th><th class="wide">Regra</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="5">Relação benefício/custo <span style="color:var(--muted);font-weight:400">(até 6)</span></td><td class="wide">≥ 10x</td><td>6</td></tr>
+            <tr><td class="wide">≥ 5x</td><td>5</td></tr>
+            <tr><td class="wide">≥ 2x</td><td>3</td></tr>
+            <tr><td class="wide">≥ 1x</td><td>2</td></tr>
+            <tr><td class="wide">&lt; 1x ou sem dados</td><td>0</td></tr>
+            <tr><td rowspan="6">Custo de não fazer / custo do projeto <span style="color:var(--muted);font-weight:400">(até 5)</span></td><td class="wide">≥ 3x</td><td>5</td></tr>
+            <tr><td class="wide">≥ 1,5x</td><td>4</td></tr>
+            <tr><td class="wide">≥ 1x</td><td>3</td></tr>
+            <tr><td class="wide">≥ 0,5x</td><td>2</td></tr>
+            <tr><td class="wide">&gt; 0 e &lt; 0,5x</td><td>1</td></tr>
+            <tr><td class="wide">Sem dados</td><td>0</td></tr>
+            <tr><td>Orçamento e janela de execução <span style="color:var(--muted);font-weight:400">(até 4)</span></td><td class="wide">Não cabe · exige remanejamento · cabe com ajuste · cabe no orçamento e janela</td><td>0 · 1 · 2 · 4</td></tr>
+            <tr><td>Tempo de captura do valor <span style="color:var(--muted);font-weight:400">(até 3)</span></td><td class="wide">Acima de 24 meses/indefinido · 12 a 24 meses · 6 a 12 meses · até 6 meses</td><td>0 · 1 · 2 · 3</td></tr>
+            <tr><td>Maturidade da estimativa <span style="color:var(--muted);font-weight:400">(até 2)</span></td><td class="wide">Conceitual · orçamento preliminar · cotação/contrato/estimativa validada</td><td>0 · 1 · 2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="sec-sub" style="margin:16px 0 8px"><strong>3.2 Avaliação de Patrimônio/Integridade</strong> — bruta até 25 pts, convertida para o bloco financeiro como <code>arredondar(bruta × 20 / 25)</code>:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Critério</th><th class="wide">Opções</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td>Comprometimento de ativo crítico</td><td class="wide">Não compromete · ativo auxiliar · ativo relevante · ativo crítico</td><td>0 · 2 · 5 · 8</td></tr>
+            <tr><td>Degradação evidenciada</td><td class="wide">Sem evidência · suspeita técnica · evidência registrada · degradação confirmada</td><td>0 · 2 · 4 · 6</td></tr>
+            <tr><td>Redundância do sistema</td><td class="wide">Redundância plena · parcial · limitada · sem redundância/caminho crítico</td><td>0 · 2 · 3 · 5</td></tr>
+            <tr><td>Janela rara ou parada maior</td><td class="wide">Não · baixa vantagem · janela relevante · janela crítica/rara</td><td>0 · 1 · 2 · 3</td></tr>
+            <tr><td>Risco de manutenção emergencial futura</td><td class="wide">Não reduz · redução baixa · moderada · alta</td><td>0 · 1 · 2 · 3</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:15.5px;margin:24px 0 8px">4 · Produção de Óleo — GP — 25 pts</h3>
+      <div class="matrix-note" style="margin-bottom:14px">
+        Preserva a lógica da Gestão da Produção: a pontuação só entra no total quando <strong>o escopo influencia diretamente a produção de óleo</strong> e <strong>o status da GP está como "Validada - computada"</strong>. Em prévia, aguardando GP, devolvida para ajuste ou sem impacto direto, a pontuação aparece como referência, mas entra no total como <strong>0</strong>.
+      </div>
+
+      <p class="sec-sub" style="margin:16px 0 8px"><strong>4.1 Relevância da Perda do Sistema</strong> — até 15 pts, pela participação do sistema no total de perdas:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th class="wide">Participação do sistema no total de perdas</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td class="wide">≥ 25%</td><td>15</td></tr>
+            <tr><td class="wide">≥ 15% e &lt; 25%</td><td>11</td></tr>
+            <tr><td class="wide">≥ 8% e &lt; 15%</td><td>7</td></tr>
+            <tr><td class="wide">≥ 3% e &lt; 8%</td><td>3</td></tr>
+            <tr><td class="wide">&lt; 3%</td><td>1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="sec-sub" style="margin:16px 0 8px"><strong>4.2 Benefício/Custo</strong> — até 10 pts. Benefício em US$ = perda evitada em bbl × 75; relação benefício/custo = benefício ÷ custo do projeto:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th class="wide">Relação benefício/custo</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td class="wide">≥ 20x</td><td>10</td></tr>
+            <tr><td class="wide">≥ 10x</td><td>7</td></tr>
+            <tr><td class="wide">≥ 5x</td><td>5</td></tr>
+            <tr><td class="wide">≥ 1x</td><td>2</td></tr>
+            <tr><td class="wide">&lt; 1x ou sem custo informado</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout gap" style="margin-top:14px">
+        <b>Campo informativo e regras de consistência da GP (não pontuam)</b>
+        <ul>
+          <li>"Esse escopo é originador de incremento de produção?" (Sim/Não) — informativo, não altera a pontuação da matriz.</li>
+          <li>Se a perda evitada for maior que a perda projetada do sistema, a ferramenta alerta para revisão de premissas.</li>
+          <li>Cobertura da perda histórica (referência) = perda evitada ÷ perda histórica do sistema.</li>
+        </ul>
+      </div>
+
+      <div class="matrix-note" style="margin-top:22px">
+        <b>Fórmula final.</b> Nota final = Segurança + Regulatório + Financeiro e Patrimônio + Produção de Óleo (GP validada) — máximo de 100 pontos. Classificação final P1–P4: ver seção 05.
+      </div>
+
+      <div class="sec-sub" style="margin:16px 0 8px">Regra de desempate, quando dois projetos têm classificação ou pontuação próxima:</div>
+      <div class="crit-grid">
+        <div class="crit"><div class="num">1</div><div><h4>Segurança</h4></div></div>
+        <div class="crit"><div class="num">2</div><div><h4>Regulatório</h4></div></div>
+        <div class="crit"><div class="num">3</div><div><h4>Produção validada pela GP</h4></div></div>
+        <div class="crit"><div class="num">4</div><div><h4>Financeiro/Patrimônio</h4></div></div>
+        <div class="crit"><div class="num">5</div><div><h4>Menor custo para executar</h4></div></div>
+      </div>
+    </section>
     <section id="papeis">
       <div class="sec-head">
-        <div class="sec-num">06 — Governança</div>
+        <div class="sec-num">07 — Governança</div>
         <h2>Papéis e responsabilidades</h2>
         <p class="sec-sub">Seis perfis sustentam o rito de ponta a ponta — do lançamento do escopo à aprovação final.</p>
       </div>
@@ -738,7 +891,7 @@
     </section>
     <section id="areas">
       <div class="sec-head">
-        <div class="sec-num">07 — Quem alimenta o plano</div>
+        <div class="sec-num">08 — Quem alimenta o plano</div>
         <h2>Áreas da PRIO e seus inputs</h2>
         <p class="sec-sub">Cruzado com os planos de trabalho reais de 2026 de ABL (FPSO Forte), CLUSTER (FPSO Bravo, Polvo A) e FPSO Frade. Linhas <span class="pill confirmed" style="vertical-align:middle">confirmado (2026)</span> foram validadas por esse histórico; as marcadas como <span class="pill assume" style="vertical-align:middle">a validar</span> ainda precisam de confirmação da própria área. Regulatório não aparece como área própria nos dados: suas exigências estão distribuídas entre Naval (classificadoras) e SMS (ANP).</p>
       </div>
@@ -769,7 +922,7 @@
     </section>
     <section id="criterios">
       <div class="sec-head">
-        <div class="sec-num">08 — Regras transversais</div>
+        <div class="sec-num">09 — Regras transversais</div>
         <h2>Critérios gerais de elegibilidade</h2>
         <p class="sec-sub">Valem para qualquer área, antes dos critérios específicos de cada uma.</p>
       </div>
@@ -784,7 +937,7 @@
     </section>
     <section id="dados">
       <div class="sec-head">
-        <div class="sec-num">09 — Levantamento</div>
+        <div class="sec-num">10 — Levantamento</div>
         <h2>Dados básicos por escopo</h2>
         <p class="sec-sub">Campos preenchidos pelo engenheiro de disciplina ao abrir a atividade no sistema de levantamento de escopo, organizados pelas mesmas etapas do formulário.</p>
       </div>
@@ -802,7 +955,7 @@
     </section>
     <section id="aprovacao">
       <div class="sec-head">
-        <div class="sec-num">10 — Consolidação</div>
+        <div class="sec-num">11 — Consolidação</div>
         <h2>Do escopo priorizado ao plano aprovado</h2>
         <p class="sec-sub">O Coordenador de Operações confronta prioridade com diretriz estratégica; o resultado é alinhado com os Gerentes Executivos antes de virar plano de POB e custo por ativo/ano.</p>
       </div>
@@ -816,23 +969,22 @@
     </section>
     <section id="pendencias">
       <div class="sec-head">
-        <div class="sec-num">11 — Antes da reunião</div>
+        <div class="sec-num">12 — Antes da reunião</div>
         <h2>Pendências abertas</h2>
         <p class="sec-sub">Pontos que precisam de validação do Diretor ou das áreas antes de o processo virar padrão.</p>
       </div>
       <div class="callout gap">
-        <b>4 pendências em aberto</b>
+        <b>3 pendências em aberto</b>
         <ul>
-          <li>Validar com cada coordenação as linhas marcadas como <span class="pill assume" style="vertical-align:middle">a validar</span> na seção 07 — inputs e critérios foram inferidos do material recebido, não confirmados pela própria área.</li>
-          <li>Levar a proposta de matriz de priorização de 100 pts (seção 05) à validação da Gestão da Produção como evolução da matriz de 180 pts já em produção — nenhuma substituição deve ocorrer sem esse alinhamento.</li>
+          <li>Validar com cada coordenação as linhas marcadas como <span class="pill assume" style="vertical-align:middle">a validar</span> na seção 08 — inputs e critérios foram inferidos do material recebido, não confirmados pela própria área.</li>
           <li>Decidir se a Visão Geral (seção 01) deve desdobrar "Aprovação &amp; divulgação" em três passos — Revisar, Ajustes do Plano e Envio — para refletir o cronograma real (seção 03).</li>
-          <li>Definir treinamento dedicado (ou confirmar cobertura pelo dia "Geral" de 02/09) para Medição Fiscal, Parada Programada, Reservatório/Produção (GP) e Desenvolvimento da Produção — ver seção 12.</li>
+          <li>Definir treinamento dedicado (ou confirmar cobertura pelo dia "Geral" de 02/09) para Medição Fiscal, Parada Programada, Reservatório/Produção (GP) e Desenvolvimento da Produção — ver seção 13.</li>
         </ul>
       </div>
     </section>
     <section id="treinamentos">
       <div class="sec-head">
-        <div class="sec-num">12 — Treinamentos por área</div>
+        <div class="sec-num">13 — Treinamentos por área</div>
         <h2>Agenda de capacitação, por área</h2>
         <p class="sec-sub">Cada dia tem uma sessão da manhã e uma da tarde, para públicos diferentes. Dados da Agenda de Treinamentos oficial.</p>
       </div>
@@ -852,7 +1004,7 @@
       </div>
       <div class="callout gap" style="margin-top:14px">
         <b>Áreas sem sessão dedicada</b>
-        <p style="margin:8px 0 0;font-size:13px">Conferindo contra as 13 áreas mapeadas na seção 07, quatro não aparecem em nenhum dia específico da agenda: <strong>Medição Fiscal</strong>, <strong>Parada Programada</strong>, <strong>Reservatório/Produção (GP)</strong> e <strong>Desenvolvimento da Produção</strong>. Podem estar cobertas pela sessão "Geral" de 02/09, ou precisar de um horário próprio — a confirmar com o Eng. Planejamento.</p>
+        <p style="margin:8px 0 0;font-size:13px">Conferindo contra as 13 áreas mapeadas na seção 08, quatro não aparecem em nenhum dia específico da agenda: <strong>Medição Fiscal</strong>, <strong>Parada Programada</strong>, <strong>Reservatório/Produção (GP)</strong> e <strong>Desenvolvimento da Produção</strong>. Podem estar cobertas pela sessão "Geral" de 02/09, ou precisar de um horário próprio — a confirmar com o Eng. Planejamento.</p>
       </div>
     </section>
 
