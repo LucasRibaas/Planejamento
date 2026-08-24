@@ -30,6 +30,8 @@
     --warn-soft:#f7e6cc;
     --crit:#a83a3a;
     --crit-soft:#f6dede;
+    --cat-opex:#2a78d6;
+    --cat-capex:#eb6834;
     --shadow:0 1px 2px rgba(18,22,29,.04), 0 8px 24px rgba(18,22,29,.06);
   }
   :root:not([data-theme="light"]){
@@ -55,6 +57,8 @@
       --warn-soft:#3a2c12;
       --crit:#e07a7a;
       --crit-soft:#3a2020;
+      --cat-opex:#3987e5;
+      --cat-capex:#d95926;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.45);
     }
   }
@@ -80,6 +84,8 @@
     --warn-soft:#3a2c12;
     --crit:#e07a7a;
     --crit-soft:#3a2020;
+    --cat-opex:#3987e5;
+    --cat-capex:#d95926;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.45);
   }
 
@@ -365,6 +371,7 @@
         <a href="#criterios">Critérios</a>
         <a href="#dados">Dados</a>
         <a href="#priorizacao">Priorização</a>
+        <a href="#esforco">Esforço</a>
         <a href="#aprovacao">Aprovação</a>
         <a href="#calendario">Calendário</a>
         <a href="#pendencias">Pendências</a>
@@ -629,9 +636,108 @@
       </div>
     </section>
 
+    <section id="esforco">
+      <div class="sec-head">
+        <div class="sec-num">08 — O que está por trás do plano</div>
+        <h2>Matriz Prioridade × Esforço</h2>
+        <p class="sec-sub">Adaptação da matriz Prêmio × Esforço do Plano de Desenvolvimento: no eixo vertical, a mesma pontuação de Prioridade da seção 07 (Segurança, Regulatório, Financeiro e Patrimônio, Produção de Óleo); no eixo horizontal, o Esforço medido em <strong>cama-dia</strong> (POB necessário × duração do escopo), já levantado na seção 06. O tamanho da bolha é o Custo Total; a cor distingue OPEX de CAPEX.</p>
+      </div>
+      <div class="matrix-note">
+        <b>Proposta ilustrativa — pontos de exemplo, não dados reais.</b> Cama-dia mede quanto da capacidade de POB o escopo consome, não a complexidade técnica de execução — diferente do Esforço do Plano de Desenvolvimento, que combina notas de engenharia, ambiental e regulatório. Mantivemos essa simplificação de propósito; ver ressalva abaixo do gráfico.
+      </div>
+
+      <div class="tbl-wrap" style="padding:20px 16px 8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow)">
+        <svg viewBox="0 0 880 460" role="img" aria-label="Matriz de dispersão: Esforço em cama-dia no eixo horizontal, Prioridade no eixo vertical, tamanho da bolha por custo total, cor por OPEX ou CAPEX" style="width:100%;height:auto;font-family:inherit">
+          <!-- quadrant backgrounds -->
+          <rect x="70" y="20" width="393" height="190" fill="var(--good-soft)"></rect>
+          <rect x="463" y="20" width="397" height="190" fill="var(--warn-soft)"></rect>
+          <rect x="70" y="210" width="393" height="190" fill="var(--surface-3)"></rect>
+          <rect x="463" y="210" width="397" height="190" fill="var(--crit-soft)"></rect>
+
+          <!-- priority threshold gridlines (85 / 70 / 50 pts) -->
+          <line x1="70" y1="77" x2="860" y2="77" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"></line>
+          <line x1="70" y1="134" x2="860" y2="134" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"></line>
+          <line x1="70" y1="210" x2="860" y2="210" stroke="var(--border)" stroke-width="1.4"></line>
+          <!-- effort band gridlines -->
+          <line x1="267" y1="20" x2="267" y2="400" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"></line>
+          <line x1="463" y1="20" x2="463" y2="400" stroke="var(--border)" stroke-width="1.4"></line>
+          <line x1="660" y1="20" x2="660" y2="400" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"></line>
+
+          <!-- axes -->
+          <line x1="70" y1="20" x2="70" y2="400" stroke="var(--ink-soft)" stroke-width="1.2"></line>
+          <line x1="70" y1="400" x2="860" y2="400" stroke="var(--ink-soft)" stroke-width="1.2"></line>
+
+          <!-- quadrant annotations -->
+          <text x="86" y="40" font-size="12.5" font-weight="700" fill="var(--good)">Quick win</text>
+          <text x="620" y="200" font-size="12.5" font-weight="700" fill="var(--accent-strong)">Planejar com antecedência</text>
+          <text x="86" y="392" font-size="12.5" font-weight="700" fill="var(--muted)">Oportunista</text>
+          <text x="479" y="392" font-size="12.5" font-weight="700" fill="var(--crit)">Reavaliar / backlog</text>
+
+          <!-- y-axis tick labels -->
+          <text x="62" y="24" text-anchor="end" font-size="11" fill="var(--muted)">100</text>
+          <text x="62" y="81" text-anchor="end" font-size="11" fill="var(--muted)">85</text>
+          <text x="62" y="138" text-anchor="end" font-size="11" fill="var(--muted)">70</text>
+          <text x="62" y="214" text-anchor="end" font-size="11" fill="var(--muted)">50</text>
+          <text x="62" y="404" text-anchor="end" font-size="11" fill="var(--muted)">0</text>
+          <text x="22" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink-soft)" transform="rotate(-90 22 210)">Prioridade (pts) →</text>
+
+          <!-- x-axis band labels -->
+          <text x="168" y="418" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink-soft)">Baixo</text>
+          <text x="365" y="418" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink-soft)">Moderado</text>
+          <text x="561" y="418" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink-soft)">Alto</text>
+          <text x="760" y="418" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink-soft)">Muito alto</text>
+          <text x="465" y="442" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink-soft)">Esforço (cama-dia) →</text>
+
+          <!-- bubbles -->
+          <g>
+            <circle cx="110" cy="305" r="9" fill="var(--cat-capex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Estudo de Viabilidade (Backlog) · 25 pts · ~80 cama-dia · US$ 30k · CAPEX</title></circle>
+            <text x="110" y="325" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Estudo de viabilidade</text>
+
+            <circle cx="160" cy="191" r="11" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Calibração de Medidores Fiscais · 55 pts · ~150 cama-dia · US$ 50k · OPEX</title></circle>
+            <text x="160" y="215" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Medição Fiscal</text>
+
+            <circle cx="210" cy="104" r="16" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Troca de Selo Mecânico · 78 pts · ~230 cama-dia · US$ 175k · OPEX</title></circle>
+            <text x="210" y="83" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Selo mecânico</text>
+
+            <circle cx="350" cy="142" r="22" fill="var(--cat-capex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Retrofit CO2 (Sustentabilidade) · 68 pts · ~420 cama-dia · US$ 600k · CAPEX</title></circle>
+            <text x="350" y="112" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Retrofit CO2</text>
+
+            <circle cx="520" cy="66" r="32" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Campanha de Tanques (Naval) · 88 pts · ~830 cama-dia · US$ 5,9M · OPEX</title></circle>
+            <text x="520" y="30" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Campanha de tanques</text>
+
+            <circle cx="590" cy="96" r="28" fill="var(--cat-capex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Adequação Topside — Novo Poço (Desenvolvimento da Produção) · 80 pts · ~980 cama-dia · US$ 3,2M · CAPEX</title></circle>
+            <text x="590" y="136" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Adequação p/ novo poço</text>
+
+            <circle cx="700" cy="229" r="24" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Pintura / Preservação (Integridade) · 45 pts · ~1250 cama-dia · US$ 1,1M · OPEX</title></circle>
+            <text x="700" y="262" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Pintura / preservação</text>
+
+            <circle cx="820" cy="58" r="36" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Parada Programada 2027 · 90 pts · ~2600 cama-dia · US$ 8,0M · OPEX</title></circle>
+            <text x="790" y="20" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Parada Programada</text>
+          </g>
+        </svg>
+
+        <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center;padding:14px 4px 4px;border-top:1px solid var(--border-soft);margin-top:10px;font-size:12px;color:var(--ink-soft)">
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:11px;height:11px;border-radius:50%;background:var(--cat-opex);display:inline-block"></i>OPEX</span>
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:11px;height:11px;border-radius:50%;background:var(--cat-capex);display:inline-block"></i>CAPEX</span>
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:10px;height:10px;border-radius:50%;background:var(--muted);display:inline-block"></i>Custo ≈ US$ 50k</span>
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:20px;height:20px;border-radius:50%;background:var(--muted);display:inline-block"></i>Custo ≈ US$ 1M</span>
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:32px;height:32px;border-radius:50%;background:var(--muted);display:inline-block"></i>Custo ≈ US$ 8M</span>
+        </div>
+      </div>
+
+      <div class="callout gap" style="margin-top:14px">
+        <b>Ressalva desta versão</b>
+        <ul>
+          <li>Cama-dia mede consumo de capacidade de POB, não dificuldade técnica — um escopo simples com muita gente por muito tempo pontua "alto esforço" mesmo sem ser complexo. O Plano de Desenvolvimento resolve isso com notas de engenharia por disciplina; não replicamos esse detalhamento aqui.</li>
+          <li>Não plotamos a capacidade de POB/dia do ativo como linha de referência neste gráfico — a unidade não bate (cama-dia é por escopo; capacidade é por mês). Essa comparação já existe no nivelamento da seção 10.</li>
+          <li>Os 8 pontos acima são ilustrativos, para validar a leitura da matriz — não são escopos reais do ciclo atual.</li>
+        </ul>
+      </div>
+    </section>
+
     <section id="aprovacao">
       <div class="sec-head">
-        <div class="sec-num">08 — Consolidação</div>
+        <div class="sec-num">09 — Consolidação</div>
         <h2>Do escopo priorizado ao plano aprovado</h2>
         <p class="sec-sub">O Coordenador de Operações confronta prioridade com diretriz estratégica; o resultado é alinhado com os Gerentes Executivos antes de virar plano de POB e custo por ativo/ano.</p>
       </div>
@@ -646,7 +752,7 @@
 
     <section id="calendario">
       <div class="sec-head">
-        <div class="sec-num">09 — Calendário</div>
+        <div class="sec-num">10 — Calendário</div>
         <h2>Linha do tempo consolidada</h2>
         <p class="sec-sub">Datas reais do Cronograma Plano Integrado 2027. Cada linha abaixo é uma etapa do rito, já com início e fim confirmados.</p>
       </div>
@@ -723,7 +829,7 @@
 
     <section id="pendencias">
       <div class="sec-head">
-        <div class="sec-num">10 — Antes da reunião</div>
+        <div class="sec-num">11 — Antes da reunião</div>
         <h2>Pendências abertas</h2>
         <p class="sec-sub">Pontos que precisam de validação do Diretor ou das áreas antes de o processo virar padrão.</p>
       </div>
@@ -732,16 +838,16 @@
         <ul>
           <li>Validar com cada coordenação as linhas marcadas como <span class="pill assume" style="vertical-align:middle">a validar</span> na seção 03 — inputs e critérios foram inferidos do material recebido, não confirmados pela própria área.</li>
           <li>Levar a proposta de matriz de priorização de 100 pts (seção 07) à validação da Gestão da Produção como evolução da matriz de 180 pts já em produção — nenhuma substituição deve ocorrer sem esse alinhamento.</li>
-          <li>Confirmar a data real de envio do plano (seção 09) — a planilha-fonte traz início em 25/09 e fim em 24/09 para essa etapa, datas aparentemente invertidas.</li>
-          <li>Decidir se a Visão Geral (seção 01) deve desdobrar "Aprovação &amp; divulgação" em três passos — Revisar, Ajustes do Plano e Envio — para refletir o cronograma real (seção 09).</li>
-          <li>Definir treinamento dedicado (ou confirmar cobertura pelo dia "Geral" de 02/09) para Medição Fiscal, Parada Programada, Reservatório/Produção (GP) e Desenvolvimento da Produção — ver seção 11.</li>
+          <li>Confirmar a data real de envio do plano (seção 10) — a planilha-fonte traz início em 25/09 e fim em 24/09 para essa etapa, datas aparentemente invertidas.</li>
+          <li>Decidir se a Visão Geral (seção 01) deve desdobrar "Aprovação &amp; divulgação" em três passos — Revisar, Ajustes do Plano e Envio — para refletir o cronograma real (seção 10).</li>
+          <li>Definir treinamento dedicado (ou confirmar cobertura pelo dia "Geral" de 02/09) para Medição Fiscal, Parada Programada, Reservatório/Produção (GP) e Desenvolvimento da Produção — ver seção 12.</li>
         </ul>
       </div>
     </section>
 
     <section id="treinamentos">
       <div class="sec-head">
-        <div class="sec-num">11 — Treinamentos por área</div>
+        <div class="sec-num">12 — Treinamentos por área</div>
         <h2>Agenda de capacitação, por área</h2>
         <p class="sec-sub">Cada dia tem uma sessão da manhã e uma da tarde, para públicos diferentes. Dados da Agenda de Treinamentos oficial.</p>
       </div>
