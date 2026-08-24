@@ -307,7 +307,7 @@
   /* Gantt / calendar timeline */
   .gantt{overflow-x:auto; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); background:var(--surface)}
   .gantt-grid{
-    display:grid; grid-template-columns:168px repeat(9,minmax(64px,1fr));
+    display:grid; grid-template-columns:190px repeat(8,minmax(64px,1fr));
     min-width:780px;
   }
   .gantt-grid > div{border-bottom:1px solid var(--border-soft); padding:10px 10px; font-size:11.5px; display:flex; align-items:center}
@@ -368,6 +368,7 @@
         <a href="#aprovacao">Aprovação</a>
         <a href="#calendario">Calendário</a>
         <a href="#pendencias">Pendências</a>
+        <a href="#treinamentos">Treinamentos</a>
       </nav>
     </div>
   </div>
@@ -379,7 +380,7 @@
     <div class="stat-row">
       <div class="stat"><b>1 ano</b><span>Horizonte do plano</span></div>
       <div class="stat"><b>8</b><span>Unidades: FPSO Frade, FPSO Forte, FPSO Bravo, Polvo A, FPSO Peregrino, Peregrino A, Peregrino B, Peregrino C</span></div>
-      <div class="stat"><b>12</b><span>Áreas solicitantes mapeadas</span></div>
+      <div class="stat"><b>15</b><span>Áreas mapeadas no plano</span></div>
       <div class="stat"><b>Semestral</b><span>Ciclo de construção (emissões de março e setembro)</span></div>
     </div>
   </header>
@@ -527,6 +528,7 @@
             <tr><td>Processos e Químicos</td><td>Eng. de Processos e Químicos</td><td class="wide">Otimização de processo, tratamento químico</td><td class="wide">Impacto em confiabilidade de processo ou consumo químico</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
             <tr><td>Suporte Técnico e Trading</td><td>Eng. de Suporte Técnico</td><td class="wide">Estudos técnicos, otimização comercial de óleo/gás</td><td class="wide">Impacto direto em receita ou eficiência de escoamento</td><td><span class="pill assume">a validar</span></td></tr>
             <tr><td>Reservatório / Produção (GP)</td><td>Eng. de Reservatório / Gestão da Produção</td><td class="wide">Escopos com impacto direto na produção de óleo</td><td class="wide">Perda evitada validada pela Gestão da Produção</td><td><span class="pill assume">a validar</span></td></tr>
+            <tr><td>Desenvolvimento da Produção</td><td>Eng. de Desenvolvimento da Produção</td><td class="wide">Comissionamento de novos poços; escopos de conexão à planta</td><td class="wide">Categoria Desenvolvimento de Produção; escopo necessário para start-up do poço</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
             <tr><td>Planejamento Integrado</td><td>Eng. de Planejamento</td><td class="wide">Consolidação, nivelamento e versionamento do plano</td><td class="wide">Dono do processo — não solicita escopo próprio</td><td><span class="pill confirmed">papel de processo</span></td></tr>
             <tr><td>Logística Marítima e Log de Pessoas</td><td>Coordenação de Logística</td><td class="wide">Embarque/desembarque, acomodação de POB terceiro</td><td class="wide">Stakeholder de capacidade — não solicitante primário</td><td><span class="pill assume">a validar</span></td></tr>
             <tr><td>Comunicação, BPs, TI (ADM 3º/4º andar)</td><td>Comunicação / BPs / TI</td><td class="wide">Suporte administrativo e de sistemas ao rito</td><td class="wide">Stakeholder de suporte — não solicitante primário</td><td><span class="pill assume">a validar</span></td></tr>
@@ -559,6 +561,7 @@
             <tr><td>Processos e Químicos</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
             <tr><td>Suporte Técnico e Trading</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
             <tr><td>Reservatório / Produção (GP)</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
+            <tr><td>Desenvolvimento da Produção</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
             <tr><td>Planejamento Integrado</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
             <tr><td>Logística Marítima e Log de Pessoas</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
             <tr><td>Comunicação, BPs, TI</td><td>[nome]</td><td>[nome]</td><td>[nome]</td><td>[nome]</td></tr>
@@ -645,7 +648,7 @@
       <div class="sec-head">
         <div class="sec-num">09 — Calendário</div>
         <h2>Linha do tempo consolidada</h2>
-        <p class="sec-sub">Amarra o rito acima ao cronograma corporativo — inclui os marcos fixos de orçamento e as duas entregas de V0.</p>
+        <p class="sec-sub">Datas reais do Cronograma Plano Integrado 2027. Cada linha abaixo é uma etapa do rito, já com início e fim confirmados.</p>
       </div>
       <div class="gantt">
         <div class="gantt-grid">
@@ -658,52 +661,63 @@
           <div class="head">Out S1</div>
           <div class="head">Out S2</div>
           <div class="head">Out S3</div>
-          <div class="head">Nov S1</div>
 
-          <div class="rowlabel">Comunicação &amp; treinamento</div>
+          <div class="rowlabel">Comunicação &amp; divulgação<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">25–27/08</span></div>
           <div class="cell"><div class="bar b1"></div></div>
-          <div class="cell"><div class="bar b1"></div><span class="flag" title="Público de 04/09 (tarde) ainda em definição">🚩</span></div>
           <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
-          <div class="rowlabel">Building — preenchimento</div>
-          <div class="cell"></div>
+          <div class="rowlabel">Treinamento (macro + intensivo)<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">27/08–02/09</span></div>
           <div class="cell"><div class="bar b1"></div></div>
           <div class="cell"><div class="bar b1"></div></div>
           <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
-          <div class="rowlabel">Workshop Orçamento</div>
-          <div class="cell"></div><div class="cell"></div>
-          <div class="cell"><div class="bar b2"></div><span class="pin">$</span></div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="rowlabel">Building — preenchimento<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">31/08–11/09</span></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"><div class="bar b1"></div><span class="pin">11</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
-          <div class="rowlabel">Leveling &amp; Challenge</div>
+          <div class="rowlabel">Leveling &amp; Challenge<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">14–18/09 · V0/V1</span></div>
           <div class="cell"></div><div class="cell"></div><div class="cell"></div>
           <div class="cell"><div class="bar b1"></div></div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-
-          <div class="rowlabel">Workshop c/ Gerentes Executivos</div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-          <div class="cell"><div class="bar b1"></div><span class="pin">25</span></div>
           <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
-          <div class="rowlabel">Revisar &amp; aprovar (V2)</div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
-          <div class="cell"><div class="bar b2"></div></div>
-          <div class="cell"><div class="bar b2"></div></div>
-          <div class="cell"></div><div class="cell"></div>
+          <div class="rowlabel">Workshop Gerencial<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">21–22/09</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
 
-          <div class="rowlabel">Envio do plano (VF)</div>
-          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="rowlabel">Revisar — aprovação V0<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">23–24/09</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"><div class="bar b2"></div></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+          <div class="rowlabel">Plan Approval — envio do plano<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">24–25/09</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"><div class="bar b2"></div><span class="pin">25</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+          <div class="rowlabel">Ajustes do plano<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">28/09–09/10</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
           <div class="cell"><div class="bar b1"></div></div>
           <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"></div>
         </div>
         <div class="gantt-legend">
           <span><i style="background:var(--accent2-soft)"></i>Rito do plano</span>
-          <span><i style="background:var(--accent-soft)"></i>Marco corporativo fixo</span>
-          <span><b class="mono" style="color:var(--accent)">$</b> = 11/09 · V0 Ativos Operados + Desenvolvimento de Produção + Potencial de Produção</span>
-          <span><b class="mono" style="color:var(--accent)">25</b> = 25/09 · V0 do Plano das Áreas + V0 Orçamento, alinhada com os Gerentes Executivos</span>
-          <span>🚩 = pendência aberta (seção 09)</span>
+          <span><i style="background:var(--accent-soft)"></i>Aprovação / revisão</span>
+          <span><b class="mono" style="color:var(--accent)">11</b> = 11/09 · fim do Building</span>
+          <span><b class="mono" style="color:var(--accent)">25</b> = 25/09 · início do envio do plano</span>
         </div>
+      </div>
+      <div class="callout gap" style="margin-top:14px">
+        <b>Ponto a confirmar</b>
+        <ul>
+          <li>A planilha-fonte traz o "Envio do Plano" com início em 25/09 e fim em 24/09 (datas invertidas) — mantive 24–25/09 como aproximação; confirmar a data real de envio antes de divulgar.</li>
+          <li>A planilha separa "Revisar" (aprovação da V0) e "Ajustes do Plano" (28/09–09/10) da etapa de envio — hoje a Visão Geral (seção 01) resume as três como uma única etapa "Aprovação &amp; divulgação". Aviso e não alterei a Visão Geral ainda — me diga se quer que eu desdobre esse passo também.</li>
+        </ul>
       </div>
     </section>
 
@@ -714,12 +728,40 @@
         <p class="sec-sub">Pontos que precisam de validação do Diretor ou das áreas antes de o processo virar padrão.</p>
       </div>
       <div class="callout gap">
-        <b>3 pendências em aberto</b>
+        <b>4 pendências em aberto</b>
         <ul>
-          <li>Definir o público do treinamento de <strong>Processos e Químicos em 04/09 (16h–18h)</strong> — ainda sem área confirmada no cronograma.</li>
           <li>Validar com cada coordenação as linhas marcadas como <span class="pill assume" style="vertical-align:middle">a validar</span> na seção 03 — inputs e critérios foram inferidos do material recebido, não confirmados pela própria área.</li>
-          <li>Levar a proposta de matriz de priorização de 100 pts (seção 06) à Accenture e à Gestão da Produção como evolução da matriz de 180 pts já em produção — nenhuma substituição deve ocorrer sem esse alinhamento.</li>
+          <li>Levar a proposta de matriz de priorização de 100 pts (seção 07) à validação da Gestão da Produção como evolução da matriz de 180 pts já em produção — nenhuma substituição deve ocorrer sem esse alinhamento.</li>
+          <li>Confirmar a data real de envio do plano (seção 09) — a planilha-fonte traz início em 25/09 e fim em 24/09 para essa etapa, datas aparentemente invertidas.</li>
+          <li>Decidir se a Visão Geral (seção 01) deve desdobrar "Aprovação &amp; divulgação" em três passos — Revisar, Ajustes do Plano e Envio — para refletir o cronograma real (seção 09).</li>
+          <li>Definir treinamento dedicado (ou confirmar cobertura pelo dia "Geral" de 02/09) para Medição Fiscal, Parada Programada, Reservatório/Produção (GP) e Desenvolvimento da Produção — ver seção 11.</li>
         </ul>
+      </div>
+    </section>
+
+    <section id="treinamentos">
+      <div class="sec-head">
+        <div class="sec-num">11 — Treinamentos por área</div>
+        <h2>Agenda de capacitação, por área</h2>
+        <p class="sec-sub">Cada dia tem uma sessão da manhã e uma da tarde, para públicos diferentes. Dados da Agenda de Treinamentos oficial.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Data</th><th>09h–11h / 11h</th><th>16h–18h</th><th>Responsável</th></tr></thead>
+          <tbody>
+            <tr><td>25/08</td><td class="wide">Convite Operações</td><td class="wide">Convite livre / toda a PRIO</td><td>Eng. Planejamento / Accenture</td></tr>
+            <tr><td>26/08</td><td class="wide">Convite Engenheiros</td><td class="wide">Convite livre / toda a PRIO</td><td>Eng. Planejamento / Accenture</td></tr>
+            <tr><td>27/08</td><td class="wide">Manutenção e Confiabilidade</td><td class="wide">Integridade e Naval</td><td>Eng. Planejamento</td></tr>
+            <tr><td>28/08</td><td class="wide">Projetos / Processos e Químicos</td><td class="wide">Construção e TA</td><td>Eng. Planejamento / Accenture</td></tr>
+            <tr><td>31/08</td><td class="wide">SMS: Ocupacional, Processos, Saúde e Qualidade</td><td class="wide">Suporte Técnico e Trading</td><td>Eng. Planejamento</td></tr>
+            <tr><td>01/09</td><td class="wide">ADM 3º/4º andar — Comunicação, BPs, TI, Log Marítima e Log Pessoas</td><td class="wide">ADM 3º/4º andar — Comunicação, BPs, TI, Log Marítima e Log Pessoas</td><td>Eng. Planejamento</td></tr>
+            <tr><td>02/09</td><td class="wide">Geral</td><td class="wide">Geral</td><td>Eng. Planejamento</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout gap" style="margin-top:14px">
+        <b>Áreas sem sessão dedicada</b>
+        <p style="margin:8px 0 0;font-size:13px">Conferindo contra as 13 áreas mapeadas na seção 03, quatro não aparecem em nenhum dia específico da agenda: <strong>Medição Fiscal</strong>, <strong>Parada Programada</strong>, <strong>Reservatório/Produção (GP)</strong> e <strong>Desenvolvimento da Produção</strong>. Podem estar cobertas pela sessão "Geral" de 02/09, ou precisar de um horário próprio — a confirmar com o Eng. Planejamento.</p>
       </div>
     </section>
 
