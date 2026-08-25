@@ -191,21 +191,21 @@
 
   /* Stepper (process flow) */
   .stepper{
-    display:grid; grid-template-columns:repeat(5,1fr); gap:0; position:relative;
+    display:grid; grid-template-columns:repeat(7,1fr); gap:0; position:relative;
   }
   .step{
-    position:relative; padding:0 14px 0 0; border-left:2px solid var(--border);
+    position:relative; padding:0 10px 0 0; border-left:2px solid var(--border);
   }
   .step:first-child{border-left:2px solid transparent}
   .step-num{
-    width:30px; height:30px; border-radius:50%;
+    width:26px; height:26px; border-radius:50%;
     background:var(--surface); border:2px solid var(--accent); color:var(--accent-strong);
-    display:grid; place-items:center; font-family:"Archivo",sans-serif; font-weight:800; font-size:13px;
-    margin-left:-16px; margin-bottom:14px;
+    display:grid; place-items:center; font-family:"Archivo",sans-serif; font-weight:800; font-size:12px;
+    margin-left:-14px; margin-bottom:12px;
   }
   .step:first-child .step-num{margin-left:0}
-  .step h3{font-size:14.5px; margin-bottom:6px}
-  .step p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.5}
+  .step h3{font-size:13px; margin-bottom:6px}
+  .step p{margin:0; font-size:11px; color:var(--ink-soft); line-height:1.45}
   .step .who{
     display:inline-block; margin-top:10px; font-size:11px; color:var(--muted);
     font-weight:500;
@@ -388,7 +388,7 @@
     <div class="stat-row">
       <div class="stat"><b>1 ano</b><span>Horizonte do plano</span></div>
       <div class="stat"><b>8</b><span>Unidades: FPSO Frade, FPSO Forte, FPSO Bravo, Polvo A, FPSO Peregrino, Peregrino A, Peregrino B, Peregrino C</span></div>
-      <div class="stat"><b>15</b><span>Áreas mapeadas no plano</span></div>
+      <div class="stat"><b>12</b><span>Áreas mapeadas no plano</span></div>
       <div class="stat"><b>Semestral</b><span>Ciclo de construção (emissões de março e setembro)</span></div>
     </div>
   </header>
@@ -458,7 +458,7 @@
     <section id="fluxo">
       <div class="sec-head">
         <div class="sec-num">01 — Visão geral</div>
-        <h2>O processo tem cinco etapas</h2>
+        <h2>O processo tem sete etapas</h2>
         <p class="sec-sub">Da comunicação inicial até o plano oficial divulgado, cada escopo passa pela mesma esteira — independente da área que o solicitou.</p>
       </div>
       <div class="stepper">
@@ -488,8 +488,20 @@
         </div>
         <div class="step">
           <div class="step-num">5</div>
-          <h3>Aprovação &amp; divulgação</h3>
-          <p>Gerente e Coordenador do Ativo revisam e aprovam (V2); plano final (VF) é enviado e divulgado a todas as áreas.</p>
+          <h3>Revisar — aprovação V0</h3>
+          <p>Gerente e Coordenador do Ativo revisam a V0 consolidada e aprovam o avanço do plano.</p>
+          <span class="who">Gerente do Ativo / Coordenador do Ativo</span>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <h3>Ajustes do plano</h3>
+          <p>Ajustes finos no plano aprovado — refinamento de POB, custo e cronograma por área, antes do fechamento.</p>
+          <span class="who">Eng. Planejamento</span>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <h3>Plan Approval — envio do plano</h3>
+          <p>Plano final (VF) é aprovado e enviado, divulgado a todas as áreas.</p>
           <span class="who">Gerente do Ativo</span>
         </div>
       </div>
@@ -608,12 +620,6 @@
         </div>
       </div>
       <p class="sec-sub" style="margin-top:10px">O workshop de 27/08 com o time de Performance é o <strong>Passo 1</strong> do racional de priorização por frente de trabalho (seção 05): define os insumos que mostram a evolução da condição do ativo, conectados às diretrizes estratégicas de cada Gerência Executiva.</p>
-      <div class="callout gap" style="margin-top:14px">
-        <b>Ponto a confirmar</b>
-        <ul>
-          <li>A planilha separa "Revisar" (aprovação da V0) e "Ajustes do Plano" (28/09–09/10) da etapa de envio — hoje a Visão Geral (seção 01) resume as três como uma única etapa "Aprovação &amp; divulgação". Aviso e não alterei a Visão Geral ainda — me diga se quer que eu desdobre esse passo também.</li>
-        </ul>
-      </div>
     </section>
     <section id="esforco">
       <div class="sec-head">
@@ -925,7 +931,7 @@
       <div class="sec-head">
         <div class="sec-num">07 — Governança</div>
         <h2>Papéis e responsabilidades</h2>
-        <p class="sec-sub">Seis perfis sustentam o rito de ponta a ponta — do lançamento do escopo à aprovação final.</p>
+        <p class="sec-sub">Cinco perfis sustentam o rito de ponta a ponta — do lançamento do escopo à aprovação final.</p>
       </div>
       <div class="role-grid">
         <div class="role"><span class="tag">Solicita</span><h3>Engenheiro de disciplina</h3><p>Levanta e cadastra o escopo: dados básicos, POB mensal, custo de material/serviço e responde a priorização.</p></div>
@@ -933,7 +939,6 @@
         <div class="role"><span class="tag">Prioriza</span><h3>Coordenador de Operações</h3><p>Avalia a solicitação priorizada contra a diretriz estratégica do ativo e aprova, recusa ou devolve para ajuste.</p></div>
         <div class="role"><span class="tag">Alinha</span><h3>Gerentes Executivos</h3><p>Participam, junto ao OIM do ativo, do workshop de V0 apresentado pelo Eng. Planejamento do Ativo, para discutir e alinhar o plano com a diretriz estratégica de cada Gerência Executiva.</p></div>
         <div class="role"><span class="tag">Aprova</span><h3>Gerente do Ativo</h3><p>Revisão final do plano consolidado (POB + custo) antes do envio e divulgação oficial.</p></div>
-        <div class="role"><span class="tag">Suporta</span><h3>Accenture</h3><p>Apoia a implantação e evolução da ferramenta de levantamento de escopo; conduz o treinamento macro junto ao Eng. Planejamento.</p></div>
       </div>
     </section>
     <section id="areas">
@@ -950,19 +955,16 @@
           <tbody>
             <tr><td>Manutenção e Confiabilidade</td><td>Eng. de Manutenção</td><td class="wide">Ordens preventivas e corretivas (SAP), campanhas de manutenção</td><td class="wide">Sempre que exigir <code>POB terceiro (vendor)</code> — entra independente de ser OPEX ou CAPEX</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
             <tr><td>Projetos</td><td>Eng. de Projetos</td><td class="wide">Modificação de Eficiência da Produção; Desenvolvimento da Produção</td><td class="wide">Fase de maturidade mínima <code>PML2</code> (campo real na planilha: <code>Fase FEL</code> ≥ FEL 2 - Básico)</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
-            <tr><td>Construção e TA</td><td>Eng. de Construção</td><td class="wide">Intervenções estruturais e de turnaround</td><td class="wide">Ordens corretivas <code>M1</code> e <code>M5</code></td><td><span class="pill assume">a validar</span></td></tr>
-            <tr><td>Integridade (estrutural)</td><td>Eng. de Integridade</td><td class="wide">Inspeções e campanhas de integridade (ENDs, CUI, calibração de válvulas de segurança)</td><td class="wide">Categoria Integridade e Regulatório; risco a barreira crítica</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>Construção</td><td>Eng. de Construção</td><td class="wide">Intervenções estruturais e de turnaround</td><td class="wide">Ordens corretivas <code>M1</code> e <code>M5</code></td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>Integridade</td><td>Eng. de Integridade</td><td class="wide">Inspeções e campanhas de integridade (ENDs, CUI, calibração de válvulas de segurança)</td><td class="wide">Categoria Integridade e Regulatório; risco a barreira crítica</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
             <tr><td>Naval</td><td>Eng. de Naval</td><td class="wide">Ordens de campanha naval: tanques, mangotes, vasos de pressão, amarras e casco</td><td class="wide">Exigências das classificadoras (ABS, DNV) e inspeções de classe</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
             <tr><td>Medição Fiscal</td><td>Departamento de Medição Fiscal</td><td class="wide">Calibração e testes de medidores fiscais, cromatografia, auditorias de medição</td><td class="wide">Conformidade regulatória de medição fiscal (ANP)</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
             <tr><td>Parada Programada</td><td>Eng. de Parada, Eng. de Manutenção, Eng. de Construção, Eng. de Integridade, Eng. de Projetos</td><td class="wide">Consolida escopos de múltiplas disciplinas durante a janela de parada</td><td class="wide">Ordens <code>Z17</code> — entra sempre no plano, sem exceção de priorização</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
             <tr><td>SMS — Segurança Ocupacional, Processos, Saúde e Qualidade</td><td>Eng. de SMS</td><td class="wide">Ações corretivas de risco, adequação a barreiras críticas</td><td class="wide">Potencial de lesão/fatalidade ou dano ambiental relevante; inclui exigência normativa ANP (NR, SGSO)</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
             <tr><td>Processos e Químicos</td><td>Eng. de Processos e Químicos</td><td class="wide">Otimização de processo, tratamento químico</td><td class="wide">Impacto em confiabilidade de processo ou consumo químico</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
-            <tr><td>Suporte Técnico e Trading</td><td>Eng. de Suporte Técnico</td><td class="wide">Estudos técnicos, otimização comercial de óleo/gás</td><td class="wide">Impacto direto em receita ou eficiência de escoamento</td><td><span class="pill assume">a validar</span></td></tr>
-            <tr><td>Reservatório / Produção (GP)</td><td>Eng. de Reservatório / Gestão da Produção</td><td class="wide">Escopos com impacto direto na produção de óleo</td><td class="wide">Perda evitada validada pela Gestão da Produção</td><td><span class="pill assume">a validar</span></td></tr>
+            <tr><td>Suporte Técnico</td><td>Eng. de Suporte Técnico</td><td class="wide">Estudos técnicos, otimização comercial de óleo/gás</td><td class="wide">Impacto direto em receita ou eficiência de escoamento</td><td><span class="pill assume">a validar</span></td></tr>
             <tr><td>Desenvolvimento da Produção</td><td>Eng. de Desenvolvimento da Produção</td><td class="wide">Comissionamento de novos poços; escopos de conexão à planta</td><td class="wide">Categoria Desenvolvimento de Produção; escopo necessário para start-up do poço</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
             <tr><td>Planejamento Integrado</td><td>Eng. de Planejamento</td><td class="wide">Consolidação, nivelamento e versionamento do plano</td><td class="wide">Dono do processo — não solicita escopo próprio</td><td><span class="pill confirmed">papel de processo</span></td></tr>
-            <tr><td>Logística Marítima e Log de Pessoas</td><td>Coordenação de Logística</td><td class="wide">Embarque/desembarque, acomodação de POB terceiro</td><td class="wide">Stakeholder de capacidade — não solicitante primário</td><td><span class="pill assume">a validar</span></td></tr>
-            <tr><td>Comunicação, BPs, TI (ADM 3º/4º andar)</td><td>Comunicação / BPs / TI</td><td class="wide">Suporte administrativo e de sistemas ao rito</td><td class="wide">Stakeholder de suporte — não solicitante primário</td><td><span class="pill assume">a validar</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -976,10 +978,9 @@
       <div class="crit-grid">
         <div class="crit"><div class="num">01</div><div><h4>POB de terceiro (vendor)</h4><p>Se a atividade exige POB terceiro, ela entra no plano — não importa se é OPEX ou CAPEX.</p></div></div>
         <div class="crit"><div class="num">02</div><div><h4>Linha CAPEX × OPEX</h4><p>Projetos ≥ <code>US$ 150k</code> são tratados como CAPEX; abaixo disso, alocados como OPEX (premissa mantida do ciclo anterior).</p></div></div>
-        <div class="crit"><div class="num">03</div><div><h4>Parada Programada</h4><p>Ordens <code>Z17</code> entram sempre — sem exceção de priorização.</p></div></div>
-        <div class="crit"><div class="num">04</div><div><h4>Corretivas de construção</h4><p>Ordens <code>M1</code> e <code>M5</code> entram sempre no levantamento de escopo.</p></div></div>
-        <div class="crit"><div class="num">05</div><div><h4>Maturidade de projeto</h4><p>Projetos só entram a partir da fase <code>PML2</code> (equivalente ao campo <code>Fase FEL</code> ≥ FEL 2 - Básico na planilha), e apenas como Eficiência da Produção ou Desenvolvimento da Produção.</p></div></div>
-        <div class="crit"><div class="num">06</div><div><h4>Diretriz estratégica</h4><p>O solicitante já levanta o escopo, no Building, com base na Diretriz Estratégica da sua Gerência Executiva — o vínculo é definido na origem da solicitação, não apenas checado depois na aprovação.</p></div></div>
+        <div class="crit"><div class="num">03</div><div><h4>Parada Programada</h4><p>Ordens <code>Z17</code> entram.</p></div></div>
+        <div class="crit"><div class="num">04</div><div><h4>Maturidade de projeto</h4><p>Projetos só entram a partir da fase <code>PML2</code> (equivalente ao campo <code>Fase FEL</code> ≥ FEL 2 - Básico na planilha), e apenas como Eficiência da Produção ou Desenvolvimento da Produção.</p></div></div>
+        <div class="crit"><div class="num">05</div><div><h4>Diretriz estratégica</h4><p>O solicitante já levanta o escopo, no Building, com base na Diretriz Estratégica da sua Gerência Executiva — o vínculo é definido na origem da solicitação, não apenas checado depois na aprovação.</p></div></div>
       </div>
     </section>
     <section id="dados">
@@ -1007,7 +1008,7 @@
         <p class="sec-sub">O Coordenador de Operações confronta prioridade com diretriz estratégica; o resultado é alinhado com os Gerentes Executivos antes de virar plano de POB e custo por ativo/ano.</p>
       </div>
       <div class="crit-grid">
-        <div class="crit"><div class="num">→</div><div><h4>Crivo do Coordenador</h4><p>Cada solicitação priorizada é avaliada pelo Coordenador de Operações do ativo, que aprova, recusa ou devolve para ajuste com base na prioridade e na diretriz estratégica vinculada.</p></div></div>
+        <div class="crit"><div class="num">→</div><div><h4>Crivo do Coordenador / Gerente</h4><p>Cada solicitação priorizada é avaliada pelo Coordenador de Operações do ativo, que aprova, recusa ou devolve para ajuste com base na prioridade e na diretriz estratégica vinculada.</p></div></div>
         <div class="crit"><div class="num">→</div><div><h4>Workshop com Gerentes Executivos</h4><p>Com a V0 já aprovada pelo Coordenador, o Eng. Planejamento do Ativo apresenta o plano ao OIM e a todos os Gerentes Executivos para discussão e alinhamento — sai daqui uma V0 também aprovada pelos Gerentes.</p></div></div>
         <div class="crit"><div class="num">→</div><div><h4>Nivelamento de capacidade</h4><p>O plano aprovado é nivelado contra a capacidade de POB/dia do ativo, sinalizando meses acima da capacidade ou subutilizados.</p></div></div>
         <div class="crit"><div class="num">→</div><div><h4>Plano de POB + Custo</h4><p>Saída final por ativo/ano: POB total, custo de material e serviço, e a divisão CAPEX × OPEX resultante.</p></div></div>
@@ -1021,10 +1022,9 @@
         <p class="sec-sub">Pontos que precisam de validação do Diretor ou das áreas antes de o processo virar padrão.</p>
       </div>
       <div class="callout gap">
-        <b>3 pendências em aberto</b>
+        <b>2 pendências em aberto</b>
         <ul>
           <li>Validar com cada coordenação as linhas marcadas como <span class="pill assume" style="vertical-align:middle">a validar</span> na seção 08 — inputs e critérios foram inferidos do material recebido, não confirmados pela própria área.</li>
-          <li>Decidir se a Visão Geral (seção 01) deve desdobrar "Aprovação &amp; divulgação" em três passos — Revisar, Ajustes do Plano e Envio — para refletir o cronograma real (seção 03).</li>
           <li>Definir treinamento dedicado (ou confirmar cobertura pelo dia "Geral" de 02/09) para Medição Fiscal, Parada Programada, Reservatório/Produção (GP) e Desenvolvimento da Produção — ver seção 13.</li>
         </ul>
       </div>
