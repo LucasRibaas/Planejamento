@@ -557,9 +557,15 @@ const EXAMPLE_DATA = {
   }
 };
 
+function pad2(n){ return String(n).padStart(2,'0'); }
+function todayLocalISO(){
+  const d = new Date();
+  return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
+}
+
 function blankState(){
   return {
-    meta: { fpso: "FPSO FORTE", preparacao: "", dataEmissao: new Date().toISOString().slice(0,10), turno: "manha", horaEmissao: "08:00", geradoPor: "", fonte: "Cronograma e Reunião de Campo" },
+    meta: { fpso: "FPSO FORTE", preparacao: "", dataEmissao: todayLocalISO(), turno: "manha", horaEmissao: "08:00", geradoPor: "", fonte: "Cronograma e Reunião de Campo" },
     pob: { coolingMedium: 0 },
     avancoParada: { startRampDown: "", finishRampUp: "", previstoPct: 0, realizadoPct: 0, ritmo: "no_plano", serieGrafico: [] },
     reparos: [],
@@ -577,12 +583,18 @@ function mergeWithDefaults(parsed){
     avancoParada: Object.assign({}, base.avancoParada, parsed.avancoParada || {}),
     andaimes: Object.assign({}, base.andaimes, parsed.andaimes || {}),
     custos: Object.assign({}, base.custos, parsed.custos || {}, { linhas: (parsed.custos && parsed.custos.linhas) || [] }),
-    reparos: (parsed.reparos || []).map(g => Object.assign({grupo:'', itens:[]}, g)),
+    reparos: (parsed.reparos || []).map(g => Object.assign({grupo:'', itens:[]}, g, {
+      itens: ((g && g.itens) || []).map(item => Object.assign({codigo:'', preparacaoPct:null, taPct:null}, item))
+    })),
     riscos: parsed.riscos || []
   });
 }
 
 let state = JSON.parse(JSON.stringify(EXAMPLE_DATA));
+
+// ===== Escapa texto livre antes de inserir via innerHTML (riscos, códigos de reparo, categorias, cabeçalho) =====
+const ESC_MAP = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ESC_MAP[c]); }
 
 // ===== Helpers de formatação (padrão do relatório de ordens) =====
 function fmt(n){ return Number(n||0).toLocaleString('pt-BR'); }
@@ -692,8 +704,6 @@ function renderSerieList(){
     container.appendChild(row);
   });
 }
-
-function pad2(n){ return String(n).padStart(2,'0'); }
 
 function generateSerieFromRampDates(){
   const a = state.avancoParada;
@@ -848,38 +858,40 @@ function renderEditor(){
   renderCustosList();
 }
 
+// Cada bind() recebe uma função que busca o objeto vivo em `state` no momento do
+// evento (não uma referência fixa) — assim funciona mesmo depois de `state` inteiro
+// ser trocado por loadState(), e wireStaticInputs() só precisa rodar uma vez (ligado
+// aos elementos fixos do DOM), sem empilhar um novo listener a cada carregamento.
 function wireStaticInputs(){
-  const bind = (id, obj, key, isNumber) => {
+  const bind = (id, getObj, key, isNumber) => {
     document.getElementById(id).addEventListener('input', (e) => {
+      const obj = getObj();
       obj[key] = isNumber ? (parseFloat(e.target.value)||0) : e.target.value;
     });
   };
-  bind('f-fpso', state.meta, 'fpso');
-  bind('f-preparacao', state.meta, 'preparacao');
-  bind('f-data', state.meta, 'dataEmissao');
-  bind('f-hora', state.meta, 'horaEmissao');
-  bind('f-geradoPor', state.meta, 'geradoPor');
-  bind('f-fonte', state.meta, 'fonte');
+  bind('f-fpso', () => state.meta, 'fpso');
+  bind('f-preparacao', () => state.meta, 'preparacao');
+  bind('f-data', () => state.meta, 'dataEmissao');
+  bind('f-hora', () => state.meta, 'horaEmissao');
+  bind('f-geradoPor', () => state.meta, 'geradoPor');
+  bind('f-fonte', () => state.meta, 'fonte');
   document.getElementById('f-turno').addEventListener('change', (e)=>{ state.meta.turno = e.target.value; });
-  bind('f-pob', state.pob, 'coolingMedium', true);
+  bind('f-pob', () => state.pob, 'coolingMedium', true);
 
-  bind('f-startRampDown', state.avancoParada, 'startRampDown');
-  bind('f-finishRampUp', state.avancoParada, 'finishRampUp');
-  bind('f-previstoPct', state.avancoParada, 'previstoPct', true);
-  bind('f-realizadoPct', state.avancoParada, 'realizadoPct', true);
+  bind('f-startRampDown', () => state.avancoParada, 'startRampDown');
+  bind('f-finishRampUp', () => state.avancoParada, 'finishRampUp');
+  bind('f-previstoPct', () => state.avancoParada, 'previstoPct', true);
+  bind('f-realizadoPct', () => state.avancoParada, 'realizadoPct', true);
   document.getElementById('f-ritmo').addEventListener('change', (e)=>{ state.avancoParada.ritmo = e.target.value; });
 
-  bind('f-andaimesPrevisto', state.andaimes, 'previstoPct', true);
-  bind('f-andaimesRealizado', state.andaimes, 'realizadoPct', true);
+  bind('f-andaimesPrevisto', () => state.andaimes, 'previstoPct', true);
+  bind('f-andaimesRealizado', () => state.andaimes, 'realizadoPct', true);
 }
+wireStaticInputs();
 
-// NOTA: os inputs estáticos usam addEventListener uma única vez por elemento fixo do DOM
-// e leem `state` no momento do evento — por isso não recriamos os listeners ao trocar
-// o objeto `state` inteiro (loadState() re-chama wireStaticInputs para reapontar os binds).
 function loadState(newState){
   state = newState;
   renderEditor();
-  wireStaticInputs();
 }
 
 document.getElementById('btn-add-serie').onclick = () => {
@@ -903,7 +915,7 @@ function buildComparisonBar(containerEl, series, maxVal){
   containerEl.innerHTML = '';
   series.forEach(item => {
     const row = el('div', {class:'cmp-row'});
-    const label = el('div', {class:'cmp-label', text: item.dia + (item.atividade ? '' : '')});
+    const label = el('div', {class:'cmp-label', text: item.dia});
 
     const tracks = el('div', {class:'cmp-tracks'});
     const tPrev = el('div', {class:'cmp-track'});
@@ -919,7 +931,7 @@ function buildComparisonBar(containerEl, series, maxVal){
     tracks.appendChild(tPrev);
     tracks.appendChild(tReal);
 
-    const tipHtml = `<b>${item.dia}${item.atividade ? ' — '+item.atividade : ''}</b><br>Previsto: ${fmtPct(item.previsto)}<br>Realizado: ${fmtPct(item.realizado)}`;
+    const tipHtml = `<b>${esc(item.dia)}${item.atividade ? ' — '+esc(item.atividade) : ''}</b><br>Previsto: ${fmtPct(item.previsto)}<br>Realizado: ${fmtPct(item.realizado)}`;
     tracks.addEventListener('mouseenter', e => showTip(e, tipHtml));
     tracks.addEventListener('mousemove', e => showTip(e, tipHtml));
     tracks.addEventListener('mouseleave', hideTip);
@@ -942,7 +954,7 @@ function buildHeader(){
     <div class="header-bar">
       <div class="header-logo"><img src="assets/logo-prio.svg" alt="Logo"></div>
       <div class="header-titles">
-        <div class="h-sub">${m.fpso || ''} · PREPARAÇÃO ${m.preparacao || ''} · ${fmtDateOnly(m.dataEmissao)} · TURNO ${turnoLabel.toUpperCase()} (${m.horaEmissao||''})</div>
+        <div class="h-sub">${esc(m.fpso)} · PREPARAÇÃO ${esc(m.preparacao)} · ${fmtDateOnly(m.dataEmissao)} · TURNO ${turnoLabel.toUpperCase()} (${esc(m.horaEmissao)})</div>
         <div class="h-title">PARADA COOLING MEDIUM</div>
       </div>
       <div class="header-legends">
@@ -976,8 +988,8 @@ function fmtDateOnly(iso){
 
 function buildStatusCard(containerId, title, arr){
   const c = document.getElementById(containerId);
-  c.innerHTML = `<div class="card-title">${title}</div><div class="status-list">${
-    arr.map(item => `<div class="status-item"><span class="status-dot status-dot--${item.status}"></span><span>${item.texto}</span></div>`).join('')
+  c.innerHTML = `<div class="card-title">${esc(title)}</div><div class="status-list">${
+    arr.map(item => `<div class="status-item"><span class="status-dot status-dot--${item.status}"></span><span>${esc(item.texto)}</span></div>`).join('')
   }</div>`;
 }
 
@@ -995,10 +1007,10 @@ function buildReparos(){
   const grupos = state.reparos;
   let body = `<div class="reparos-head"><span>Reparos</span><span>Preparação (%)</span><span>TA (%)</span></div>`;
   grupos.forEach(g => {
-    body += `<div class="reparos-grupo-title">${g.grupo}</div>`;
+    body += `<div class="reparos-grupo-title">${esc(g.grupo)}</div>`;
     g.itens.forEach(item => {
       body += `<div class="reparos-row">
-        <span class="reparos-code">${item.codigo}</span>
+        <span class="reparos-code">${esc(item.codigo)}</span>
         ${reparoBarHtml(item.preparacaoPct)}
         ${reparoBarHtml(item.taPct, 'mini-fill--ta')}
       </div>`;
@@ -1045,7 +1057,7 @@ function buildCustos(){
   const rows = linhas.map(r => {
     const delta = (r.realizado||0) - (r.previsto||0);
     const cls = delta <= 0 ? 'delta-pos' : 'delta-neg';
-    return `<tr><td>${r.categoria}</td><td>${fmtBRL(r.previsto)}</td><td>${fmtBRL(r.realizado)}</td><td class="${cls}">${delta>0?'+':''}${fmtBRL(delta)}</td></tr>`;
+    return `<tr><td>${esc(r.categoria)}</td><td>${fmtBRL(r.previsto)}</td><td>${fmtBRL(r.realizado)}</td><td class="${cls}">${delta>0?'+':''}${fmtBRL(delta)}</td></tr>`;
   }).join('');
   const totalDelta = totalReal - totalPrev;
   const totalCls = totalDelta <= 0 ? 'delta-pos' : 'delta-neg';
@@ -1064,7 +1076,7 @@ function buildCustos(){
 function buildFooter(){
   const c = document.getElementById('area-footer');
   const m = state.meta;
-  c.innerHTML = `<span>Fonte: ${m.fonte || ''}</span><span>Emitido em ${fmtDateOnlyBR(m.dataEmissao)} às ${m.horaEmissao || ''} · ${m.geradoPor || ''}</span>`;
+  c.innerHTML = `<span>Fonte: ${esc(m.fonte)}</span><span>Emitido em ${fmtDateOnlyBR(m.dataEmissao)} às ${esc(m.horaEmissao)} · ${esc(m.geradoPor)}</span>`;
 }
 function fmtDateOnlyBR(iso){
   if(!iso) return '—';
