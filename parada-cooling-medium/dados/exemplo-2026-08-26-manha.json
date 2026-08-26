@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "fpso": "FPSO FORTE",
+    "preparacao": "ABL-134 (PXD)",
+    "dataEmissao": "2026-08-26",
+    "turno": "manha",
+    "horaEmissao": "08:00",
+    "geradoPor": "landrade@prio3.com.br",
+    "fonte": "Cronograma e Reunião de Campo"
+  },
+  "pob": {
+    "coolingMedium": 61
+  },
+  "avancoParada": {
+    "startRampDown": "2026-08-28T10:00",
+    "finishRampUp": "2026-09-01T10:00",
+    "previstoPct": 20.0,
+    "realizadoPct": 4.5,
+    "ritmo": "atrasado",
+    "serieGrafico": [
+      { "dia": "24/08", "atividade": "Pré-parada", "previsto": 5, "realizado": 4 },
+      { "dia": "25/08", "atividade": "Pré-parada", "previsto": 10, "realizado": 4.5 },
+      { "dia": "26/08", "atividade": "Pré-parada", "previsto": 20, "realizado": 4.5 },
+      { "dia": "28/08", "atividade": "Ramp Down", "previsto": 55, "realizado": 0 },
+      { "dia": "29/08", "atividade": "Execução", "previsto": 75, "realizado": 0 },
+      { "dia": "01/09", "atividade": "Ramp Up", "previsto": 100, "realizado": 0 }
+    ]
+  },
+  "atividadesExecutadas": [
+    { "texto": "Montagem Andaime do Módulo 01 – Reparo 005", "status": "verde" },
+    { "texto": "Reparo Pré-TA: Coluna 39 Frame 05", "status": "amarelo" },
+    { "texto": "Montagem de Pau de Carga do Trocador A", "status": "verde" }
+  ],
+  "lookahead": [
+    { "texto": "Montagem Andaime do Módulo 06 – Reparo 033", "status": "verde" },
+    { "texto": "Reparo Pré-TA: Coluna 06 Frame 07", "status": "amarelo" },
+    { "texto": "Hotbolt Spool Trocador B", "status": "vermelho" }
+  ],
+  "riscos": [
+    { "texto": "Entrega dos Spools 27/08", "status": "amarelo" },
+    { "texto": "Máquina de Solda 27/08", "status": "amarelo" },
+    { "texto": "Antecipação de Parada", "status": "vermelho" },
+    { "texto": "POB de Caldeiraria Completo", "status": "verde" },
+    { "texto": "Aumento de reparos devido a novos furos", "status": "vermelho" }
+  ],
+  "andaimes": {
+    "previstoPct": 30,
+    "realizadoPct": 35
+  },
+  "custos": {
+    "moeda": "BRL",
+    "linhas": [
+      { "categoria": "Mão de obra", "previsto": 850000, "realizado": 210000 },
+      { "categoria": "Materiais/Sobressalentes", "previsto": 620000, "realizado": 180000 },
+      { "categoria": "Equipamentos e Locação", "previsto": 410000, "realizado": 95000 },
+      { "categoria": "Serviços de Terceiros", "previsto": 300000, "realizado": 70000 },
+      { "categoria": "Outros", "previsto": 120000, "realizado": 15000 }
+    ]
+  }
+}

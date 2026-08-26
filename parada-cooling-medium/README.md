@@ -1,0 +1,55 @@
+# Relatório — Parada Cooling Medium (FPSO Forte)
+
+Relatório visual de 1 página para acompanhar a parada programada de manutenção com foco em Cooling Medium, emitido 2x ao dia (08:00 e 20:00).
+
+É um app 100% estático (HTML + CSS + JS, sem instalação, sem servidor): abra o arquivo direto no navegador.
+
+## Passo a passo por emissão
+
+1. Dê duplo clique em `relatorio_parada_cooling_medium.html` para abrir no navegador (Chrome ou Edge recomendados).
+2. A página abre em modo **Editar**. Duas opções para começar:
+   - **Carregar emissão anterior**: seleciona o último arquivo salvo em `dados/` (ex.: a emissão da noite anterior) e pré-preenche o formulário — só ajuste o que mudou.
+   - **Novo em branco**: começa do zero.
+   - **Carregar exemplo**: carrega os dados de demonstração, útil para testar o layout.
+3. Preencha/ajuste os campos: cabeçalho, POB, avanço da parada (datas, % previsto/realizado, série do gráfico por dia/atividade), atividades executadas, lookahead, riscos, andamento de andaimes e tabela de custos. Use os botões **+ Adicionar** / **✕** para incluir ou remover itens das listas.
+4. Clique em **Visualizar relatório** para ver o layout final de 1 página.
+5. Clique em **Salvar JSON**:
+   - No Chrome/Edge, escolha salvar diretamente dentro da pasta `dados/` com o nome sugerido (`AAAA-MM-DD-manha.json` ou `AAAA-MM-DD-noite.json`).
+   - Em outros navegadores, o arquivo é baixado normalmente — mova-o manualmente para `parada-cooling-medium/dados/`.
+6. Ainda na tela de Visualizar, clique em **Imprimir / PDF** (ou Ctrl+P), escolha "Salvar como PDF", papel **A4 paisagem**, sem cabeçalhos/rodapés do navegador. O relatório é desenhado para caber em exatamente 1 página.
+7. Envie o PDF gerado aos gerentes.
+8. Suba o JSON da emissão para o repositório (isso cria o histórico de todas as emissões):
+
+   ```bash
+   git add parada-cooling-medium/dados/AAAA-MM-DD-turno.json
+   git commit -m "Emissão parada Cooling Medium — AAAA-MM-DD turno"
+   git push
+   ```
+
+## Estrutura
+
+```
+parada-cooling-medium/
+├── relatorio_parada_cooling_medium.html   # app (Editor + Visualizador)
+├── dados/                                  # um arquivo JSON por emissão (histórico)
+│   └── exemplo-2026-08-26-manha.json
+├── assets/
+│   └── logo-prio.svg                       # placeholder — substitua pelo logo oficial mantendo o nome do arquivo
+└── README.md
+```
+
+## Notas
+
+- Cada arquivo em `dados/` é autossuficiente (contém todos os campos do relatório daquela emissão) — não depende de nenhum outro arquivo.
+- O processo de emissão é manual: não há automação de horário, envio de e-mail ou geração automática de PDF. Alguém do turno preenche e exporta às 08:00/20:00.
+- A tabela de custos vem com categorias de exemplo (mão de obra, materiais, equipamentos, terceiros, outros) — ajuste livremente pelo formulário para o plano de contas real.
+- Se as listas (riscos, atividades, custos etc.) ficarem muito longas, o relatório reduz automaticamente o tamanho da fonte para tentar manter tudo em 1 página; ainda assim, evite listas muito extensas para manter a leitura confortável.
+
+## Identidade visual
+
+O relatório usa a paleta roxo/laranja e a fonte Epilogue da skill de marca `prio-pptx-layout` (originalmente feita para decks PowerPoint — essa skill aponta uma skill irmã, `prio-rs-layout`, com paleta verde neon para HTML/relatórios, que não estava disponível neste momento; a aplicação do roxo/laranja aqui foi uma decisão explícita do usuário).
+
+- **Cores de status** (bolinhas verde/amarelo/vermelho, indicador de ritmo Atrasado/Acima do plano/No plano) foram mantidas com o significado semântico de semáforo, independente da marca — trocar essas cores reduziria a legibilidade operacional do relatório.
+- **Mascote (polvo)** não foi incluído: a própria skill orienta usá-lo só em capas/encerramentos/transições, "nunca competindo com conteúdo técnico denso" — este relatório é justamente um conteúdo técnico denso (tabelas e checklists).
+- A fonte Epilogue é carregada via Google Fonts; sem internet no momento de abrir o arquivo, o navegador usa automaticamente a fonte de fallback (Inter/Segoe UI) sem quebrar o layout.
+- Para trocar a logo placeholder pela logo oficial da PRIO, substitua `assets/logo-prio.svg` mantendo o nome do arquivo (ou ajuste o `<img src>` no HTML se usar outro nome/formato).

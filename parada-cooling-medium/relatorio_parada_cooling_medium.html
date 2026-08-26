@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parada Cooling Medium — FPSO Forte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --surface: #f6f5fb;
+    --card: #ffffff;
+    --border: #e5e1f3;
+    --text-primary: #2c2849;   /* Roxo Escuro/Ameixa — texto de corpo/títulos escuros PRIO */
+    --text-secondary: #5c5775;
+    --text-muted: #948fb0;
+    /* Cores de status (semânticas, tipo semáforo — mantidas independentes da marca) */
+    --verde: #22c55e;
+    --amarelo: #f59e0b;
+    --vermelho: #ef4444;
+    /* Identidade PRIO (skill prio-pptx-layout) */
+    --roxo: #9787d4;
+    --roxo-escuro: #2c2849;
+    --laranja: #f2834b;
+    --verde-lima: #85e34d;
+    --azul-claro: #10a9ff;
+    --accent: var(--laranja);
+    --ghost: #ded8f2;         /* tom claro do roxo PRIO, usado como barra "previsto" */
+    --radius: 10px;
+  }
+
+  html, body {
+    font-family: 'Epilogue', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--surface);
+    color: var(--text-primary);
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text-primary);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+  }
+  button:hover { background: var(--surface); }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
+  button.primary:hover { opacity: 0.9; background: var(--accent); }
+  button.danger { color: var(--vermelho); }
+
+  input[type="text"], input[type="number"], input[type="datetime-local"], select, textarea {
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--text-primary);
+    width: 100%;
+  }
+
+  /* ---------- Tooltip (padrão reaproveitado do relatório de ordens) ---------- */
+  #tooltip {
+    position: fixed;
+    background: rgba(15,23,42,0.92);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.77rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: 9999;
+    max-width: 240px;
+    line-height: 1.5;
+  }
+
+  /* ---------- Toolbar ---------- */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+  }
+  .toolbar-title {
+    font-weight: 900;
+    font-size: 0.95rem;
+    color: var(--roxo-escuro);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .toolbar-sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
+  .toolbar-hint { font-size: 0.72rem; color: var(--text-muted); width: 100%; }
+
+  /* ---------- Editor ---------- */
+  #editor-view { padding: 20px; max-width: 980px; margin: 0 auto; }
+  .ed-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .ed-section h2 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--laranja);
+    margin-bottom: 12px;
+  }
+  .ed-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .ed-field label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .ed-list-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .ed-list-row .grow { flex: 1; }
+  .ed-list-row select { max-width: 150px; }
+  .ed-list-row .num { max-width: 110px; }
+  .ed-remove-btn {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--vermelho);
+    border-color: var(--border);
+  }
+  .ed-add-btn { margin-top: 4px; }
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+  .status-dot--verde { background: var(--verde); }
+  .status-dot--amarelo { background: var(--amarelo); }
+  .status-dot--vermelho { background: var(--vermelho); }
+
+  /* ---------- Report sheet ---------- */
+  #report-view { padding: 30px 10px; }
+  .sheet-wrap { display: flex; justify-content: center; }
+  .sheet {
+    --fs-scale: 1;
+    width: 277mm;
+    height: 190mm;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 6px 28px rgba(15,23,42,0.18);
+    padding: 6mm;
+    font-size: calc(9px * var(--fs-scale));
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.3fr;
+    grid-template-rows: auto 1fr 1fr auto auto;
+    grid-template-areas:
+      "header    header  header"
+      "exec      riscos  avanco"
+      "lookahead riscos  avanco"
+      "andaimes  custos  avanco"
+      "footer    footer  footer";
+    gap: 3mm;
+    color: var(--text-primary);
+    transform-origin: top center;
+  }
+
+  .sheet .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.1em 1.2em;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .sheet .card-title {
+    font-size: 1.15em;
+    font-weight: 700;
+    color: var(--laranja);
+    margin-bottom: 0.6em;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .area-header { grid-area: header; }
+  .area-exec { grid-area: exec; }
+  .area-lookahead { grid-area: lookahead; }
+  .area-riscos { grid-area: riscos; }
+  .area-avanco { grid-area: avanco; }
+  .area-andaimes { grid-area: andaimes; }
+  .area-custos { grid-area: custos; }
+  .area-footer { grid-area: footer; }
+
+  .header-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.4em;
+    height: 100%;
+  }
+  .header-logo img { height: 2.6em; display: block; }
+  .header-titles { flex: 1; min-width: 0; }
+  .header-titles .h-sub {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .header-titles .h-title {
+    font-size: 1.7em;
+    font-weight: 900;
+    color: var(--roxo-escuro);
+    letter-spacing: 0.03em;
+    margin-top: 0.1em;
+  }
+  .header-legends { display: flex; flex-direction: column; gap: 0.4em; }
+  .legend { display: flex; gap: 0.9em; flex-wrap: wrap; align-items: center; }
+  .legend-label { font-size: 0.68em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-right: 0.3em; }
+  .legend-item { display: flex; align-items: center; gap: 0.35em; font-size: 0.75em; color: var(--text-secondary); white-space: nowrap; }
+  .legend-dot { width: 0.7em; height: 0.7em; border-radius: 2px; flex-shrink: 0; }
+  .legend-dot--pace { border-radius: 2px; transform: rotate(45deg); }
+  .legend-dot--verde, .status-dot--verde, .pill--verde { background: var(--verde); }
+  .legend-dot--amarelo, .status-dot--amarelo, .pill--amarelo { background: var(--amarelo); }
+  .legend-dot--vermelho, .status-dot--vermelho, .pill--vermelho { background: var(--vermelho); }
+  .header-pob {
+    text-align: center;
+    padding: 0 1em;
+    border-left: 1px solid var(--roxo);
+  }
+  .header-pob .pob-label { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .header-pob .pob-value { font-size: 2em; font-weight: 900; color: var(--roxo-escuro); line-height: 1; margin-top: 0.15em; }
+
+  .status-list { display: flex; flex-direction: column; gap: 0.55em; overflow: hidden; flex: 1; min-height: 0; }
+  .status-item { display: flex; align-items: flex-start; gap: 0.5em; font-size: 0.92em; line-height: 1.3; }
+  .status-item .status-dot { margin-top: 0.35em; width: 0.65em; height: 0.65em; }
+
+  .pill { display: inline-block; padding: 0.15em 0.6em; border-radius: 999px; font-size: 0.72em; font-weight: 700; color: #fff; }
+
+  .avanco-top { display: flex; justify-content: space-between; gap: 0.8em; margin-bottom: 0.7em; flex-wrap: wrap; }
+  .avanco-dates { font-size: 0.82em; color: var(--text-secondary); line-height: 1.6; }
+  .avanco-dates b { color: var(--text-primary); }
+  .avanco-stats { display: flex; gap: 1.2em; }
+  .avanco-stat { text-align: center; }
+  .avanco-stat .as-label { font-size: 0.66em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .avanco-stat .as-value { font-size: 1.5em; font-weight: 900; }
+  .avanco-stat--previsto .as-value { color: var(--accent); }
+  .avanco-stat--realizado .as-value { color: var(--text-primary); }
+
+  .cmp-chart { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; justify-content: space-evenly; }
+  .cmp-row { display: flex; align-items: center; gap: 0.6em; }
+  .cmp-label { width: 4.2em; flex-shrink: 0; font-size: 0.78em; color: var(--text-secondary); text-align: right; }
+  .cmp-tracks { flex: 1; display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
+  .cmp-track { height: 0.85em; border-radius: 3px; background: var(--surface); overflow: hidden; }
+  .cmp-fill { height: 100%; border-radius: 3px; }
+  .cmp-fill--previsto { background: var(--ghost); }
+  .cmp-fill--realizado { background: var(--accent); }
+  .cmp-vals { width: 3.6em; flex-shrink: 0; font-size: 0.7em; color: var(--text-muted); line-height: 1.3; text-align: left; }
+
+  .andaimes-body, .custos-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+
+  table.custos-table { width: 100%; border-collapse: collapse; font-size: 0.82em; }
+  table.custos-table th {
+    text-align: right;
+    padding: 0.3em 0.5em;
+    background: var(--laranja);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85em;
+    text-transform: uppercase;
+  }
+  table.custos-table thead th:first-child { border-radius: 4px 0 0 4px; }
+  table.custos-table thead th:last-child { border-radius: 0 4px 4px 0; }
+  table.custos-table th:first-child, table.custos-table td:first-child { text-align: left; }
+  table.custos-table td { padding: 0.22em 0.4em; border-bottom: 1px solid var(--border); text-align: right; }
+  table.custos-table tfoot td { font-weight: 700; border-top: 1.5px solid var(--border); border-bottom: none; }
+  .delta-pos { color: var(--verde); }
+  .delta-neg { color: var(--vermelho); }
+
+  .area-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.75em; color: var(--text-muted); padding: 0 0.4em; }
+
+  /* ---------- Visibility toggles ---------- */
+  .hidden { display: none !important; }
+
+  @media print {
+    @page { size: A4 landscape; margin: 8mm; }
+    html, body { background: #fff; }
+    .no-print { display: none !important; }
+    #editor-view { display: none !important; }
+    #report-view { display: block !important; padding: 0; }
+    .sheet-wrap { display: block; }
+    .sheet {
+      box-shadow: none;
+      transform: none !important;
+      margin: 0;
+      width: 100%;
+      height: 100vh;
+    }
+  }
+</style>
+</head>
+<body class="mode-editor">
+
+<div id="tooltip"></div>
+
+<div class="toolbar no-print">
+  <div class="toolbar-title">Parada Cooling Medium — FPSO Forte</div>
+  <div class="toolbar-actions">
+    <button id="btn-load-prev" type="button">Carregar emissão anterior</button>
+    <button id="btn-load-example" type="button">Carregar exemplo</button>
+    <button id="btn-new" type="button">Novo em branco</button>
+    <span class="toolbar-sep"></span>
+    <button id="btn-toggle-view" type="button" class="primary">Visualizar relatório</button>
+    <button id="btn-save-json" type="button">Salvar JSON</button>
+    <button id="btn-print" type="button">Imprimir / PDF</button>
+  </div>
+  <input type="file" id="file-input" accept="application/json" class="hidden">
+</div>
+
+<!-- ============ EDITOR ============ -->
+<div id="editor-view">
+  <div class="ed-section">
+    <h2>Cabeçalho da emissão</h2>
+    <div class="ed-grid">
+      <div class="ed-field"><label>FPSO</label><input type="text" id="f-fpso"></div>
+      <div class="ed-field"><label>Preparação</label><input type="text" id="f-preparacao"></div>
+      <div class="ed-field"><label>Data da emissão</label><input type="text" id="f-data" placeholder="AAAA-MM-DD"></div>
+      <div class="ed-field"><label>Turno</label>
+        <select id="f-turno">
+          <option value="manha">Manhã (08:00)</option>
+          <option value="noite">Noite (20:00)</option>
+        </select>
+      </div>
+      <div class="ed-field"><label>Hora da emissão</label><input type="text" id="f-hora" placeholder="08:00"></div>
+      <div class="ed-field"><label>Gerado por</label><input type="text" id="f-geradoPor"></div>
+      <div class="ed-field"><label>Fonte</label><input type="text" id="f-fonte"></div>
+      <div class="ed-field"><label>POB Cooling Medium</label><input type="number" id="f-pob"></div>
+    </div>
+  </div>
+
+  <div class="ed-section">
+    <h2>Avanço da parada</h2>
+    <div class="ed-grid">
+      <div class="ed-field"><label>Start Ramp Down</label><input type="datetime-local" id="f-startRampDown"></div>
+      <div class="ed-field"><label>Finish Ramp Up</label><input type="datetime-local" id="f-finishRampUp"></div>
+      <div class="ed-field"><label>Previsto (%)</label><input type="number" step="0.1" id="f-previstoPct"></div>
+      <div class="ed-field"><label>Realizado (%)</label><input type="number" step="0.1" id="f-realizadoPct"></div>
+      <div class="ed-field"><label>Ritmo</label>
+        <select id="f-ritmo">
+          <option value="no_plano">No plano</option>
+          <option value="acima_do_plano">Acima do plano</option>
+          <option value="atrasado">Atrasado</option>
+        </select>
+      </div>
+    </div>
+    <h2 style="margin-top:14px">Série do gráfico (Previsto x Realizado por dia/atividade)</h2>
+    <div id="list-serie"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-serie">+ Adicionar dia/atividade</button>
+  </div>
+
+  <div class="ed-section">
+    <h2>Atividades executadas</h2>
+    <div id="list-atividades"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-atividades">+ Adicionar atividade</button>
+  </div>
+
+  <div class="ed-section">
+    <h2>Lookahead</h2>
+    <div id="list-lookahead"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-lookahead">+ Adicionar item</button>
+  </div>
+
+  <div class="ed-section">
+    <h2>Principais riscos da pré-parada</h2>
+    <div id="list-riscos"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-riscos">+ Adicionar risco</button>
+  </div>
+
+  <div class="ed-section">
+    <h2>Andamento montagem de andaimes</h2>
+    <div class="ed-grid">
+      <div class="ed-field"><label>Previsto (%)</label><input type="number" step="0.1" id="f-andaimesPrevisto"></div>
+      <div class="ed-field"><label>Realizado (%)</label><input type="number" step="0.1" id="f-andaimesRealizado"></div>
+    </div>
+  </div>
+
+  <div class="ed-section">
+    <h2>Tabela de custos (R$)</h2>
+    <div id="list-custos"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-custos">+ Adicionar categoria</button>
+  </div>
+</div>
+
+<!-- ============ RELATÓRIO (1 página) ============ -->
+<div id="report-view" class="hidden">
+  <div class="sheet-wrap">
+    <div class="sheet" id="sheet">
+      <div class="area-header" id="area-header"></div>
+      <div class="area-exec card" id="area-exec"></div>
+      <div class="area-lookahead card" id="area-lookahead"></div>
+      <div class="area-riscos card" id="area-riscos"></div>
+      <div class="area-avanco card" id="area-avanco"></div>
+      <div class="area-andaimes card" id="area-andaimes"></div>
+      <div class="area-custos card" id="area-custos"></div>
+      <div class="area-footer" id="area-footer"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== Dados de exemplo embutidos (mesmo conteúdo de dados/exemplo-2026-08-26-manha.json) =====
+const EXAMPLE_DATA = {
+  meta: {
+    fpso: "FPSO FORTE",
+    preparacao: "ABL-134 (PXD)",
+    dataEmissao: "2026-08-26",
+    turno: "manha",
+    horaEmissao: "08:00",
+    geradoPor: "landrade@prio3.com.br",
+    fonte: "Cronograma e Reunião de Campo"
+  },
+  pob: { coolingMedium: 61 },
+  avancoParada: {
+    startRampDown: "2026-08-28T10:00",
+    finishRampUp: "2026-09-01T10:00",
+    previstoPct: 20.0,
+    realizadoPct: 4.5,
+    ritmo: "atrasado",
+    serieGrafico: [
+      { dia: "24/08", atividade: "Pré-parada", previsto: 5, realizado: 4 },
+      { dia: "25/08", atividade: "Pré-parada", previsto: 10, realizado: 4.5 },
+      { dia: "26/08", atividade: "Pré-parada", previsto: 20, realizado: 4.5 },
+      { dia: "28/08", atividade: "Ramp Down", previsto: 55, realizado: 0 },
+      { dia: "29/08", atividade: "Execução", previsto: 75, realizado: 0 },
+      { dia: "01/09", atividade: "Ramp Up", previsto: 100, realizado: 0 }
+    ]
+  },
+  atividadesExecutadas: [
+    { texto: "Montagem Andaime do Módulo 01 – Reparo 005", status: "verde" },
+    { texto: "Reparo Pré-TA: Coluna 39 Frame 05", status: "amarelo" },
+    { texto: "Montagem de Pau de Carga do Trocador A", status: "verde" }
+  ],
+  lookahead: [
+    { texto: "Montagem Andaime do Módulo 06 – Reparo 033", status: "verde" },
+    { texto: "Reparo Pré-TA: Coluna 06 Frame 07", status: "amarelo" },
+    { texto: "Hotbolt Spool Trocador B", status: "vermelho" }
+  ],
+  riscos: [
+    { texto: "Entrega dos Spools 27/08", status: "amarelo" },
+    { texto: "Máquina de Solda 27/08", status: "amarelo" },
+    { texto: "Antecipação de Parada", status: "vermelho" },
+    { texto: "POB de Caldeiraria Completo", status: "verde" },
+    { texto: "Aumento de reparos devido a novos furos", status: "vermelho" }
+  ],
+  andaimes: { previstoPct: 30, realizadoPct: 35 },
+  custos: {
+    moeda: "BRL",
+    linhas: [
+      { categoria: "Mão de obra", previsto: 850000, realizado: 210000 },
+      { categoria: "Materiais/Sobressalentes", previsto: 620000, realizado: 180000 },
+      { categoria: "Equipamentos e Locação", previsto: 410000, realizado: 95000 },
+      { categoria: "Serviços de Terceiros", previsto: 300000, realizado: 70000 },
+      { categoria: "Outros", previsto: 120000, realizado: 15000 }
+    ]
+  }
+};
+
+function blankState(){
+  return {
+    meta: { fpso: "FPSO FORTE", preparacao: "", dataEmissao: new Date().toISOString().slice(0,10), turno: "manha", horaEmissao: "08:00", geradoPor: "", fonte: "Cronograma e Reunião de Campo" },
+    pob: { coolingMedium: 0 },
+    avancoParada: { startRampDown: "", finishRampUp: "", previstoPct: 0, realizadoPct: 0, ritmo: "no_plano", serieGrafico: [] },
+    atividadesExecutadas: [],
+    lookahead: [],
+    riscos: [],
+    andaimes: { previstoPct: 0, realizadoPct: 0 },
+    custos: { moeda: "BRL", linhas: [] }
+  };
+}
+
+function mergeWithDefaults(parsed){
+  const base = blankState();
+  return Object.assign({}, base, parsed, {
+    meta: Object.assign({}, base.meta, parsed.meta || {}),
+    pob: Object.assign({}, base.pob, parsed.pob || {}),
+    avancoParada: Object.assign({}, base.avancoParada, parsed.avancoParada || {}),
+    andaimes: Object.assign({}, base.andaimes, parsed.andaimes || {}),
+    custos: Object.assign({}, base.custos, parsed.custos || {}, { linhas: (parsed.custos && parsed.custos.linhas) || [] }),
+    atividadesExecutadas: parsed.atividadesExecutadas || [],
+    lookahead: parsed.lookahead || [],
+    riscos: parsed.riscos || []
+  });
+}
+
+let state = JSON.parse(JSON.stringify(EXAMPLE_DATA));
+
+// ===== Helpers de formatação (padrão do relatório de ordens) =====
+function fmt(n){ return Number(n||0).toLocaleString('pt-BR'); }
+function fmtPct(n){ return Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + '%'; }
+function fmtBRL(n){ return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}); }
+function fmtDate(iso){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return iso;
+  return d.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+
+// ===== Tooltip global (padrão reaproveitado) =====
+const tip = document.getElementById('tooltip');
+function showTip(e, html){ tip.innerHTML = html; tip.style.opacity = '1'; moveTip(e); }
+function moveTip(e){
+  const x = e.clientX + 14, y = e.clientY - 10;
+  tip.style.left = Math.min(x, window.innerWidth-250)+'px';
+  tip.style.top = y+'px';
+}
+function hideTip(){ tip.style.opacity = '0'; }
+document.addEventListener('mousemove', moveTip);
+
+const RITMO_INFO = {
+  no_plano:       { label: 'No plano',        cls: 'verde' },
+  acima_do_plano: { label: 'Acima do plano',  cls: 'amarelo' },
+  atrasado:       { label: 'Atrasado',        cls: 'vermelho' }
+};
+
+// =====================================================================
+// EDITOR
+// =====================================================================
+function el(tag, attrs, children){
+  const e = document.createElement(tag);
+  Object.entries(attrs||{}).forEach(([k,v])=>{
+    if(k === 'text') e.textContent = v;
+    else e.setAttribute(k, v);
+  });
+  (children||[]).forEach(c => e.appendChild(c));
+  return e;
+}
+
+function renderStatusList(containerId, arr){
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  arr.forEach((item, i) => {
+    const row = el('div', {class:'ed-list-row'});
+
+    const dot = el('span', {class:'status-dot status-dot--'+item.status});
+
+    const text = el('input', {type:'text', class:'grow', value:item.texto});
+    text.value = item.texto;
+    text.oninput = () => { item.texto = text.value; };
+
+    const sel = el('select', {});
+    ['verde','amarelo','vermelho'].forEach(s=>{
+      const opt = el('option', {value:s, text: s==='verde'?'No plano':(s==='amarelo'?'Em risco':'Crítico')});
+      if(s===item.status) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.onchange = () => { item.status = sel.value; dot.className = 'status-dot status-dot--'+item.status; };
+
+    const rm = el('button', {type:'button', class:'ed-remove-btn', title:'Remover'});
+    rm.textContent = '✕';
+    rm.onclick = () => { arr.splice(i,1); renderStatusList(containerId, arr); };
+
+    row.appendChild(dot);
+    row.appendChild(text);
+    row.appendChild(sel);
+    row.appendChild(rm);
+    container.appendChild(row);
+  });
+}
+
+function renderSerieList(){
+  const container = document.getElementById('list-serie');
+  container.innerHTML = '';
+  const arr = state.avancoParada.serieGrafico;
+  arr.forEach((item, i) => {
+    const row = el('div', {class:'ed-list-row'});
+
+    const dia = el('input', {type:'text', class:'num', placeholder:'Dia (ex: 28/08)'});
+    dia.value = item.dia || '';
+    dia.oninput = () => { item.dia = dia.value; };
+
+    const ativ = el('input', {type:'text', class:'grow', placeholder:'Atividade'});
+    ativ.value = item.atividade || '';
+    ativ.oninput = () => { item.atividade = ativ.value; };
+
+    const prev = el('input', {type:'number', step:'0.1', class:'num', placeholder:'Previsto %'});
+    prev.value = item.previsto ?? 0;
+    prev.oninput = () => { item.previsto = parseFloat(prev.value)||0; };
+
+    const real = el('input', {type:'number', step:'0.1', class:'num', placeholder:'Realizado %'});
+    real.value = item.realizado ?? 0;
+    real.oninput = () => { item.realizado = parseFloat(real.value)||0; };
+
+    const rm = el('button', {type:'button', class:'ed-remove-btn', title:'Remover'});
+    rm.textContent = '✕';
+    rm.onclick = () => { arr.splice(i,1); renderSerieList(); };
+
+    row.appendChild(dia);
+    row.appendChild(ativ);
+    row.appendChild(prev);
+    row.appendChild(real);
+    row.appendChild(rm);
+    container.appendChild(row);
+  });
+}
+
+function renderCustosList(){
+  const container = document.getElementById('list-custos');
+  container.innerHTML = '';
+  const arr = state.custos.linhas;
+  arr.forEach((item, i) => {
+    const row = el('div', {class:'ed-list-row'});
+
+    const cat = el('input', {type:'text', class:'grow', placeholder:'Categoria'});
+    cat.value = item.categoria || '';
+    cat.oninput = () => { item.categoria = cat.value; };
+
+    const prev = el('input', {type:'number', class:'num', placeholder:'Previsto R$'});
+    prev.value = item.previsto ?? 0;
+    prev.oninput = () => { item.previsto = parseFloat(prev.value)||0; };
+
+    const real = el('input', {type:'number', class:'num', placeholder:'Realizado R$'});
+    real.value = item.realizado ?? 0;
+    real.oninput = () => { item.realizado = parseFloat(real.value)||0; };
+
+    const rm = el('button', {type:'button', class:'ed-remove-btn', title:'Remover'});
+    rm.textContent = '✕';
+    rm.onclick = () => { arr.splice(i,1); renderCustosList(); };
+
+    row.appendChild(cat);
+    row.appendChild(prev);
+    row.appendChild(real);
+    row.appendChild(rm);
+    container.appendChild(row);
+  });
+}
+
+function renderEditor(){
+  const m = state.meta;
+  document.getElementById('f-fpso').value = m.fpso || '';
+  document.getElementById('f-preparacao').value = m.preparacao || '';
+  document.getElementById('f-data').value = m.dataEmissao || '';
+  document.getElementById('f-turno').value = m.turno || 'manha';
+  document.getElementById('f-hora').value = m.horaEmissao || '';
+  document.getElementById('f-geradoPor').value = m.geradoPor || '';
+  document.getElementById('f-fonte').value = m.fonte || '';
+  document.getElementById('f-pob').value = state.pob.coolingMedium ?? 0;
+
+  const a = state.avancoParada;
+  document.getElementById('f-startRampDown').value = a.startRampDown || '';
+  document.getElementById('f-finishRampUp').value = a.finishRampUp || '';
+  document.getElementById('f-previstoPct').value = a.previstoPct ?? 0;
+  document.getElementById('f-realizadoPct').value = a.realizadoPct ?? 0;
+  document.getElementById('f-ritmo').value = a.ritmo || 'no_plano';
+
+  document.getElementById('f-andaimesPrevisto').value = state.andaimes.previstoPct ?? 0;
+  document.getElementById('f-andaimesRealizado').value = state.andaimes.realizadoPct ?? 0;
+
+  renderSerieList();
+  renderStatusList('list-atividades', state.atividadesExecutadas);
+  renderStatusList('list-lookahead', state.lookahead);
+  renderStatusList('list-riscos', state.riscos);
+  renderCustosList();
+}
+
+function wireStaticInputs(){
+  const bind = (id, obj, key, isNumber) => {
+    document.getElementById(id).addEventListener('input', (e) => {
+      obj[key] = isNumber ? (parseFloat(e.target.value)||0) : e.target.value;
+    });
+  };
+  bind('f-fpso', state.meta, 'fpso');
+  bind('f-preparacao', state.meta, 'preparacao');
+  bind('f-data', state.meta, 'dataEmissao');
+  bind('f-hora', state.meta, 'horaEmissao');
+  bind('f-geradoPor', state.meta, 'geradoPor');
+  bind('f-fonte', state.meta, 'fonte');
+  document.getElementById('f-turno').addEventListener('change', (e)=>{ state.meta.turno = e.target.value; });
+  bind('f-pob', state.pob, 'coolingMedium', true);
+
+  bind('f-startRampDown', state.avancoParada, 'startRampDown');
+  bind('f-finishRampUp', state.avancoParada, 'finishRampUp');
+  bind('f-previstoPct', state.avancoParada, 'previstoPct', true);
+  bind('f-realizadoPct', state.avancoParada, 'realizadoPct', true);
+  document.getElementById('f-ritmo').addEventListener('change', (e)=>{ state.avancoParada.ritmo = e.target.value; });
+
+  bind('f-andaimesPrevisto', state.andaimes, 'previstoPct', true);
+  bind('f-andaimesRealizado', state.andaimes, 'realizadoPct', true);
+}
+
+// NOTA: os inputs estáticos usam addEventListener uma única vez por elemento fixo do DOM
+// e leem `state` no momento do evento — por isso não recriamos os listeners ao trocar
+// o objeto `state` inteiro (loadState() re-chama wireStaticInputs para reapontar os binds).
+function loadState(newState){
+  state = newState;
+  renderEditor();
+  wireStaticInputs();
+}
+
+document.getElementById('btn-add-serie').onclick = () => {
+  state.avancoParada.serieGrafico.push({dia:'', atividade:'', previsto:0, realizado:0});
+  renderSerieList();
+};
+document.getElementById('btn-add-atividades').onclick = () => {
+  state.atividadesExecutadas.push({texto:'', status:'verde'});
+  renderStatusList('list-atividades', state.atividadesExecutadas);
+};
+document.getElementById('btn-add-lookahead').onclick = () => {
+  state.lookahead.push({texto:'', status:'verde'});
+  renderStatusList('list-lookahead', state.lookahead);
+};
+document.getElementById('btn-add-riscos').onclick = () => {
+  state.riscos.push({texto:'', status:'amarelo'});
+  renderStatusList('list-riscos', state.riscos);
+};
+document.getElementById('btn-add-custos').onclick = () => {
+  state.custos.linhas.push({categoria:'', previsto:0, realizado:0});
+  renderCustosList();
+};
+
+// =====================================================================
+// RELATÓRIO (1 página)
+// =====================================================================
+function buildComparisonBar(containerEl, series, maxVal){
+  containerEl.innerHTML = '';
+  series.forEach(item => {
+    const row = el('div', {class:'cmp-row'});
+    const label = el('div', {class:'cmp-label', text: item.dia + (item.atividade ? '' : '')});
+
+    const tracks = el('div', {class:'cmp-tracks'});
+    const tPrev = el('div', {class:'cmp-track'});
+    const fPrev = el('div', {class:'cmp-fill cmp-fill--previsto'});
+    fPrev.style.width = Math.min(100, (item.previsto/maxVal)*100) + '%';
+    tPrev.appendChild(fPrev);
+
+    const tReal = el('div', {class:'cmp-track'});
+    const fReal = el('div', {class:'cmp-fill cmp-fill--realizado'});
+    fReal.style.width = Math.min(100, (item.realizado/maxVal)*100) + '%';
+    tReal.appendChild(fReal);
+
+    tracks.appendChild(tPrev);
+    tracks.appendChild(tReal);
+
+    const tipHtml = `<b>${item.dia}${item.atividade ? ' — '+item.atividade : ''}</b><br>Previsto: ${fmtPct(item.previsto)}<br>Realizado: ${fmtPct(item.realizado)}`;
+    tracks.addEventListener('mouseenter', e => showTip(e, tipHtml));
+    tracks.addEventListener('mousemove', e => showTip(e, tipHtml));
+    tracks.addEventListener('mouseleave', hideTip);
+
+    const vals = el('div', {class:'cmp-vals'});
+    vals.innerHTML = `<div>P ${fmtPct(item.previsto)}</div><div>R ${fmtPct(item.realizado)}</div>`;
+
+    row.appendChild(label);
+    row.appendChild(tracks);
+    row.appendChild(vals);
+    containerEl.appendChild(row);
+  });
+}
+
+function buildHeader(){
+  const c = document.getElementById('area-header');
+  const m = state.meta;
+  const turnoLabel = m.turno === 'noite' ? 'Noite' : 'Manhã';
+  c.innerHTML = `
+    <div class="header-bar">
+      <div class="header-logo"><img src="assets/logo-prio.svg" alt="Logo"></div>
+      <div class="header-titles">
+        <div class="h-sub">${m.fpso || ''} · PREPARAÇÃO ${m.preparacao || ''} · ${fmtDateOnly(m.dataEmissao)} · TURNO ${turnoLabel.toUpperCase()} (${m.horaEmissao||''})</div>
+        <div class="h-title">PARADA COOLING MEDIUM</div>
+      </div>
+      <div class="header-legends">
+        <div class="legend">
+          <span class="legend-label">Legenda de status</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--verde"></span>No plano</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--amarelo"></span>Em risco / a confirmar</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--vermelho"></span>Crítico</span>
+        </div>
+        <div class="legend">
+          <span class="legend-label">Ritmo</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--vermelho"></span>Atrasado</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--amarelo"></span>Acima do plano</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--verde"></span>No plano</span>
+        </div>
+      </div>
+      <div class="header-pob">
+        <div class="pob-label">POB Cooling Medium</div>
+        <div class="pob-value">${fmt(state.pob.coolingMedium)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function fmtDateOnly(iso){
+  if(!iso) return '—';
+  const parts = iso.split('-');
+  if(parts.length !== 3) return iso;
+  return `DIA ${parts[2]}/${parts[1]}`;
+}
+
+function buildStatusCard(containerId, title, arr){
+  const c = document.getElementById(containerId);
+  c.innerHTML = `<div class="card-title">${title}</div><div class="status-list">${
+    arr.map(item => `<div class="status-item"><span class="status-dot status-dot--${item.status}"></span><span>${item.texto}</span></div>`).join('')
+  }</div>`;
+}
+
+function buildAvanco(){
+  const c = document.getElementById('area-avanco');
+  const a = state.avancoParada;
+  const ritmo = RITMO_INFO[a.ritmo] || RITMO_INFO.no_plano;
+  c.innerHTML = `
+    <div class="card-title">Avanço da parada</div>
+    <div class="avanco-top">
+      <div class="avanco-dates">
+        <div><b>Start Ramp Down:</b> ${fmtDate(a.startRampDown)}</div>
+        <div><b>Finish Ramp Up:</b> ${fmtDate(a.finishRampUp)}</div>
+        <div style="margin-top:0.4em"><span class="pill pill--${ritmo.cls}">${ritmo.label.toUpperCase()}</span></div>
+      </div>
+      <div class="avanco-stats">
+        <div class="avanco-stat avanco-stat--previsto"><div class="as-label">Previsto</div><div class="as-value">${fmtPct(a.previstoPct)}</div></div>
+        <div class="avanco-stat avanco-stat--realizado"><div class="as-label">Realizado</div><div class="as-value">${fmtPct(a.realizadoPct)}</div></div>
+      </div>
+    </div>
+    <div class="cmp-chart" id="avanco-chart"></div>
+  `;
+  const maxVal = Math.max(100, ...a.serieGrafico.map(s => Math.max(s.previsto, s.realizado)));
+  buildComparisonBar(document.getElementById('avanco-chart'), a.serieGrafico, maxVal);
+}
+
+function buildAndaimes(){
+  const c = document.getElementById('area-andaimes');
+  const d = state.andaimes;
+  c.innerHTML = `<div class="card-title">Andamento montagem de andaimes — P:${fmtPct(d.previstoPct)} x R:${fmtPct(d.realizadoPct)}</div><div class="andaimes-body" id="andaimes-chart"></div>`;
+  buildComparisonBar(document.getElementById('andaimes-chart'), [{dia:'Andaimes', atividade:'Montagem', previsto:d.previstoPct, realizado:d.realizadoPct}], 100);
+}
+
+function buildCustos(){
+  const c = document.getElementById('area-custos');
+  const linhas = state.custos.linhas;
+  const totalPrev = linhas.reduce((s,r)=>s+(r.previsto||0),0);
+  const totalReal = linhas.reduce((s,r)=>s+(r.realizado||0),0);
+  const rows = linhas.map(r => {
+    const delta = (r.realizado||0) - (r.previsto||0);
+    const cls = delta <= 0 ? 'delta-pos' : 'delta-neg';
+    return `<tr><td>${r.categoria}</td><td>${fmtBRL(r.previsto)}</td><td>${fmtBRL(r.realizado)}</td><td class="${cls}">${delta>0?'+':''}${fmtBRL(delta)}</td></tr>`;
+  }).join('');
+  const totalDelta = totalReal - totalPrev;
+  const totalCls = totalDelta <= 0 ? 'delta-pos' : 'delta-neg';
+  c.innerHTML = `
+    <div class="card-title">Tabela de custos</div>
+    <div class="custos-body">
+      <table class="custos-table">
+        <thead><tr><th>Categoria</th><th>Previsto</th><th>Realizado</th><th>Variação</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td>Total</td><td>${fmtBRL(totalPrev)}</td><td>${fmtBRL(totalReal)}</td><td class="${totalCls}">${totalDelta>0?'+':''}${fmtBRL(totalDelta)}</td></tr></tfoot>
+      </table>
+    </div>
+  `;
+}
+
+function buildFooter(){
+  const c = document.getElementById('area-footer');
+  const m = state.meta;
+  c.innerHTML = `<span>Fonte: ${m.fonte || ''}</span><span>Emitido em ${fmtDateOnlyBR(m.dataEmissao)} às ${m.horaEmissao || ''} · ${m.geradoPor || ''}</span>`;
+}
+function fmtDateOnlyBR(iso){
+  if(!iso) return '—';
+  const parts = iso.split('-');
+  if(parts.length !== 3) return iso;
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+function buildReport(){
+  buildHeader();
+  buildStatusCard('area-exec', 'Atividades executadas', state.atividadesExecutadas);
+  buildStatusCard('area-lookahead', 'Lookahead', state.lookahead);
+  buildStatusCard('area-riscos', 'Principais riscos da pré-parada', state.riscos);
+  buildAvanco();
+  buildAndaimes();
+  buildCustos();
+  buildFooter();
+}
+
+// ===== Autofit: garante que o relatório cabe em 1 página, mesmo com listas maiores =====
+function isOverflowing(sheet){
+  const areas = sheet.querySelectorAll('.card, .area-header, .area-footer');
+  for(const a of areas){
+    if(a.scrollHeight - a.clientHeight > 1) return true;
+  }
+  return false;
+}
+function autofitSheet(){
+  const sheet = document.getElementById('sheet');
+  let scale = 1;
+  sheet.style.setProperty('--fs-scale', scale);
+  for(let i=0; i<20; i++){
+    if(!isOverflowing(sheet)) break;
+    scale -= 0.04;
+    if(scale < 0.55) break;
+    sheet.style.setProperty('--fs-scale', scale.toFixed(2));
+  }
+}
+
+// ===== Ajuste de escala só para pré-visualização em tela (não afeta impressão) =====
+function fitScreenScale(){
+  const wrap = document.querySelector('.sheet-wrap');
+  const sheet = document.getElementById('sheet');
+  sheet.style.transform = 'none';
+  const availW = wrap.clientWidth - 20;
+  const naturalW = sheet.offsetWidth;
+  const s = Math.min(1, availW / naturalW);
+  sheet.style.transform = `scale(${s})`;
+  wrap.style.marginBottom = (sheet.offsetHeight * (s-1)) + 'px';
+}
+window.addEventListener('resize', () => {
+  if(document.body.classList.contains('mode-report')) fitScreenScale();
+});
+
+// =====================================================================
+// Alternância Editor / Relatório + ações da toolbar
+// =====================================================================
+function switchToReport(){
+  document.body.classList.remove('mode-editor');
+  document.body.classList.add('mode-report');
+  document.getElementById('editor-view').classList.add('hidden');
+  document.getElementById('report-view').classList.remove('hidden');
+  document.getElementById('btn-toggle-view').textContent = 'Voltar a editar';
+  buildReport();
+  requestAnimationFrame(() => { autofitSheet(); fitScreenScale(); });
+}
+function switchToEditor(){
+  document.body.classList.remove('mode-report');
+  document.body.classList.add('mode-editor');
+  document.getElementById('report-view').classList.add('hidden');
+  document.getElementById('editor-view').classList.remove('hidden');
+  document.getElementById('btn-toggle-view').textContent = 'Visualizar relatório';
+}
+document.getElementById('btn-toggle-view').onclick = () => {
+  if(document.body.classList.contains('mode-report')) switchToEditor();
+  else switchToReport();
+};
+
+document.getElementById('btn-print').onclick = () => {
+  buildReport();
+  requestAnimationFrame(() => {
+    autofitSheet();
+    setTimeout(() => window.print(), 30);
+  });
+};
+
+document.getElementById('btn-new').onclick = () => {
+  if(!confirm('Descartar os dados atuais e começar um relatório em branco?')) return;
+  loadState(blankState());
+};
+document.getElementById('btn-load-example').onclick = () => {
+  loadState(JSON.parse(JSON.stringify(EXAMPLE_DATA)));
+};
+
+const fileInput = document.getElementById('file-input');
+document.getElementById('btn-load-prev').onclick = () => fileInput.click();
+fileInput.onchange = async (e) => {
+  const file = e.target.files[0];
+  fileInput.value = '';
+  if(!file) return;
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    loadState(mergeWithDefaults(parsed));
+  } catch(err){
+    alert('Não foi possível ler o arquivo JSON: ' + err.message);
+  }
+};
+
+function suggestedFilename(){
+  const m = state.meta;
+  const turno = m.turno === 'noite' ? 'noite' : 'manha';
+  return `${m.dataEmissao || 'relatorio'}-${turno}.json`;
+}
+
+async function saveJson(){
+  const dataStr = JSON.stringify(state, null, 2);
+  const filename = suggestedFilename();
+  if(window.showSaveFilePicker){
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: 'JSON', accept: {'application/json': ['.json']} }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(dataStr);
+      await writable.close();
+      return;
+    } catch(err){
+      if(err.name === 'AbortError') return;
+      // segue para o fallback de download em caso de erro inesperado da API
+    }
+  }
+  const blob = new Blob([dataStr], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+document.getElementById('btn-save-json').onclick = saveJson;
+
+// ===== Inicialização =====
+loadState(state);
+</script>
+</body>
+</html>
