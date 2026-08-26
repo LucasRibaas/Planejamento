@@ -1200,6 +1200,25 @@ function suggestedFilename(){
 async function saveJson(){
   const dataStr = JSON.stringify(state, null, 2);
   const filename = suggestedFilename();
+
+  // Rodando dentro de uma prévia/artefato do claude.ai: usa a capability de
+  // downloads do host em vez do File System Access API / <a download>, que o
+  // sandbox do preview bloqueia silenciosamente. Fora desse ambiente
+  // (arquivo aberto direto no navegador) `window.claude` não existe e este
+  // bloco é ignorado sem nenhum atraso.
+  if(window.claude && typeof window.claude.use === 'function'){
+    try {
+      const downloads = await window.claude.use('downloads');
+      if(downloads){
+        await downloads.save({ filename, data: dataStr });
+        return;
+      }
+    } catch(err){
+      if(err && err.code === 'declined') return;
+      // qualquer outro erro (indisponível, não habilitado etc.) cai no fallback abaixo
+    }
+  }
+
   if(window.showSaveFilePicker){
     try {
       const handle = await window.showSaveFilePicker({
