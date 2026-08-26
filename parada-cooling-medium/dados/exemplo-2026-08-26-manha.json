@@ -26,15 +26,24 @@
       { "dia": "01/09", "atividade": "Ramp Up", "previsto": 100, "realizado": 0 }
     ]
   },
-  "atividadesExecutadas": [
-    { "texto": "Montagem Andaime do Módulo 01 – Reparo 005", "status": "verde" },
-    { "texto": "Reparo Pré-TA: Coluna 39 Frame 05", "status": "amarelo" },
-    { "texto": "Montagem de Pau de Carga do Trocador A", "status": "verde" }
-  ],
-  "lookahead": [
-    { "texto": "Montagem Andaime do Módulo 06 – Reparo 033", "status": "verde" },
-    { "texto": "Reparo Pré-TA: Coluna 06 Frame 07", "status": "amarelo" },
-    { "texto": "Hotbolt Spool Trocador B", "status": "vermelho" }
+  "reparos": [
+    { "grupo": "Reparos com Viga", "itens": [
+      { "codigo": "REP 049 MOD 03 COL 20", "preparacaoPct": 20.0, "taPct": null },
+      { "codigo": "REP 029 MOD 06 COL 39", "preparacaoPct": null, "taPct": null },
+      { "codigo": "REP 082 MOD 03 COL 19", "preparacaoPct": 40.0, "taPct": null },
+      { "codigo": "REP 005 MOD 01 COL 06", "preparacaoPct": 30.0, "taPct": null },
+      { "codigo": "REP 033 MOD 05 COL 32", "preparacaoPct": 20.0, "taPct": null },
+      { "codigo": "REP 078 MOD 02 COL 12", "preparacaoPct": 30.0, "taPct": null },
+      { "codigo": "REP 077 MOD 03 COL 16", "preparacaoPct": null, "taPct": null },
+      { "codigo": "REP 036 MOD 06 COL 35", "preparacaoPct": null, "taPct": null },
+      { "codigo": "REP 035 MOD 04 COL 25", "preparacaoPct": null, "taPct": null }
+    ]},
+    { "grupo": "Reparos em Ramais", "itens": [
+      { "codigo": "MOD 06 - LINHA 16\"-W-B10-101", "preparacaoPct": null, "taPct": null },
+      { "codigo": "MOD 05 - LINHA 16\"-W-B10-119", "preparacaoPct": null, "taPct": null },
+      { "codigo": "MOD 05 - LINHA 10\"-WB10-041", "preparacaoPct": null, "taPct": null },
+      { "codigo": "MOD 03 - LINHA 14\"-W-B10-033", "preparacaoPct": null, "taPct": null }
+    ]}
   ],
   "riscos": [
     { "texto": "Entrega dos Spools 27/08", "status": "amarelo" },
