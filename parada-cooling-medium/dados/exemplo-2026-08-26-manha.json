@@ -18,11 +18,10 @@
     "realizadoPct": 4.5,
     "ritmo": "atrasado",
     "serieGrafico": [
-      { "dia": "24/08", "atividade": "Pré-parada", "previsto": 5, "realizado": 4 },
-      { "dia": "25/08", "atividade": "Pré-parada", "previsto": 10, "realizado": 4.5 },
-      { "dia": "26/08", "atividade": "Pré-parada", "previsto": 20, "realizado": 4.5 },
-      { "dia": "28/08", "atividade": "Ramp Down", "previsto": 55, "realizado": 0 },
-      { "dia": "29/08", "atividade": "Execução", "previsto": 75, "realizado": 0 },
+      { "dia": "28/08", "atividade": "Ramp Down", "previsto": 20, "realizado": 4.5 },
+      { "dia": "29/08", "atividade": "Execução", "previsto": 40, "realizado": 0 },
+      { "dia": "30/08", "atividade": "Execução", "previsto": 60, "realizado": 0 },
+      { "dia": "31/08", "atividade": "Execução", "previsto": 80, "realizado": 0 },
       { "dia": "01/09", "atividade": "Ramp Up", "previsto": 100, "realizado": 0 }
     ]
   },

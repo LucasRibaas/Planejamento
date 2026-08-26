@@ -123,6 +123,7 @@
     margin-bottom: 12px;
   }
   .ed-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .ed-hint { font-size: 0.75rem; color: var(--text-muted); margin: -4px 0 8px; }
   .ed-field label {
     display: block;
     font-size: 0.72rem;
@@ -440,8 +441,12 @@
       </div>
     </div>
     <h2 style="margin-top:14px">Série do gráfico (Previsto x Realizado por dia/atividade)</h2>
+    <p class="ed-hint">O período do gráfico deve ir do Start Ramp Down ao Finish Ramp Up preenchidos acima.</p>
     <div id="list-serie"></div>
-    <button type="button" class="ed-add-btn" id="btn-add-serie">+ Adicionar dia/atividade</button>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button type="button" class="ed-add-btn" id="btn-gen-serie">Gerar dias (Ramp Down → Ramp Up)</button>
+      <button type="button" class="ed-add-btn" id="btn-add-serie">+ Adicionar dia/atividade</button>
+    </div>
   </div>
 
   <div class="ed-section">
@@ -506,11 +511,10 @@ const EXAMPLE_DATA = {
     realizadoPct: 4.5,
     ritmo: "atrasado",
     serieGrafico: [
-      { dia: "24/08", atividade: "Pré-parada", previsto: 5, realizado: 4 },
-      { dia: "25/08", atividade: "Pré-parada", previsto: 10, realizado: 4.5 },
-      { dia: "26/08", atividade: "Pré-parada", previsto: 20, realizado: 4.5 },
-      { dia: "28/08", atividade: "Ramp Down", previsto: 55, realizado: 0 },
-      { dia: "29/08", atividade: "Execução", previsto: 75, realizado: 0 },
+      { dia: "28/08", atividade: "Ramp Down", previsto: 20, realizado: 4.5 },
+      { dia: "29/08", atividade: "Execução", previsto: 40, realizado: 0 },
+      { dia: "30/08", atividade: "Execução", previsto: 60, realizado: 0 },
+      { dia: "31/08", atividade: "Execução", previsto: 80, realizado: 0 },
       { dia: "01/09", atividade: "Ramp Up", previsto: 100, realizado: 0 }
     ]
   },
@@ -689,6 +693,40 @@ function renderSerieList(){
   });
 }
 
+function pad2(n){ return String(n).padStart(2,'0'); }
+
+function generateSerieFromRampDates(){
+  const a = state.avancoParada;
+  if(!a.startRampDown || !a.finishRampUp){
+    alert('Preencha Start Ramp Down e Finish Ramp Up antes de gerar os dias.');
+    return;
+  }
+  const start = new Date(a.startRampDown);
+  const end = new Date(a.finishRampUp);
+  start.setHours(0,0,0,0);
+  end.setHours(0,0,0,0);
+  if(isNaN(start.getTime()) || isNaN(end.getTime()) || start > end){
+    alert('Start Ramp Down precisa ser antes (ou igual a) Finish Ramp Up.');
+    return;
+  }
+  const existing = {};
+  a.serieGrafico.forEach(item => { if(item.dia) existing[item.dia] = item; });
+
+  const novaSerie = [];
+  for(let d = new Date(start); d <= end; d.setDate(d.getDate()+1)){
+    const label = pad2(d.getDate()) + '/' + pad2(d.getMonth()+1);
+    const prev = existing[label];
+    novaSerie.push({
+      dia: label,
+      atividade: prev ? (prev.atividade || '') : '',
+      previsto: prev ? (prev.previsto ?? 0) : 0,
+      realizado: prev ? (prev.realizado ?? 0) : 0
+    });
+  }
+  a.serieGrafico = novaSerie;
+  renderSerieList();
+}
+
 function renderCustosList(){
   const container = document.getElementById('list-custos');
   container.innerHTML = '';
@@ -848,6 +886,7 @@ document.getElementById('btn-add-serie').onclick = () => {
   state.avancoParada.serieGrafico.push({dia:'', atividade:'', previsto:0, realizado:0});
   renderSerieList();
 };
+document.getElementById('btn-gen-serie').onclick = generateSerieFromRampDates;
 document.getElementById('btn-add-riscos').onclick = () => {
   state.riscos.push({texto:'', status:'amarelo'});
   renderStatusList('list-riscos', state.riscos);
