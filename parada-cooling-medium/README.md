@@ -34,7 +34,7 @@ parada-cooling-medium/
 ├── dados/                                  # um arquivo JSON por emissão (histórico)
 │   └── exemplo-2026-08-26-manha.json
 ├── assets/
-│   └── logo-prio.svg                       # placeholder — substitua pelo logo oficial mantendo o nome do arquivo
+│   └── logo-prio.svg                       # recriação aproximada do mascote (polvo azul) — troque pelo arquivo oficial quando disponível
 └── README.md
 ```
 
@@ -60,4 +60,4 @@ O relatório usa a paleta roxo/laranja e a fonte Epilogue da skill de marca `pri
 - **Cores de status** (bolinhas verde/amarelo/vermelho, indicador de ritmo Atrasado/Acima do plano/No plano) foram mantidas com o significado semântico de semáforo, independente da marca — trocar essas cores reduziria a legibilidade operacional do relatório.
 - **Mascote (polvo)** não foi incluído: a própria skill orienta usá-lo só em capas/encerramentos/transições, "nunca competindo com conteúdo técnico denso" — este relatório é justamente um conteúdo técnico denso (tabelas e checklists).
 - A fonte Epilogue é carregada via Google Fonts; sem internet no momento de abrir o arquivo, o navegador usa automaticamente a fonte de fallback (Inter/Segoe UI) sem quebrar o layout.
-- Para trocar a logo placeholder pela logo oficial da PRIO, substitua `assets/logo-prio.svg` mantendo o nome do arquivo (ou ajuste o `<img src>` no HTML se usar outro nome/formato).
+- O mascote atual (`assets/logo-prio.svg`) é uma recriação aproximada, feita a mão a partir de uma referência visual colada no chat — não é um recorte do arquivo oficial (que só foi enviado como imagem inline, sem anexo). Quando o arquivo oficial estiver disponível, substitua `assets/logo-prio.svg` mantendo o nome (ou ajuste o `<img src>` no HTML se usar outro nome/formato).
