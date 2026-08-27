@@ -230,7 +230,16 @@
   }
 
   .area-header { grid-area: header; }
-  .area-reparos { grid-area: reparos; }
+  .area-reparos {
+    grid-area: reparos;
+    display: flex;
+    flex-direction: column;
+    gap: 3mm;
+    min-height: 0;
+  }
+  .area-reparos > .card { min-height: 0; }
+  #area-reparos { flex: 1.7 1 0%; }
+  #area-lookahead { flex: 1 1 0%; }
   .area-riscos { grid-area: riscos; }
   .area-avanco { grid-area: avanco; }
   .area-andaimes { grid-area: andaimes; }
@@ -457,6 +466,12 @@
   </div>
 
   <div class="ed-section">
+    <h2>Lookahead — próximas atividades</h2>
+    <div id="list-lookahead"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-lookahead">+ Adicionar atividade</button>
+  </div>
+
+  <div class="ed-section">
     <h2>Principais riscos da pré-parada</h2>
     <div id="list-riscos"></div>
     <button type="button" class="ed-add-btn" id="btn-add-riscos">+ Adicionar risco</button>
@@ -484,7 +499,10 @@
   <div class="sheet-wrap">
     <div class="sheet" id="sheet">
       <div class="area-header" id="area-header"></div>
-      <div class="area-reparos card" id="area-reparos"></div>
+      <div class="area-reparos">
+        <div class="card" id="area-reparos"></div>
+        <div class="card" id="area-lookahead"></div>
+      </div>
       <div class="area-riscos card" id="area-riscos"></div>
       <div class="area-avanco card" id="area-avanco"></div>
       <div class="area-andaimes card" id="area-andaimes"></div>
@@ -540,6 +558,11 @@ const EXAMPLE_DATA = {
       { codigo: "MOD 03 - LINHA 14\"-W-B10-033", preparacaoPct: null, taPct: null }
     ]}
   ],
+  lookahead: [
+    { texto: "Mobilização de equipe extra de solda", status: "amarelo" },
+    { texto: "Inspeção final pré-TA da Coluna 06 Frame 07", status: "verde" },
+    { texto: "Hotbolt Spool Trocador B", status: "vermelho" }
+  ],
   riscos: [
     { texto: "Entrega dos Spools 27/08", status: "amarelo" },
     { texto: "Máquina de Solda 27/08", status: "amarelo" },
@@ -575,6 +598,7 @@ function blankState(){
     pob: { coolingMedium: 0 },
     avancoParada: { startRampDown: "", finishRampUp: "", previstoPct: 0, realizadoPct: 0, ritmo: "no_plano", serieGrafico: [] },
     reparos: [],
+    lookahead: [],
     riscos: [],
     andaimes: {
       acesso: { previstoPct: 0, realizadoPct: 0 },
@@ -598,6 +622,7 @@ function mergeWithDefaults(parsed){
     reparos: (parsed.reparos || []).map(g => Object.assign({grupo:'', itens:[]}, g, {
       itens: ((g && g.itens) || []).map(item => Object.assign({codigo:'', preparacaoPct:null, taPct:null}, item))
     })),
+    lookahead: parsed.lookahead || [],
     riscos: parsed.riscos || []
   });
 }
@@ -868,6 +893,7 @@ function renderEditor(){
 
   renderSerieList();
   renderReparosEditor();
+  renderStatusList('list-lookahead', state.lookahead);
   renderStatusList('list-riscos', state.riscos);
   renderCustosList();
 }
@@ -915,6 +941,10 @@ document.getElementById('btn-add-serie').onclick = () => {
   renderSerieList();
 };
 document.getElementById('btn-gen-serie').onclick = generateSerieFromRampDates;
+document.getElementById('btn-add-lookahead').onclick = () => {
+  state.lookahead.push({texto:'', status:'verde'});
+  renderStatusList('list-lookahead', state.lookahead);
+};
 document.getElementById('btn-add-riscos').onclick = () => {
   state.riscos.push({texto:'', status:'amarelo'});
   renderStatusList('list-riscos', state.riscos);
@@ -1107,6 +1137,7 @@ function fmtDateOnlyBR(iso){
 function buildReport(){
   buildHeader();
   buildReparos();
+  buildStatusCard('area-lookahead', 'Lookahead', state.lookahead);
   buildStatusCard('area-riscos', 'Principais riscos da pré-parada', state.riscos);
   buildAvanco();
   buildAndaimes();

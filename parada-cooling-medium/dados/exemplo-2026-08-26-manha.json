@@ -44,6 +44,11 @@
       { "codigo": "MOD 03 - LINHA 14\"-W-B10-033", "preparacaoPct": null, "taPct": null }
     ]}
   ],
+  "lookahead": [
+    { "texto": "Mobilização de equipe extra de solda", "status": "amarelo" },
+    { "texto": "Inspeção final pré-TA da Coluna 06 Frame 07", "status": "verde" },
+    { "texto": "Hotbolt Spool Trocador B", "status": "vermelho" }
+  ],
   "riscos": [
     { "texto": "Entrega dos Spools 27/08", "status": "amarelo" },
     { "texto": "Máquina de Solda 27/08", "status": "amarelo" },

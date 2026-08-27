@@ -11,7 +11,7 @@ Relatório visual de 1 página para acompanhar a parada programada de manutenç�
    - **Carregar emissão anterior**: seleciona o último arquivo salvo em `dados/` (ex.: a emissão da noite anterior) e pré-preenche o formulário — só ajuste o que mudou.
    - **Novo em branco**: começa do zero.
    - **Carregar exemplo**: carrega os dados de demonstração, útil para testar o layout.
-3. Preencha/ajuste os campos: cabeçalho, POB, avanço da parada (datas, % previsto/realizado, série do gráfico por dia/atividade), reparos (agrupados por tipo, com % de Preparação e % de TA por item), riscos, andamento de andaimes (Acesso e Escoramento, cada um com seu próprio % previsto/realizado) e tabela de custos. Use os botões **+ Adicionar** / **✕** para incluir ou remover grupos e itens das listas.
+3. Preencha/ajuste os campos: cabeçalho, POB, avanço da parada (datas, % previsto/realizado, série do gráfico por dia/atividade), reparos (agrupados por tipo, com % de Preparação e % de TA por item), lookahead (próximas atividades a realizar), riscos, andamento de andaimes (Acesso e Escoramento, cada um com seu próprio % previsto/realizado) e tabela de custos. Use os botões **+ Adicionar** / **✕** para incluir ou remover grupos e itens das listas.
 4. Clique em **Visualizar relatório** para ver o layout final de 1 página.
 5. Clique em **Salvar JSON**:
    - No Chrome/Edge, escolha salvar diretamente dentro da pasta `dados/` com o nome sugerido (`AAAA-MM-DD-manha.json` ou `AAAA-MM-DD-noite.json`).
@@ -41,7 +41,8 @@ parada-cooling-medium/
 ## Dois níveis de avanço (não confundir)
 
 - **Avanço da parada** (quadrante direito): visão macro — % físico concluído do cronograma inteiro da parada, por dia, Previsto x Realizado. É uma curva agregada de todos os reparos somados, útil para ver a tendência geral (atrasado/no plano) rapidamente.
-- **Reparos — Preparação x TA** (quadrante esquerdo): visão detalhada — % de Preparação e % de execução durante o TA, item a item, por reparo específico.
+- **Reparos — Preparação x TA** (quadrante esquerdo, parte de cima): visão detalhada — % de Preparação e % de execução durante o TA, item a item, por reparo específico.
+- **Lookahead** (quadrante esquerdo, parte de baixo): lista simples (texto + status) das próximas atividades a realizar, sem % — para isso ainda não terem virado um item detalhado na tabela de Reparos.
 
 Os valores de "Avanço da parada" não são calculados automaticamente a partir da tabela de Reparos — são preenchidos à parte no formulário (série do gráfico), pois representam o cronograma geral da parada, que pode incluir atividades além dos reparos listados.
 
