@@ -386,6 +386,8 @@
 
   .andaimes-body, .custos-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
   .andaimes-body .cmp-label { width: 6.5em; }
+  .andaimes-body .cmp-vals { width: 6.2em; line-height: 1.2; }
+  .andaimes-body .cmp-qtd { display: block; font-size: 0.85em; color: var(--text-muted); font-weight: 400; }
 
   table.custos-table { width: 100%; border-collapse: collapse; font-size: 0.82em; }
   table.custos-table th {
@@ -519,8 +521,12 @@
     <div class="ed-grid">
       <div class="ed-field"><label>Acesso — Previsto (%)</label><input type="number" step="0.1" id="f-andaimesAcessoPrevisto"></div>
       <div class="ed-field"><label>Acesso — Realizado (%)</label><input type="number" step="0.1" id="f-andaimesAcessoRealizado"></div>
+      <div class="ed-field"><label>Acesso — Previsto (pontos)</label><input type="number" id="f-andaimesAcessoPrevistoQtd"></div>
+      <div class="ed-field"><label>Acesso — Realizado (pontos)</label><input type="number" id="f-andaimesAcessoRealizadoQtd"></div>
       <div class="ed-field"><label>Escoramento — Previsto (%)</label><input type="number" step="0.1" id="f-andaimesEscoramentoPrevisto"></div>
       <div class="ed-field"><label>Escoramento — Realizado (%)</label><input type="number" step="0.1" id="f-andaimesEscoramentoRealizado"></div>
+      <div class="ed-field"><label>Escoramento — Previsto (pontos)</label><input type="number" id="f-andaimesEscoramentoPrevistoQtd"></div>
+      <div class="ed-field"><label>Escoramento — Realizado (pontos)</label><input type="number" id="f-andaimesEscoramentoRealizadoQtd"></div>
     </div>
   </div>
 
@@ -631,8 +637,8 @@ const EXAMPLE_DATA = {
     { texto: "Aumento de reparos devido a novos furos", status: "vermelho" }
   ],
   andaimes: {
-    acesso: { previstoPct: 30, realizadoPct: 35 },
-    escoramento: { previstoPct: 20, realizadoPct: 12 }
+    acesso: { previstoPct: 30, realizadoPct: 35, previstoQtd: 45, realizadoQtd: 38 },
+    escoramento: { previstoPct: 20, realizadoPct: 12, previstoQtd: 20, realizadoQtd: 8 }
   },
   custos: {
     moeda: "BRL",
@@ -662,8 +668,8 @@ function blankState(){
     lookahead: [],
     riscos: [],
     andaimes: {
-      acesso: { previstoPct: 0, realizadoPct: 0 },
-      escoramento: { previstoPct: 0, realizadoPct: 0 }
+      acesso: { previstoPct: 0, realizadoPct: 0, previstoQtd: 0, realizadoQtd: 0 },
+      escoramento: { previstoPct: 0, realizadoPct: 0, previstoQtd: 0, realizadoQtd: 0 }
     },
     custos: { moeda: "BRL", linhas: [] }
   };
@@ -955,8 +961,12 @@ function renderEditor(){
 
   document.getElementById('f-andaimesAcessoPrevisto').value = state.andaimes.acesso.previstoPct ?? 0;
   document.getElementById('f-andaimesAcessoRealizado').value = state.andaimes.acesso.realizadoPct ?? 0;
+  document.getElementById('f-andaimesAcessoPrevistoQtd').value = state.andaimes.acesso.previstoQtd ?? 0;
+  document.getElementById('f-andaimesAcessoRealizadoQtd').value = state.andaimes.acesso.realizadoQtd ?? 0;
   document.getElementById('f-andaimesEscoramentoPrevisto').value = state.andaimes.escoramento.previstoPct ?? 0;
   document.getElementById('f-andaimesEscoramentoRealizado').value = state.andaimes.escoramento.realizadoPct ?? 0;
+  document.getElementById('f-andaimesEscoramentoPrevistoQtd').value = state.andaimes.escoramento.previstoQtd ?? 0;
+  document.getElementById('f-andaimesEscoramentoRealizadoQtd').value = state.andaimes.escoramento.realizadoQtd ?? 0;
 
   renderSerieList();
   renderReparosEditor();
@@ -994,8 +1004,12 @@ function wireStaticInputs(){
 
   bind('f-andaimesAcessoPrevisto', () => state.andaimes.acesso, 'previstoPct', true);
   bind('f-andaimesAcessoRealizado', () => state.andaimes.acesso, 'realizadoPct', true);
+  bind('f-andaimesAcessoPrevistoQtd', () => state.andaimes.acesso, 'previstoQtd', true);
+  bind('f-andaimesAcessoRealizadoQtd', () => state.andaimes.acesso, 'realizadoQtd', true);
   bind('f-andaimesEscoramentoPrevisto', () => state.andaimes.escoramento, 'previstoPct', true);
   bind('f-andaimesEscoramentoRealizado', () => state.andaimes.escoramento, 'realizadoPct', true);
+  bind('f-andaimesEscoramentoPrevistoQtd', () => state.andaimes.escoramento, 'previstoQtd', true);
+  bind('f-andaimesEscoramentoRealizadoQtd', () => state.andaimes.escoramento, 'realizadoQtd', true);
 }
 wireStaticInputs();
 
@@ -1167,14 +1181,46 @@ function buildAvanco(){
   buildComparisonBar(document.getElementById('avanco-chart'), a.serieGrafico, maxVal);
 }
 
+function buildAndaimesRow(item){
+  const row = el('div', {class:'cmp-row'});
+  const label = el('div', {class:'cmp-label', text: item.label});
+
+  const tracks = el('div', {class:'cmp-tracks'});
+  const tPrev = el('div', {class:'cmp-track'});
+  const fPrev = el('div', {class:'cmp-fill cmp-fill--previsto'});
+  fPrev.style.width = Math.min(100, item.previstoPct) + '%';
+  tPrev.appendChild(fPrev);
+
+  const onTrack = item.realizadoPct >= item.previstoPct;
+  const tReal = el('div', {class:'cmp-track'});
+  const fReal = el('div', {class:'cmp-fill ' + (onTrack ? 'cmp-fill--realizado-ok' : 'cmp-fill--realizado-behind')});
+  fReal.style.width = Math.min(100, item.realizadoPct) + '%';
+  tReal.appendChild(fReal);
+
+  tracks.appendChild(tPrev);
+  tracks.appendChild(tReal);
+
+  const tipHtml = `<b>${esc(item.label)}</b><br>Previsto: ${fmtPct(item.previstoPct)} (${fmt(item.previstoQtd)} pontos)<br>Realizado: ${fmtPct(item.realizadoPct)} (${fmt(item.realizadoQtd)} pontos)`;
+  tracks.addEventListener('mouseenter', e => showTip(e, tipHtml));
+  tracks.addEventListener('mousemove', e => showTip(e, tipHtml));
+  tracks.addEventListener('mouseleave', hideTip);
+
+  const vals = el('div', {class:'cmp-vals'});
+  vals.innerHTML = `<div>P ${fmtPct(item.previstoPct)}<span class="cmp-qtd">${fmt(item.previstoQtd)} pts</span></div><div>R ${fmtPct(item.realizadoPct)}<span class="cmp-qtd">${fmt(item.realizadoQtd)} pts</span></div>`;
+
+  row.appendChild(label);
+  row.appendChild(tracks);
+  row.appendChild(vals);
+  return row;
+}
+
 function buildAndaimes(){
   const c = document.getElementById('area-andaimes');
   const d = state.andaimes;
   c.innerHTML = `<div class="card-title">Andamento montagem de andaimes</div><div class="andaimes-body" id="andaimes-chart"></div>`;
-  buildComparisonBar(document.getElementById('andaimes-chart'), [
-    { dia: 'Acesso', atividade: 'Andaime de acesso', previsto: d.acesso.previstoPct, realizado: d.acesso.realizadoPct },
-    { dia: 'Escoramento', atividade: 'Andaime de escoramento', previsto: d.escoramento.previstoPct, realizado: d.escoramento.realizadoPct }
-  ], 100);
+  const chart = document.getElementById('andaimes-chart');
+  chart.appendChild(buildAndaimesRow({ label:'Acesso', previstoPct:d.acesso.previstoPct, realizadoPct:d.acesso.realizadoPct, previstoQtd:d.acesso.previstoQtd, realizadoQtd:d.acesso.realizadoQtd }));
+  chart.appendChild(buildAndaimesRow({ label:'Escoramento', previstoPct:d.escoramento.previstoPct, realizadoPct:d.escoramento.realizadoPct, previstoQtd:d.escoramento.previstoQtd, realizadoQtd:d.escoramento.realizadoQtd }));
 }
 
 function buildCustos(){

@@ -67,8 +67,8 @@
     { "texto": "Aumento de reparos devido a novos furos", "status": "vermelho" }
   ],
   "andaimes": {
-    "acesso": { "previstoPct": 30, "realizadoPct": 35 },
-    "escoramento": { "previstoPct": 20, "realizadoPct": 12 }
+    "acesso": { "previstoPct": 30, "realizadoPct": 35, "previstoQtd": 45, "realizadoQtd": 38 },
+    "escoramento": { "previstoPct": 20, "realizadoPct": 12, "previstoQtd": 20, "realizadoQtd": 8 }
   },
   "custos": {
     "moeda": "BRL",
