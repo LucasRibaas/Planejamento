@@ -42,7 +42,17 @@
       { "codigo": "MOD 05 - LINHA 16\"-W-B10-119", "preparacaoPct": null, "taPct": null },
       { "codigo": "MOD 05 - LINHA 10\"-WB10-041", "preparacaoPct": null, "taPct": null },
       { "codigo": "MOD 03 - LINHA 14\"-W-B10-033", "preparacaoPct": null, "taPct": null }
+    ]},
+    { "grupo": "Spools e Permutadores", "itens": [
+      { "codigo": "Spools + Vlv Permutador P06-A", "preparacaoPct": null, "taPct": null },
+      { "codigo": "Spools + Vlv Perm. P06-B", "preparacaoPct": null, "taPct": null },
+      { "codigo": "Troca Placas P06-B", "preparacaoPct": null, "taPct": null }
     ]}
+  ],
+  "atividadesRealizadas": [
+    { "texto": "Montagem Andaime do Módulo 01 – Reparo 005", "status": "verde" },
+    { "texto": "Reparo Pré-TA: Coluna 39 Frame 05", "status": "amarelo" },
+    { "texto": "Montagem de Pau de Carga do Trocador A", "status": "verde" }
   ],
   "lookahead": [
     { "texto": "Mobilização de equipe extra de solda", "status": "amarelo" },

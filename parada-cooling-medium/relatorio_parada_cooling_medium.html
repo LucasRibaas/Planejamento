@@ -203,8 +203,8 @@
     grid-template-rows: auto 1fr 1fr auto auto;
     grid-template-areas:
       "header    header  header"
-      "reparos   riscos  avanco"
-      "reparos   riscos  avanco"
+      "colA      colB    avanco"
+      "colA      colB    avanco"
       "andaimes  custos  avanco"
       "footer    footer  footer";
     gap: 3mm;
@@ -241,17 +241,17 @@
   }
 
   .area-header { grid-area: header; }
-  .area-reparos {
-    grid-area: reparos;
+  .area-colA, .area-colB {
     display: flex;
     flex-direction: column;
     gap: 3mm;
     min-height: 0;
   }
-  .area-reparos > .card { min-height: 0; }
+  .area-colA { grid-area: colA; }
+  .area-colB { grid-area: colB; }
+  .area-colA > .card, .area-colB > .card { min-height: 0; }
   #area-reparos { flex: 1.7 1 0%; }
-  #area-lookahead { flex: 1 1 0%; }
-  .area-riscos { grid-area: riscos; }
+  #area-riscos, #area-atividades, #area-lookahead { flex: 1 1 0%; }
   .area-avanco { grid-area: avanco; }
   .area-andaimes { grid-area: andaimes; }
   .area-custos { grid-area: custos; }
@@ -477,6 +477,12 @@
   </div>
 
   <div class="ed-section">
+    <h2>Atividades realizadas</h2>
+    <div id="list-atividades"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-atividades">+ Adicionar atividade</button>
+  </div>
+
+  <div class="ed-section">
     <h2>Lookahead — próximas atividades</h2>
     <div id="list-lookahead"></div>
     <button type="button" class="ed-add-btn" id="btn-add-lookahead">+ Adicionar atividade</button>
@@ -510,11 +516,14 @@
   <div class="sheet-wrap">
     <div class="sheet" id="sheet">
       <div class="area-header" id="area-header"></div>
-      <div class="area-reparos">
+      <div class="area-colA">
         <div class="card" id="area-reparos"></div>
+        <div class="card" id="area-riscos"></div>
+      </div>
+      <div class="area-colB">
+        <div class="card" id="area-atividades"></div>
         <div class="card" id="area-lookahead"></div>
       </div>
-      <div class="area-riscos card" id="area-riscos"></div>
       <div class="area-avanco card" id="area-avanco"></div>
       <div class="area-andaimes card" id="area-andaimes"></div>
       <div class="area-custos card" id="area-custos"></div>
@@ -594,7 +603,17 @@ const EXAMPLE_DATA = {
       { codigo: "MOD 05 - LINHA 16\"-W-B10-119", preparacaoPct: null, taPct: null },
       { codigo: "MOD 05 - LINHA 10\"-WB10-041", preparacaoPct: null, taPct: null },
       { codigo: "MOD 03 - LINHA 14\"-W-B10-033", preparacaoPct: null, taPct: null }
+    ]},
+    { grupo: "Spools e Permutadores", itens: [
+      { codigo: "Spools + Vlv Permutador P06-A", preparacaoPct: null, taPct: null },
+      { codigo: "Spools + Vlv Perm. P06-B", preparacaoPct: null, taPct: null },
+      { codigo: "Troca Placas P06-B", preparacaoPct: null, taPct: null }
     ]}
+  ],
+  atividadesRealizadas: [
+    { texto: "Montagem Andaime do Módulo 01 – Reparo 005", status: "verde" },
+    { texto: "Reparo Pré-TA: Coluna 39 Frame 05", status: "amarelo" },
+    { texto: "Montagem de Pau de Carga do Trocador A", status: "verde" }
   ],
   lookahead: [
     { texto: "Mobilização de equipe extra de solda", status: "amarelo" },
@@ -636,6 +655,7 @@ function blankState(){
     pob: { coolingMedium: 0 },
     avancoParada: { startRampDown: "", finishRampUp: "", previstoPct: 0, realizadoPct: 0, ritmo: "no_plano", serieGrafico: [] },
     reparos: [],
+    atividadesRealizadas: [],
     lookahead: [],
     riscos: [],
     andaimes: {
@@ -660,6 +680,7 @@ function mergeWithDefaults(parsed){
     reparos: (parsed.reparos || []).map(g => Object.assign({grupo:'', itens:[]}, g, {
       itens: ((g && g.itens) || []).map(item => Object.assign({codigo:'', preparacaoPct:null, taPct:null}, item))
     })),
+    atividadesRealizadas: parsed.atividadesRealizadas || [],
     lookahead: parsed.lookahead || [],
     riscos: parsed.riscos || []
   });
@@ -936,6 +957,7 @@ function renderEditor(){
 
   renderSerieList();
   renderReparosEditor();
+  renderStatusList('list-atividades', state.atividadesRealizadas);
   renderStatusList('list-lookahead', state.lookahead);
   renderStatusList('list-riscos', state.riscos);
   renderCustosList();
@@ -984,6 +1006,10 @@ document.getElementById('btn-add-serie').onclick = () => {
   renderSerieList();
 };
 document.getElementById('btn-gen-serie').onclick = generateSerieFromRampDates;
+document.getElementById('btn-add-atividades').onclick = () => {
+  state.atividadesRealizadas.push({texto:'', status:'verde'});
+  renderStatusList('list-atividades', state.atividadesRealizadas);
+};
 document.getElementById('btn-add-lookahead').onclick = () => {
   state.lookahead.push({texto:'', status:'verde'});
   renderStatusList('list-lookahead', state.lookahead);
@@ -1180,8 +1206,9 @@ function fmtDateOnlyBR(iso){
 function buildReport(){
   buildHeader();
   buildReparos();
-  buildStatusCard('area-lookahead', 'Lookahead', state.lookahead);
   buildStatusCard('area-riscos', 'Principais riscos da pré-parada', state.riscos);
+  buildStatusCard('area-atividades', 'Atividades Realizadas', state.atividadesRealizadas);
+  buildStatusCard('area-lookahead', 'Lookahead', state.lookahead);
   buildAvanco();
   buildAndaimes();
   buildCustos();
