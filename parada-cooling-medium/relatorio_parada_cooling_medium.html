@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parada Cooling Medium — FPSO Forte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Sem isto, o Chrome/Edge descarta TODAS as cores de fundo (barras de progresso,
+     bolinhas de status, faixas de tabela, pill "ATRASADO") ao imprimir/exportar PDF,
+     a menos que a pessoa marque manualmente "Imprimir gráficos de segundo plano" —
+     opção que fica desmarcada por padrão. Isto força a impressão dessas cores sempre,
+     independente da configuração do navegador de quem for gerar o relatório. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  :root {
+    --surface: #f6f5fb;
+    --card: #ffffff;
+    --border: #e5e1f3;
+    --text-primary: #2c2849;   /* Roxo Escuro/Ameixa — texto de corpo/títulos escuros PRIO */
+    --text-secondary: #5c5775;
+    --text-muted: #948fb0;
+    /* Cores de status (semânticas, tipo semáforo — mantidas independentes da marca) */
+    --verde: #22c55e;
+    --amarelo: #f59e0b;
+    --vermelho: #ef4444;
+    /* Identidade PRIO (skill prio-pptx-layout) */
+    --roxo: #9787d4;
+    --roxo-escuro: #2c2849;
+    --laranja: #f2834b;
+    --laranja-tint: #fbe4d5;
+    --verde-lima: #85e34d;
+    --azul-claro: #10a9ff;
+    --accent: var(--laranja);
+    --ghost: #ded8f2;         /* tom claro do roxo PRIO, usado como barra "previsto" */
+    --radius: 10px;
+  }
+
+  html, body {
+    font-family: 'Epilogue', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--surface);
+    color: var(--text-primary);
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text-primary);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+  }
+  button:hover { background: var(--surface); }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
+  button.primary:hover { opacity: 0.9; background: var(--accent); }
+  button.danger { color: var(--vermelho); }
+
+  input[type="text"], input[type="number"], input[type="datetime-local"], select, textarea {
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--text-primary);
+    width: 100%;
+  }
+
+  /* ---------- Tooltip (padrão reaproveitado do relatório de ordens) ---------- */
+  #tooltip {
+    position: fixed;
+    background: rgba(15,23,42,0.92);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.77rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: 9999;
+    max-width: 240px;
+    line-height: 1.5;
+  }
+
+  /* ---------- Toolbar ---------- */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+  }
+  .toolbar-title {
+    font-weight: 900;
+    font-size: 0.95rem;
+    color: var(--roxo-escuro);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .toolbar-sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
+  .toolbar-hint { font-size: 0.72rem; color: var(--text-muted); width: 100%; }
+
+  /* ---------- Editor ---------- */
+  #editor-view { padding: 20px; max-width: 980px; margin: 0 auto; }
+  .ed-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .ed-section h2 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--laranja);
+    margin-bottom: 12px;
+  }
+  .ed-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .ed-hint { font-size: 0.75rem; color: var(--text-muted); margin: -4px 0 8px; }
+  .ed-field label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .ed-list-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .ed-list-row .grow { flex: 1; }
+  .ed-list-row select { max-width: 150px; }
+  .ed-list-row .num { max-width: 110px; }
+  .ed-remove-btn {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--vermelho);
+    border-color: var(--border);
+  }
+  .ed-add-btn { margin-top: 4px; }
+  .ed-reparo-grupo {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    background: var(--surface);
+  }
+  .ed-reparo-grupo-header { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .ed-reparo-grupo-header input { font-weight: 700; }
+  .ed-reparo-itens { margin-left: 4px; }
+  .ed-reparo-itens .ed-list-row .num { max-width: 130px; }
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+  .status-dot--verde { background: var(--verde); }
+  .status-dot--amarelo { background: var(--amarelo); }
+  .status-dot--vermelho { background: var(--vermelho); }
+
+  /* ---------- Report sheet ---------- */
+  #report-view { padding: 30px 10px; }
+  .sheet-wrap { display: flex; justify-content: center; }
+  .sheet {
+    --fs-scale: 1;
+    width: 277mm;
+    height: 190mm;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 6px 28px rgba(15,23,42,0.18);
+    padding: 6mm;
+    font-size: calc(9px * var(--fs-scale));
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.3fr;
+    grid-template-rows: auto 1fr 1fr auto auto;
+    grid-template-areas:
+      "header    header  header"
+      "colA      colB    avanco"
+      "colA      colB    avanco"
+      "andaimes  custos  avanco"
+      "footer    footer  footer";
+    gap: 3mm;
+    color: var(--text-primary);
+    transform-origin: top center;
+  }
+
+  .sheet .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.1em 1.2em;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .sheet .card-title {
+    font-size: 1.15em;
+    font-weight: 700;
+    color: var(--laranja);
+    margin-bottom: 0.6em;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .sheet .card-title .card-subtitle {
+    display: block;
+    font-size: 0.72em;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: none;
+    letter-spacing: normal;
+    margin-top: 0.1em;
+  }
+
+  .area-header { grid-area: header; }
+  .area-colA, .area-colB {
+    display: flex;
+    flex-direction: column;
+    gap: 3mm;
+    min-height: 0;
+  }
+  .area-colA { grid-area: colA; }
+  .area-colB { grid-area: colB; }
+  .area-colA > .card, .area-colB > .card { min-height: 0; }
+  #area-reparos { flex: 1.7 1 0%; }
+  #area-riscos, #area-atividades, #area-lookahead { flex: 1 1 0%; }
+  .area-avanco { grid-area: avanco; }
+  .area-andaimes { grid-area: andaimes; }
+  .area-custos { grid-area: custos; }
+  .area-footer { grid-area: footer; }
+
+  .header-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.4em;
+    height: 100%;
+  }
+  .header-logo svg { height: 2.6em; width: auto; display: block; }
+  .header-titles { flex: 1; min-width: 0; }
+  .header-titles .h-sub {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .header-titles .h-title {
+    font-size: 1.7em;
+    font-weight: 900;
+    color: var(--roxo-escuro);
+    letter-spacing: 0.03em;
+    margin-top: 0.1em;
+  }
+  .header-legends { display: flex; flex-direction: column; gap: 0.4em; }
+  .legend { display: flex; gap: 0.9em; flex-wrap: wrap; align-items: center; }
+  .legend-label { font-size: 0.68em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-right: 0.3em; }
+  .legend-item { display: flex; align-items: center; gap: 0.35em; font-size: 0.75em; color: var(--text-secondary); white-space: nowrap; }
+  .legend-dot { width: 0.7em; height: 0.7em; border-radius: 2px; flex-shrink: 0; }
+  .legend-dot--pace { border-radius: 2px; transform: rotate(45deg); }
+  .legend-dot--verde, .status-dot--verde, .pill--verde { background: var(--verde); }
+  .legend-dot--amarelo, .status-dot--amarelo, .pill--amarelo { background: var(--amarelo); }
+  .legend-dot--vermelho, .status-dot--vermelho, .pill--vermelho { background: var(--vermelho); }
+  .header-pob {
+    text-align: center;
+    padding: 0 1em;
+    border-left: 1px solid var(--roxo);
+  }
+  .header-pob .pob-label { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .header-pob .pob-value { font-size: 2em; font-weight: 900; color: var(--roxo-escuro); line-height: 1; margin-top: 0.15em; }
+
+  /* Destaque do Previsto x Realizado geral da parada — é o KPI mais importante do card
+     "Avanço da parada", precisa saltar aos olhos acima da evolução dia a dia. */
+  .avanco-highlight {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8em;
+    background: var(--laranja-tint);
+    border: 1px solid var(--laranja);
+    border-radius: 10px;
+    padding: 0.6em 0.9em;
+    margin-bottom: 0.7em;
+    flex-shrink: 0;
+  }
+  .avanco-highlight .ah-left { display: flex; flex-direction: column; gap: 0.3em; }
+  .avanco-highlight .ah-tag { font-size: 0.68em; font-weight: 700; color: var(--roxo-escuro); text-transform: uppercase; letter-spacing: 0.05em; }
+  .avanco-highlight .ah-stats { display: flex; gap: 1.3em; }
+  .avanco-highlight .ah-stat { display: flex; flex-direction: column; align-items: center; }
+  .avanco-highlight .ah-value { font-size: 2.3em; font-weight: 900; line-height: 1; }
+  .avanco-highlight .ah-label { font-size: 0.62em; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.15em; }
+  .avanco-highlight .ah-stat--previsto .ah-value { color: var(--laranja); }
+  .avanco-highlight .ah-stat--realizado .ah-value { color: var(--roxo-escuro); }
+  .avanco-sub-label { font-size: 0.72em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.3em; flex-shrink: 0; }
+
+  .status-list { display: flex; flex-direction: column; gap: 0.55em; overflow: hidden; flex: 1; min-height: 0; }
+  .status-item { display: flex; align-items: flex-start; gap: 0.5em; font-size: 0.92em; line-height: 1.3; }
+  .status-item .status-dot { margin-top: 0.35em; width: 0.65em; height: 0.65em; }
+
+  /* ---------- Tabela de Reparos (Preparação % / TA %) ---------- */
+  .reparos-body { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .reparos-head {
+    display: grid;
+    grid-template-columns: 1fr 6.5em 6.5em;
+    gap: 0.5em;
+    background: var(--laranja);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    padding: 0.28em 0.6em;
+    flex-shrink: 0;
+  }
+  .reparos-head span:not(:first-child) { text-align: center; }
+  .reparos-grupo-title {
+    font-size: 0.8em;
+    font-weight: 700;
+    color: var(--roxo-escuro);
+    background: var(--surface);
+    border-radius: 4px;
+    padding: 0.22em 0.6em;
+    margin: 0.5em 0 0.3em;
+  }
+  .reparos-grupo-title:first-child { margin-top: 0.4em; }
+  .reparos-row {
+    display: grid;
+    grid-template-columns: 1fr 6.5em 6.5em;
+    gap: 0.5em;
+    align-items: center;
+    padding: 0.16em 0.6em;
+    font-size: 0.78em;
+  }
+  .reparos-row:nth-child(odd) { background: var(--surface); }
+  .reparos-code { color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .reparos-pct { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .mini-track { width: 100%; height: 0.6em; border-radius: 3px; background: var(--border); overflow: hidden; }
+  .mini-fill { height: 100%; border-radius: 3px; background: var(--roxo); }
+  .mini-fill--ta { background: var(--laranja); }
+  .reparos-pct .rp-val { font-size: 0.85em; color: var(--text-muted); }
+  .reparos-pct .rp-val--empty { color: var(--border); }
+
+  .pill { display: inline-block; padding: 0.15em 0.6em; border-radius: 999px; font-size: 0.72em; font-weight: 700; color: #fff; }
+
+  .avanco-top { margin-bottom: 0.7em; }
+  .avanco-dates { font-size: 0.82em; color: var(--text-secondary); line-height: 1.6; }
+  .avanco-dates b { color: var(--text-primary); }
+
+  .cmp-chart { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; justify-content: space-evenly; }
+  .cmp-row { display: flex; align-items: center; gap: 0.6em; }
+  .cmp-label { width: 4.2em; flex-shrink: 0; font-size: 0.78em; color: var(--text-secondary); text-align: right; }
+  .cmp-tracks { flex: 1; display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
+  .cmp-track { height: 0.85em; border-radius: 3px; background: var(--surface); overflow: hidden; }
+  .cmp-fill { height: 100%; border-radius: 3px; }
+  .cmp-fill--previsto { background: var(--ghost); }
+  .cmp-fill--realizado-ok { background: var(--verde); }
+  .cmp-fill--realizado-behind { background: var(--vermelho); }
+  .cmp-vals { width: 4.6em; flex-shrink: 0; font-size: 0.7em; color: var(--text-muted); line-height: 1.3; text-align: left; white-space: nowrap; }
+
+  .andaimes-body, .custos-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+  .andaimes-body .cmp-label { width: 6.5em; }
+  .andaimes-body .cmp-vals { width: 6.2em; line-height: 1.2; }
+  .andaimes-body .cmp-qtd { display: block; font-size: 0.85em; color: var(--text-muted); font-weight: 400; }
+
+  table.custos-table { width: 100%; border-collapse: collapse; font-size: 0.82em; }
+  table.custos-table th {
+    text-align: right;
+    padding: 0.3em 0.5em;
+    background: var(--laranja);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85em;
+    text-transform: uppercase;
+  }
+  table.custos-table thead th:first-child { border-radius: 4px 0 0 4px; }
+  table.custos-table thead th:last-child { border-radius: 0 4px 4px 0; }
+  table.custos-table th:first-child, table.custos-table td:first-child { text-align: left; }
+  table.custos-table td { padding: 0.22em 0.4em; border-bottom: 1px solid var(--border); text-align: right; }
+  table.custos-table tfoot td { font-weight: 700; border-top: 1.5px solid var(--border); border-bottom: none; }
+  .delta-pos { color: var(--verde); }
+  .delta-neg { color: var(--vermelho); }
+
+  .area-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.75em; color: var(--text-muted); padding: 0 0.4em; }
+
+  /* ---------- Visibility toggles ---------- */
+  .hidden { display: none !important; }
+
+  @media print {
+    @page { size: A4 landscape; margin: 8mm; }
+    html, body { background: #fff; }
+    .no-print { display: none !important; }
+    #editor-view { display: none !important; }
+    #report-view { display: block !important; padding: 0; }
+    .sheet-wrap { display: block; }
+    .sheet {
+      box-shadow: none;
+      transform: none !important;
+      margin: 0;
+      width: 100%;
+      height: 100vh;
+    }
+  }
+</style>
+</head>
+<body class="mode-editor">
+
+<div id="tooltip"></div>
+
+<div class="toolbar no-print">
+  <div class="toolbar-title">Parada Cooling Medium — FPSO Forte</div>
+  <div class="toolbar-actions">
+    <button id="btn-load-prev" type="button">Carregar emissão anterior</button>
+    <button id="btn-load-example" type="button">Carregar exemplo</button>
+    <button id="btn-new" type="button">Novo em branco</button>
+    <span class="toolbar-sep"></span>
+    <button id="btn-toggle-view" type="button" class="primary">Visualizar relatório</button>
+    <button id="btn-save-json" type="button">Salvar JSON</button>
+    <button id="btn-print" type="button">Imprimir / PDF</button>
+  </div>
+  <input type="file" id="file-input" accept="application/json" class="hidden">
+</div>
+
+<!-- ============ EDITOR ============ -->
+<div id="editor-view">
+  <div class="ed-section">
+    <h2>Cabeçalho da emissão</h2>
+    <div class="ed-grid">
+      <div class="ed-field"><label>FPSO</label><input type="text" id="f-fpso"></div>
+      <div class="ed-field"><label>Preparação</label><input type="text" id="f-preparacao"></div>
+      <div class="ed-field"><label>Data da emissão</label><input type="text" id="f-data" placeholder="AAAA-MM-DD"></div>
+      <div class="ed-field"><label>Turno</label>
+        <select id="f-turno">
+          <option value="manha">Manhã (08:00)</option>
+          <option value="noite">Noite (20:00)</option>
+        </select>
+      </div>
+      <div class="ed-field"><label>Hora da emissão</label><input type="text" id="f-hora" placeholder="08:00"></div>
+      <div class="ed-field"><label>Gerado por</label><input type="text" id="f-geradoPor"></div>
+      <div class="ed-field"><label>Fonte</label><input type="text" id="f-fonte"></div>
+      <div class="ed-field"><label>POB Cooling Medium</label><input type="number" id="f-pob"></div>
+    </div>
+  </div>
+
+  <div class="ed-section">
+    <h2>Avanço da parada</h2>
+    <div class="ed-grid">
+      <div class="ed-field"><label>Start Ramp Down</label><input type="datetime-local" id="f-startRampDown"></div>
+      <div class="ed-field"><label>Finish Ramp Up</label><input type="datetime-local" id="f-finishRampUp"></div>
+      <div class="ed-field"><label>Previsto (%)</label><input type="number" step="0.1" id="f-previstoPct"></div>
+      <div class="ed-field"><label>Realizado (%)</label><input type="number" step="0.1" id="f-realizadoPct"></div>
+      <div class="ed-field"><label>Ritmo</label>
+        <select id="f-ritmo">
+          <option value="no_plano">No plano</option>
+          <option value="acima_do_plano">Acima do plano</option>
+          <option value="atrasado">Atrasado</option>
+        </select>
+      </div>
+    </div>
+    <h2 style="margin-top:14px">Série do gráfico (Previsto x Realizado por dia/atividade)</h2>
+    <p class="ed-hint">O período do gráfico deve ir do Start Ramp Down ao Finish Ramp Up preenchidos acima.</p>
+    <div id="list-serie"></div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button type="button" class="ed-add-btn" id="btn-gen-serie">Gerar dias (Ramp Down → Ramp Up)</button>
+      <button type="button" class="ed-add-btn" id="btn-add-serie">+ Adicionar dia/atividade</button>
+    </div>
+  </div>
+
+  <div class="ed-section">
+    <h2>Reparos (Preparação % e TA %)</h2>
+    <div id="list-reparos-grupos"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-reparo-grupo">+ Adicionar grupo de reparos</button>
+  </div>
+
+  <div class="ed-section">
+    <h2>Atividades realizadas</h2>
+    <div id="list-atividades"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-atividades">+ Adicionar atividade</button>
+  </div>
+
+  <div class="ed-section">
+    <h2>Lookahead — próximas atividades</h2>
+    <div id="list-lookahead"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-lookahead">+ Adicionar atividade</button>
+  </div>
+
+  <div class="ed-section">
+    <h2>Principais riscos da pré-parada</h2>
+    <div id="list-riscos"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-riscos">+ Adicionar risco</button>
+  </div>
+
+  <div class="ed-section">
+    <h2>Andamento montagem de andaimes</h2>
+    <div class="ed-grid">
+      <div class="ed-field"><label>Acesso — Previsto (%)</label><input type="number" step="0.1" id="f-andaimesAcessoPrevisto"></div>
+      <div class="ed-field"><label>Acesso — Realizado (%)</label><input type="number" step="0.1" id="f-andaimesAcessoRealizado"></div>
+      <div class="ed-field"><label>Acesso — Previsto (pontos)</label><input type="number" id="f-andaimesAcessoPrevistoQtd"></div>
+      <div class="ed-field"><label>Acesso — Realizado (pontos)</label><input type="number" id="f-andaimesAcessoRealizadoQtd"></div>
+      <div class="ed-field"><label>Escoramento — Previsto (%)</label><input type="number" step="0.1" id="f-andaimesEscoramentoPrevisto"></div>
+      <div class="ed-field"><label>Escoramento — Realizado (%)</label><input type="number" step="0.1" id="f-andaimesEscoramentoRealizado"></div>
+      <div class="ed-field"><label>Escoramento — Previsto (pontos)</label><input type="number" id="f-andaimesEscoramentoPrevistoQtd"></div>
+      <div class="ed-field"><label>Escoramento — Realizado (pontos)</label><input type="number" id="f-andaimesEscoramentoRealizadoQtd"></div>
+    </div>
+  </div>
+
+  <div class="ed-section">
+    <h2>Tabela de custos (R$)</h2>
+    <div id="list-custos"></div>
+    <button type="button" class="ed-add-btn" id="btn-add-custos">+ Adicionar categoria</button>
+  </div>
+</div>
+
+<!-- ============ RELATÓRIO (1 página) ============ -->
+<div id="report-view" class="hidden">
+  <div class="sheet-wrap">
+    <div class="sheet" id="sheet">
+      <div class="area-header" id="area-header"></div>
+      <div class="area-colA">
+        <div class="card" id="area-reparos"></div>
+        <div class="card" id="area-riscos"></div>
+      </div>
+      <div class="area-colB">
+        <div class="card" id="area-atividades"></div>
+        <div class="card" id="area-lookahead"></div>
+      </div>
+      <div class="area-avanco card" id="area-avanco"></div>
+      <div class="area-andaimes card" id="area-andaimes"></div>
+      <div class="area-custos card" id="area-custos"></div>
+      <div class="area-footer" id="area-footer"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== Logo (mascote) embutido inline no JS — funciona sem depender de assets/logo-prio.svg
+// como arquivo externo (relativo), o que evita ícone quebrado ao abrir este HTML fora da pasta
+// original (ex: prévia de Artifact). Path extraído do vetor original enviado pelo usuário
+// (PRIO_LOGO_POLVO.pdf) via PyMuPDF, cor #2b2f53 (variante "navy" oficial da marca) — não é
+// mais uma recriação à mão. O arquivo assets/logo-prio.svg guarda a mesma arte como
+// referência; ao trocar o logo, atualize os dois. =====
+const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="10.196 6.605 494.864 320.714" role="img" aria-label="PRIO">
+  <path transform="matrix(1,0,0,-1,304.9692,34.199586)" fill="#2b2f53" d="M0 0C9.032 .893 16.56-6.636 15.665-15.668 12.973-34.407-13.917-31.706-12.754-12.751-12.091-6.067-6.684-.661 0 0M198.069-107.155C144.455-72.364 85.069-60.007 37.129-56.689 37.14-27.117 37.166 .093 37.182 15.203 37.19 22.049 31.643 27.595 24.797 27.594-4.019 27.591-75.943 27.568-114.118 27.423-130.345 27.361-146.551 26.069-162.203 21.439-177.396 16.946-190.679 9.771-196.955-6.104-205.114-26.744-200.03-53.185-184.889-66.447-170.156-78.832-152.67-80.038-133.908-83.347-157.673-93.101-179.984-102.598-202.588-111.343-210.032-114.223-228.164-118.398-240.968-119.25-258.032-120.383-281.113-114.601-291.138-111.109-292.918-110.488-294.773-111.801-294.773-113.686V-150.114C-294.773-151.808-293.734-153.329-292.152-153.937-285.413-156.526-266.997-163.154-252.621-164.152-182.915-168.726-149.496-145.961-91.52-115.329-83.722-111.395-75.635-108.915-67.36-107.424-80.145-156.559-117.467-205.038-162.944-238.225-164.824-239.596-164.859-242.405-162.969-243.761-151.192-252.21-138.735-259.771-125.701-266.356-124.02-267.206-121.979-266.982-120.518-265.794-68.232-223.288-31.786-167.828-18.341-108.63-18.314-108.639-18.282-108.648-18.256-108.658-17.891-108.65-17.524-108.659-17.158-108.657 1.455-129.923 28.831-161.968 31.05-193.702 33.509-228.865 26.762-260.417 17.348-288.53 16.588-290.801 18.359-293.119 20.75-292.997 30.159-292.515 50.666-291.307 63.43-289.381 65.15-289.121 66.589-287.94 67.185-286.307 77.088-259.159 85.559-227.667 83.233-193.219 81.069-161.174 70.187-137.653 37.776-104.842 78.317-108.072 127.341-118.669 170.993-146.667 172.886-147.88 175.396-147.382 176.643-145.511L199.038-111.916C200.091-110.337 199.661-108.188 198.069-107.155"/>
+</svg>`;
+
+// ===== Dados de exemplo embutidos (mesmo conteúdo de dados/exemplo-2026-08-26-manha.json) =====
+const EXAMPLE_DATA = {
+  meta: {
+    fpso: "FPSO FORTE",
+    preparacao: "ABL-134 (PXD)",
+    dataEmissao: "2026-08-26",
+    turno: "manha",
+    horaEmissao: "08:00",
+    geradoPor: "landrade@prio3.com.br",
+    fonte: "Cronograma e Reunião de Campo"
+  },
+  pob: { coolingMedium: 61 },
+  avancoParada: {
+    startRampDown: "2026-08-28T10:00",
+    finishRampUp: "2026-09-01T10:00",
+    previstoPct: 20.0,
+    realizadoPct: 4.5,
+    ritmo: "atrasado",
+    serieGrafico: [
+      { dia: "28/08", atividade: "Ramp Down", previsto: 20, realizado: 4.5 },
+      { dia: "29/08", atividade: "Execução", previsto: 40, realizado: 0 },
+      { dia: "30/08", atividade: "Execução", previsto: 60, realizado: 0 },
+      { dia: "31/08", atividade: "Execução", previsto: 80, realizado: 0 },
+      { dia: "01/09", atividade: "Ramp Up", previsto: 100, realizado: 0 }
+    ]
+  },
+  reparos: [
+    { grupo: "Reparos com Viga", itens: [
+      { codigo: "REP 049 MOD 03 COL 20", preparacaoPct: 20.0, taPct: null },
+      { codigo: "REP 029 MOD 06 COL 39", preparacaoPct: null, taPct: null },
+      { codigo: "REP 082 MOD 03 COL 19", preparacaoPct: 40.0, taPct: null },
+      { codigo: "REP 005 MOD 01 COL 06", preparacaoPct: 30.0, taPct: null },
+      { codigo: "REP 033 MOD 05 COL 32", preparacaoPct: 20.0, taPct: null },
+      { codigo: "REP 078 MOD 02 COL 12", preparacaoPct: 30.0, taPct: null },
+      { codigo: "REP 077 MOD 03 COL 16", preparacaoPct: null, taPct: null },
+      { codigo: "REP 036 MOD 06 COL 35", preparacaoPct: null, taPct: null },
+      { codigo: "REP 035 MOD 04 COL 25", preparacaoPct: null, taPct: null }
+    ]},
+    { grupo: "Reparos em Ramais", itens: [
+      { codigo: "MOD 06 - LINHA 16\"-W-B10-101", preparacaoPct: null, taPct: null },
+      { codigo: "MOD 05 - LINHA 16\"-W-B10-119", preparacaoPct: null, taPct: null },
+      { codigo: "MOD 05 - LINHA 10\"-WB10-041", preparacaoPct: null, taPct: null },
+      { codigo: "MOD 03 - LINHA 14\"-W-B10-033", preparacaoPct: null, taPct: null }
+    ]},
+    { grupo: "Spools e Permutadores", itens: [
+      { codigo: "Spools + Vlv Permutador P06-A", preparacaoPct: null, taPct: null },
+      { codigo: "Spools + Vlv Perm. P06-B", preparacaoPct: null, taPct: null },
+      { codigo: "Troca Placas P06-B", preparacaoPct: null, taPct: null }
+    ]}
+  ],
+  atividadesRealizadas: [
+    { texto: "Montagem Andaime do Módulo 01 – Reparo 005", status: "verde" },
+    { texto: "Reparo Pré-TA: Coluna 39 Frame 05", status: "amarelo" },
+    { texto: "Montagem de Pau de Carga do Trocador A", status: "verde" }
+  ],
+  lookahead: [
+    { texto: "Mobilização de equipe extra de solda", status: "amarelo" },
+    { texto: "Inspeção final pré-TA da Coluna 06 Frame 07", status: "verde" },
+    { texto: "Hotbolt Spool Trocador B", status: "vermelho" }
+  ],
+  riscos: [
+    { texto: "Entrega dos Spools 27/08", status: "amarelo" },
+    { texto: "Máquina de Solda 27/08", status: "amarelo" },
+    { texto: "Antecipação de Parada", status: "vermelho" },
+    { texto: "POB de Caldeiraria Completo", status: "verde" },
+    { texto: "Aumento de reparos devido a novos furos", status: "vermelho" }
+  ],
+  andaimes: {
+    acesso: { previstoPct: 30, realizadoPct: 35, previstoQtd: 45, realizadoQtd: 38 },
+    escoramento: { previstoPct: 20, realizadoPct: 12, previstoQtd: 20, realizadoQtd: 8 }
+  },
+  custos: {
+    moeda: "BRL",
+    linhas: [
+      { categoria: "Mão de obra", previsto: 850000, realizado: 210000 },
+      { categoria: "Materiais/Sobressalentes", previsto: 620000, realizado: 180000 },
+      { categoria: "Equipamentos e Locação", previsto: 410000, realizado: 95000 },
+      { categoria: "Serviços de Terceiros", previsto: 300000, realizado: 70000 },
+      { categoria: "Outros", previsto: 120000, realizado: 15000 }
+    ]
+  }
+};
+
+function pad2(n){ return String(n).padStart(2,'0'); }
+function todayLocalISO(){
+  const d = new Date();
+  return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
+}
+
+function blankState(){
+  return {
+    meta: { fpso: "FPSO FORTE", preparacao: "", dataEmissao: todayLocalISO(), turno: "manha", horaEmissao: "08:00", geradoPor: "", fonte: "Cronograma e Reunião de Campo" },
+    pob: { coolingMedium: 0 },
+    avancoParada: { startRampDown: "", finishRampUp: "", previstoPct: 0, realizadoPct: 0, ritmo: "no_plano", serieGrafico: [] },
+    reparos: [],
+    atividadesRealizadas: [],
+    lookahead: [],
+    riscos: [],
+    andaimes: {
+      acesso: { previstoPct: 0, realizadoPct: 0, previstoQtd: 0, realizadoQtd: 0 },
+      escoramento: { previstoPct: 0, realizadoPct: 0, previstoQtd: 0, realizadoQtd: 0 }
+    },
+    custos: { moeda: "BRL", linhas: [] }
+  };
+}
+
+function mergeWithDefaults(parsed){
+  const base = blankState();
+  return Object.assign({}, base, parsed, {
+    meta: Object.assign({}, base.meta, parsed.meta || {}),
+    pob: Object.assign({}, base.pob, parsed.pob || {}),
+    avancoParada: Object.assign({}, base.avancoParada, parsed.avancoParada || {}),
+    andaimes: {
+      acesso: Object.assign({}, base.andaimes.acesso, (parsed.andaimes && parsed.andaimes.acesso) || {}),
+      escoramento: Object.assign({}, base.andaimes.escoramento, (parsed.andaimes && parsed.andaimes.escoramento) || {})
+    },
+    custos: Object.assign({}, base.custos, parsed.custos || {}, { linhas: (parsed.custos && parsed.custos.linhas) || [] }),
+    reparos: (parsed.reparos || []).map(g => Object.assign({grupo:'', itens:[]}, g, {
+      itens: ((g && g.itens) || []).map(item => Object.assign({codigo:'', preparacaoPct:null, taPct:null}, item))
+    })),
+    atividadesRealizadas: parsed.atividadesRealizadas || [],
+    lookahead: parsed.lookahead || [],
+    riscos: parsed.riscos || []
+  });
+}
+
+let state = JSON.parse(JSON.stringify(EXAMPLE_DATA));
+
+// ===== Escapa texto livre antes de inserir via innerHTML (riscos, códigos de reparo, categorias, cabeçalho) =====
+const ESC_MAP = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ESC_MAP[c]); }
+
+// ===== Helpers de formatação (padrão do relatório de ordens) =====
+function fmt(n){ return Number(n||0).toLocaleString('pt-BR'); }
+function fmtPct(n){ return Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + '%'; }
+function fmtBRL(n){
+  // toLocaleString intercala um espaço não separável (U+00A0) entre "R$" e o valor;
+  // em alguns motores de impressão/PDF esse caractere renderiza como um traço/pipe
+  // visível dependendo do peso da fonte — troca por espaço normal para evitar isso.
+  return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).replace(/\u00A0/g, ' ');
+}
+function fmtDate(iso){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return iso;
+  return d.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+
+// ===== Tooltip global (padrão reaproveitado) =====
+const tip = document.getElementById('tooltip');
+function showTip(e, html){ tip.innerHTML = html; tip.style.opacity = '1'; moveTip(e); }
+function moveTip(e){
+  const x = e.clientX + 14, y = e.clientY - 10;
+  tip.style.left = Math.min(x, window.innerWidth-250)+'px';
+  tip.style.top = y+'px';
+}
+function hideTip(){ tip.style.opacity = '0'; }
+document.addEventListener('mousemove', moveTip);
+
+const RITMO_INFO = {
+  no_plano:       { label: 'No plano',        cls: 'verde' },
+  acima_do_plano: { label: 'Acima do plano',  cls: 'amarelo' },
+  atrasado:       { label: 'Atrasado',        cls: 'vermelho' }
+};
+
+// =====================================================================
+// EDITOR
+// =====================================================================
+function el(tag, attrs, children){
+  const e = document.createElement(tag);
+  Object.entries(attrs||{}).forEach(([k,v])=>{
+    if(k === 'text') e.textContent = v;
+    else e.setAttribute(k, v);
+  });
+  (children||[]).forEach(c => e.appendChild(c));
+  return e;
+}
+
+function renderStatusList(containerId, arr){
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  arr.forEach((item, i) => {
+    const row = el('div', {class:'ed-list-row'});
+
+    const dot = el('span', {class:'status-dot status-dot--'+item.status});
+
+    const text = el('input', {type:'text', class:'grow', value:item.texto});
+    text.value = item.texto;
+    text.oninput = () => { item.texto = text.value; };
+
+    const sel = el('select', {});
+    ['verde','amarelo','vermelho'].forEach(s=>{
+      const opt = el('option', {value:s, text: s==='verde'?'No plano':(s==='amarelo'?'Em risco':'Crítico')});
+      if(s===item.status) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.onchange = () => { item.status = sel.value; dot.className = 'status-dot status-dot--'+item.status; };
+
+    const rm = el('button', {type:'button', class:'ed-remove-btn', title:'Remover'});
+    rm.textContent = '✕';
+    rm.onclick = () => { arr.splice(i,1); renderStatusList(containerId, arr); };
+
+    row.appendChild(dot);
+    row.appendChild(text);
+    row.appendChild(sel);
+    row.appendChild(rm);
+    container.appendChild(row);
+  });
+}
+
+function renderSerieList(){
+  const container = document.getElementById('list-serie');
+  container.innerHTML = '';
+  const arr = state.avancoParada.serieGrafico;
+  arr.forEach((item, i) => {
+    const row = el('div', {class:'ed-list-row'});
+
+    const dia = el('input', {type:'text', class:'num', placeholder:'Dia (ex: 28/08)'});
+    dia.value = item.dia || '';
+    dia.oninput = () => { item.dia = dia.value; };
+
+    const ativ = el('input', {type:'text', class:'grow', placeholder:'Atividade'});
+    ativ.value = item.atividade || '';
+    ativ.oninput = () => { item.atividade = ativ.value; };
+
+    const prev = el('input', {type:'number', step:'0.1', class:'num', placeholder:'Previsto %'});
+    prev.value = item.previsto ?? 0;
+    prev.oninput = () => { item.previsto = parseFloat(prev.value)||0; };
+
+    const real = el('input', {type:'number', step:'0.1', class:'num', placeholder:'Realizado %'});
+    real.value = item.realizado ?? 0;
+    real.oninput = () => { item.realizado = parseFloat(real.value)||0; };
+
+    const rm = el('button', {type:'button', class:'ed-remove-btn', title:'Remover'});
+    rm.textContent = '✕';
+    rm.onclick = () => { arr.splice(i,1); renderSerieList(); };
+
+    row.appendChild(dia);
+    row.appendChild(ativ);
+    row.appendChild(prev);
+    row.appendChild(real);
+    row.appendChild(rm);
+    container.appendChild(row);
+  });
+}
+
+function generateSerieFromRampDates(){
+  const a = state.avancoParada;
+  if(!a.startRampDown || !a.finishRampUp){
+    alert('Preencha Start Ramp Down e Finish Ramp Up antes de gerar os dias.');
+    return;
+  }
+  const start = new Date(a.startRampDown);
+  const end = new Date(a.finishRampUp);
+  start.setHours(0,0,0,0);
+  end.setHours(0,0,0,0);
+  if(isNaN(start.getTime()) || isNaN(end.getTime()) || start > end){
+    alert('Start Ramp Down precisa ser antes (ou igual a) Finish Ramp Up.');
+    return;
+  }
+  const existing = {};
+  a.serieGrafico.forEach(item => { if(item.dia) existing[item.dia] = item; });
+
+  const novaSerie = [];
+  for(let d = new Date(start); d <= end; d.setDate(d.getDate()+1)){
+    const label = pad2(d.getDate()) + '/' + pad2(d.getMonth()+1);
+    const prev = existing[label];
+    novaSerie.push({
+      dia: label,
+      atividade: prev ? (prev.atividade || '') : '',
+      previsto: prev ? (prev.previsto ?? 0) : 0,
+      realizado: prev ? (prev.realizado ?? 0) : 0
+    });
+  }
+  a.serieGrafico = novaSerie;
+  renderSerieList();
+}
+
+function renderCustosList(){
+  const container = document.getElementById('list-custos');
+  container.innerHTML = '';
+  const arr = state.custos.linhas;
+  arr.forEach((item, i) => {
+    const row = el('div', {class:'ed-list-row'});
+
+    const cat = el('input', {type:'text', class:'grow', placeholder:'Categoria'});
+    cat.value = item.categoria || '';
+    cat.oninput = () => { item.categoria = cat.value; };
+
+    const prev = el('input', {type:'number', class:'num', placeholder:'Previsto R$'});
+    prev.value = item.previsto ?? 0;
+    prev.oninput = () => { item.previsto = parseFloat(prev.value)||0; };
+
+    const real = el('input', {type:'number', class:'num', placeholder:'Realizado R$'});
+    real.value = item.realizado ?? 0;
+    real.oninput = () => { item.realizado = parseFloat(real.value)||0; };
+
+    const rm = el('button', {type:'button', class:'ed-remove-btn', title:'Remover'});
+    rm.textContent = '✕';
+    rm.onclick = () => { arr.splice(i,1); renderCustosList(); };
+
+    row.appendChild(cat);
+    row.appendChild(prev);
+    row.appendChild(real);
+    row.appendChild(rm);
+    container.appendChild(row);
+  });
+}
+
+function parsePctInput(str){
+  const s = (str||'').trim();
+  return s === '' ? null : (parseFloat(s.replace(',','.'))||0);
+}
+
+function renderReparosEditor(){
+  const container = document.getElementById('list-reparos-grupos');
+  container.innerHTML = '';
+  state.reparos.forEach((grupo, gi) => {
+    const block = el('div', {class:'ed-reparo-grupo'});
+
+    const header = el('div', {class:'ed-reparo-grupo-header'});
+    const nome = el('input', {type:'text', class:'grow', placeholder:'Nome do grupo (ex: Reparos com Viga)'});
+    nome.value = grupo.grupo || '';
+    nome.oninput = () => { grupo.grupo = nome.value; };
+    const rmGrupo = el('button', {type:'button', class:'ed-remove-btn', title:'Remover grupo'});
+    rmGrupo.textContent = '✕';
+    rmGrupo.onclick = () => { state.reparos.splice(gi,1); renderReparosEditor(); };
+    header.appendChild(nome);
+    header.appendChild(rmGrupo);
+    block.appendChild(header);
+
+    const itensBox = el('div', {class:'ed-reparo-itens'});
+    grupo.itens.forEach((item, ii) => {
+      const row = el('div', {class:'ed-list-row'});
+
+      const cod = el('input', {type:'text', class:'grow', placeholder:'Código do reparo (ex: REP 049 MOD 03 COL 20)'});
+      cod.value = item.codigo || '';
+      cod.oninput = () => { item.codigo = cod.value; };
+
+      const prep = el('input', {type:'text', class:'num', placeholder:'Preparação %'});
+      prep.value = item.preparacaoPct ?? '';
+      prep.oninput = () => { item.preparacaoPct = parsePctInput(prep.value); };
+
+      const ta = el('input', {type:'text', class:'num', placeholder:'TA %'});
+      ta.value = item.taPct ?? '';
+      ta.oninput = () => { item.taPct = parsePctInput(ta.value); };
+
+      const rm = el('button', {type:'button', class:'ed-remove-btn', title:'Remover'});
+      rm.textContent = '✕';
+      rm.onclick = () => { grupo.itens.splice(ii,1); renderReparosEditor(); };
+
+      row.appendChild(cod);
+      row.appendChild(prep);
+      row.appendChild(ta);
+      row.appendChild(rm);
+      itensBox.appendChild(row);
+    });
+    block.appendChild(itensBox);
+
+    const addItem = el('button', {type:'button', class:'ed-add-btn'});
+    addItem.textContent = '+ Adicionar reparo';
+    addItem.onclick = () => { grupo.itens.push({codigo:'', preparacaoPct:null, taPct:null}); renderReparosEditor(); };
+    block.appendChild(addItem);
+
+    container.appendChild(block);
+  });
+}
+document.getElementById('btn-add-reparo-grupo').onclick = () => {
+  state.reparos.push({grupo:'Novo grupo', itens:[]});
+  renderReparosEditor();
+};
+
+function renderEditor(){
+  const m = state.meta;
+  document.getElementById('f-fpso').value = m.fpso || '';
+  document.getElementById('f-preparacao').value = m.preparacao || '';
+  document.getElementById('f-data').value = m.dataEmissao || '';
+  document.getElementById('f-turno').value = m.turno || 'manha';
+  document.getElementById('f-hora').value = m.horaEmissao || '';
+  document.getElementById('f-geradoPor').value = m.geradoPor || '';
+  document.getElementById('f-fonte').value = m.fonte || '';
+  document.getElementById('f-pob').value = state.pob.coolingMedium ?? 0;
+
+  const a = state.avancoParada;
+  document.getElementById('f-startRampDown').value = a.startRampDown || '';
+  document.getElementById('f-finishRampUp').value = a.finishRampUp || '';
+  document.getElementById('f-previstoPct').value = a.previstoPct ?? 0;
+  document.getElementById('f-realizadoPct').value = a.realizadoPct ?? 0;
+  document.getElementById('f-ritmo').value = a.ritmo || 'no_plano';
+
+  document.getElementById('f-andaimesAcessoPrevisto').value = state.andaimes.acesso.previstoPct ?? 0;
+  document.getElementById('f-andaimesAcessoRealizado').value = state.andaimes.acesso.realizadoPct ?? 0;
+  document.getElementById('f-andaimesAcessoPrevistoQtd').value = state.andaimes.acesso.previstoQtd ?? 0;
+  document.getElementById('f-andaimesAcessoRealizadoQtd').value = state.andaimes.acesso.realizadoQtd ?? 0;
+  document.getElementById('f-andaimesEscoramentoPrevisto').value = state.andaimes.escoramento.previstoPct ?? 0;
+  document.getElementById('f-andaimesEscoramentoRealizado').value = state.andaimes.escoramento.realizadoPct ?? 0;
+  document.getElementById('f-andaimesEscoramentoPrevistoQtd').value = state.andaimes.escoramento.previstoQtd ?? 0;
+  document.getElementById('f-andaimesEscoramentoRealizadoQtd').value = state.andaimes.escoramento.realizadoQtd ?? 0;
+
+  renderSerieList();
+  renderReparosEditor();
+  renderStatusList('list-atividades', state.atividadesRealizadas);
+  renderStatusList('list-lookahead', state.lookahead);
+  renderStatusList('list-riscos', state.riscos);
+  renderCustosList();
+}
+
+// Cada bind() recebe uma função que busca o objeto vivo em `state` no momento do
+// evento (não uma referência fixa) — assim funciona mesmo depois de `state` inteiro
+// ser trocado por loadState(), e wireStaticInputs() só precisa rodar uma vez (ligado
+// aos elementos fixos do DOM), sem empilhar um novo listener a cada carregamento.
+function wireStaticInputs(){
+  const bind = (id, getObj, key, isNumber) => {
+    document.getElementById(id).addEventListener('input', (e) => {
+      const obj = getObj();
+      obj[key] = isNumber ? (parseFloat(e.target.value)||0) : e.target.value;
+    });
+  };
+  bind('f-fpso', () => state.meta, 'fpso');
+  bind('f-preparacao', () => state.meta, 'preparacao');
+  bind('f-data', () => state.meta, 'dataEmissao');
+  bind('f-hora', () => state.meta, 'horaEmissao');
+  bind('f-geradoPor', () => state.meta, 'geradoPor');
+  bind('f-fonte', () => state.meta, 'fonte');
+  document.getElementById('f-turno').addEventListener('change', (e)=>{ state.meta.turno = e.target.value; });
+  bind('f-pob', () => state.pob, 'coolingMedium', true);
+
+  bind('f-startRampDown', () => state.avancoParada, 'startRampDown');
+  bind('f-finishRampUp', () => state.avancoParada, 'finishRampUp');
+  bind('f-previstoPct', () => state.avancoParada, 'previstoPct', true);
+  bind('f-realizadoPct', () => state.avancoParada, 'realizadoPct', true);
+  document.getElementById('f-ritmo').addEventListener('change', (e)=>{ state.avancoParada.ritmo = e.target.value; });
+
+  bind('f-andaimesAcessoPrevisto', () => state.andaimes.acesso, 'previstoPct', true);
+  bind('f-andaimesAcessoRealizado', () => state.andaimes.acesso, 'realizadoPct', true);
+  bind('f-andaimesAcessoPrevistoQtd', () => state.andaimes.acesso, 'previstoQtd', true);
+  bind('f-andaimesAcessoRealizadoQtd', () => state.andaimes.acesso, 'realizadoQtd', true);
+  bind('f-andaimesEscoramentoPrevisto', () => state.andaimes.escoramento, 'previstoPct', true);
+  bind('f-andaimesEscoramentoRealizado', () => state.andaimes.escoramento, 'realizadoPct', true);
+  bind('f-andaimesEscoramentoPrevistoQtd', () => state.andaimes.escoramento, 'previstoQtd', true);
+  bind('f-andaimesEscoramentoRealizadoQtd', () => state.andaimes.escoramento, 'realizadoQtd', true);
+}
+wireStaticInputs();
+
+function loadState(newState){
+  state = newState;
+  renderEditor();
+}
+
+document.getElementById('btn-add-serie').onclick = () => {
+  state.avancoParada.serieGrafico.push({dia:'', atividade:'', previsto:0, realizado:0});
+  renderSerieList();
+};
+document.getElementById('btn-gen-serie').onclick = generateSerieFromRampDates;
+document.getElementById('btn-add-atividades').onclick = () => {
+  state.atividadesRealizadas.push({texto:'', status:'verde'});
+  renderStatusList('list-atividades', state.atividadesRealizadas);
+};
+document.getElementById('btn-add-lookahead').onclick = () => {
+  state.lookahead.push({texto:'', status:'verde'});
+  renderStatusList('list-lookahead', state.lookahead);
+};
+document.getElementById('btn-add-riscos').onclick = () => {
+  state.riscos.push({texto:'', status:'amarelo'});
+  renderStatusList('list-riscos', state.riscos);
+};
+document.getElementById('btn-add-custos').onclick = () => {
+  state.custos.linhas.push({categoria:'', previsto:0, realizado:0});
+  renderCustosList();
+};
+
+// =====================================================================
+// RELATÓRIO (1 página)
+// =====================================================================
+function buildComparisonBar(containerEl, series, maxVal){
+  containerEl.innerHTML = '';
+  series.forEach(item => {
+    const row = el('div', {class:'cmp-row'});
+    const label = el('div', {class:'cmp-label', text: item.dia});
+
+    const tracks = el('div', {class:'cmp-tracks'});
+    const tPrev = el('div', {class:'cmp-track'});
+    const fPrev = el('div', {class:'cmp-fill cmp-fill--previsto'});
+    fPrev.style.width = Math.min(100, (item.previsto/maxVal)*100) + '%';
+    tPrev.appendChild(fPrev);
+
+    const onTrack = item.realizado >= item.previsto;
+    const tReal = el('div', {class:'cmp-track'});
+    const fReal = el('div', {class:'cmp-fill ' + (onTrack ? 'cmp-fill--realizado-ok' : 'cmp-fill--realizado-behind')});
+    fReal.style.width = Math.min(100, (item.realizado/maxVal)*100) + '%';
+    tReal.appendChild(fReal);
+
+    tracks.appendChild(tPrev);
+    tracks.appendChild(tReal);
+
+    const tipHtml = `<b>${esc(item.dia)}${item.atividade ? ' — '+esc(item.atividade) : ''}</b><br>Previsto: ${fmtPct(item.previsto)}<br>Realizado: ${fmtPct(item.realizado)}`;
+    tracks.addEventListener('mouseenter', e => showTip(e, tipHtml));
+    tracks.addEventListener('mousemove', e => showTip(e, tipHtml));
+    tracks.addEventListener('mouseleave', hideTip);
+
+    const vals = el('div', {class:'cmp-vals'});
+    vals.innerHTML = `<div>P ${fmtPct(item.previsto)}</div><div>R ${fmtPct(item.realizado)}</div>`;
+
+    row.appendChild(label);
+    row.appendChild(tracks);
+    row.appendChild(vals);
+    containerEl.appendChild(row);
+  });
+}
+
+function buildHeader(){
+  const c = document.getElementById('area-header');
+  const m = state.meta;
+  const turnoLabel = m.turno === 'noite' ? 'Noite' : 'Manhã';
+  c.innerHTML = `
+    <div class="header-bar">
+      <div class="header-logo">${LOGO_SVG}</div>
+      <div class="header-titles">
+        <div class="h-sub">${esc(m.fpso)} · PREPARAÇÃO ${esc(m.preparacao)} · ${fmtDateOnly(m.dataEmissao)} · TURNO ${turnoLabel.toUpperCase()} (${esc(m.horaEmissao)})</div>
+        <div class="h-title">PARADA COOLING MEDIUM</div>
+      </div>
+      <div class="header-legends">
+        <div class="legend">
+          <span class="legend-label">Legenda de status</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--verde"></span>No plano</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--amarelo"></span>Em risco / a confirmar</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--vermelho"></span>Crítico</span>
+        </div>
+        <div class="legend">
+          <span class="legend-label">Ritmo</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--vermelho"></span>Atrasado</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--amarelo"></span>Acima do plano</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--verde"></span>No plano</span>
+        </div>
+      </div>
+      <div class="header-pob">
+        <div class="pob-label">POB Cooling Medium</div>
+        <div class="pob-value">${fmt(state.pob.coolingMedium)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function fmtDateOnly(iso){
+  if(!iso) return '—';
+  const parts = iso.split('-');
+  if(parts.length !== 3) return iso;
+  return `DIA ${parts[2]}/${parts[1]}`;
+}
+
+function buildStatusCard(containerId, title, arr){
+  const c = document.getElementById(containerId);
+  c.innerHTML = `<div class="card-title">${esc(title)}</div><div class="status-list">${
+    arr.map(item => `<div class="status-item"><span class="status-dot status-dot--${item.status}"></span><span>${esc(item.texto)}</span></div>`).join('')
+  }</div>`;
+}
+
+function fmtPctOrDash(n){
+  return (n === null || n === undefined || n === '') ? '<span class="rp-val--empty">—</span>' : fmtPct(n);
+}
+
+function reparoBarHtml(n, modifier){
+  const pct = (n === null || n === undefined || n === '') ? 0 : Math.max(0, Math.min(100, n));
+  return `<div class="reparos-pct"><div class="mini-track"><div class="mini-fill${modifier?(' '+modifier):''}" style="width:${pct}%"></div></div><span class="rp-val">${fmtPctOrDash(n)}</span></div>`;
+}
+
+function buildReparos(){
+  const c = document.getElementById('area-reparos');
+  const grupos = state.reparos;
+  let body = `<div class="reparos-head"><span>Reparos</span><span>Preparação (%)</span><span>TA (%)</span></div>`;
+  grupos.forEach(g => {
+    body += `<div class="reparos-grupo-title">${esc(g.grupo)}</div>`;
+    g.itens.forEach(item => {
+      body += `<div class="reparos-row">
+        <span class="reparos-code">${esc(item.codigo)}</span>
+        ${reparoBarHtml(item.preparacaoPct)}
+        ${reparoBarHtml(item.taPct, 'mini-fill--ta')}
+      </div>`;
+    });
+  });
+  c.innerHTML = `<div class="card-title">Reparos — Preparação x TA</div><div class="reparos-body">${body}</div>`;
+}
+
+function buildAvanco(){
+  const c = document.getElementById('area-avanco');
+  const a = state.avancoParada;
+  const ritmo = RITMO_INFO[a.ritmo] || RITMO_INFO.no_plano;
+  c.innerHTML = `
+    <div class="card-title">Avanço da parada<span class="card-subtitle">Avanço físico geral do cronograma (todos os reparos)</span></div>
+    <div class="avanco-highlight">
+      <div class="ah-left">
+        <span class="ah-tag">% geral da parada</span>
+        <span class="pill pill--${ritmo.cls}">${ritmo.label.toUpperCase()}</span>
+      </div>
+      <div class="ah-stats">
+        <div class="ah-stat ah-stat--previsto"><span class="ah-value">${fmtPct(a.previstoPct)}</span><span class="ah-label">Previsto</span></div>
+        <div class="ah-stat ah-stat--realizado"><span class="ah-value">${fmtPct(a.realizadoPct)}</span><span class="ah-label">Realizado</span></div>
+      </div>
+    </div>
+    <div class="avanco-top">
+      <div class="avanco-dates">
+        <div><b>Start Ramp Down:</b> ${fmtDate(a.startRampDown)}</div>
+        <div><b>Finish Ramp Up:</b> ${fmtDate(a.finishRampUp)}</div>
+      </div>
+    </div>
+    <div class="avanco-sub-label">Evolução por dia — Previsto x Realizado</div>
+    <div class="cmp-chart" id="avanco-chart"></div>
+  `;
+  const maxVal = Math.max(100, ...a.serieGrafico.map(s => Math.max(s.previsto, s.realizado)));
+  buildComparisonBar(document.getElementById('avanco-chart'), a.serieGrafico, maxVal);
+}
+
+function buildAndaimesRow(item){
+  const row = el('div', {class:'cmp-row'});
+  const label = el('div', {class:'cmp-label', text: item.label});
+
+  const tracks = el('div', {class:'cmp-tracks'});
+  const tPrev = el('div', {class:'cmp-track'});
+  const fPrev = el('div', {class:'cmp-fill cmp-fill--previsto'});
+  fPrev.style.width = Math.min(100, item.previstoPct) + '%';
+  tPrev.appendChild(fPrev);
+
+  const onTrack = item.realizadoPct >= item.previstoPct;
+  const tReal = el('div', {class:'cmp-track'});
+  const fReal = el('div', {class:'cmp-fill ' + (onTrack ? 'cmp-fill--realizado-ok' : 'cmp-fill--realizado-behind')});
+  fReal.style.width = Math.min(100, item.realizadoPct) + '%';
+  tReal.appendChild(fReal);
+
+  tracks.appendChild(tPrev);
+  tracks.appendChild(tReal);
+
+  const tipHtml = `<b>${esc(item.label)}</b><br>Previsto: ${fmtPct(item.previstoPct)} (${fmt(item.previstoQtd)} pontos)<br>Realizado: ${fmtPct(item.realizadoPct)} (${fmt(item.realizadoQtd)} pontos)`;
+  tracks.addEventListener('mouseenter', e => showTip(e, tipHtml));
+  tracks.addEventListener('mousemove', e => showTip(e, tipHtml));
+  tracks.addEventListener('mouseleave', hideTip);
+
+  const vals = el('div', {class:'cmp-vals'});
+  vals.innerHTML = `<div>P ${fmtPct(item.previstoPct)}<span class="cmp-qtd">${fmt(item.previstoQtd)} pts</span></div><div>R ${fmtPct(item.realizadoPct)}<span class="cmp-qtd">${fmt(item.realizadoQtd)} pts</span></div>`;
+
+  row.appendChild(label);
+  row.appendChild(tracks);
+  row.appendChild(vals);
+  return row;
+}
+
+function buildAndaimes(){
+  const c = document.getElementById('area-andaimes');
+  const d = state.andaimes;
+  c.innerHTML = `<div class="card-title">Andamento montagem de andaimes</div><div class="andaimes-body" id="andaimes-chart"></div>`;
+  const chart = document.getElementById('andaimes-chart');
+  chart.appendChild(buildAndaimesRow({ label:'Acesso', previstoPct:d.acesso.previstoPct, realizadoPct:d.acesso.realizadoPct, previstoQtd:d.acesso.previstoQtd, realizadoQtd:d.acesso.realizadoQtd }));
+  chart.appendChild(buildAndaimesRow({ label:'Escoramento', previstoPct:d.escoramento.previstoPct, realizadoPct:d.escoramento.realizadoPct, previstoQtd:d.escoramento.previstoQtd, realizadoQtd:d.escoramento.realizadoQtd }));
+}
+
+function buildCustos(){
+  const c = document.getElementById('area-custos');
+  const linhas = state.custos.linhas;
+  const totalPrev = linhas.reduce((s,r)=>s+(r.previsto||0),0);
+  const totalReal = linhas.reduce((s,r)=>s+(r.realizado||0),0);
+  const rows = linhas.map(r => {
+    const delta = (r.realizado||0) - (r.previsto||0);
+    const cls = delta <= 0 ? 'delta-pos' : 'delta-neg';
+    return `<tr><td>${esc(r.categoria)}</td><td>${fmtBRL(r.previsto)}</td><td>${fmtBRL(r.realizado)}</td><td class="${cls}">${delta>0?'+':''}${fmtBRL(delta)}</td></tr>`;
+  }).join('');
+  const totalDelta = totalReal - totalPrev;
+  const totalCls = totalDelta <= 0 ? 'delta-pos' : 'delta-neg';
+  c.innerHTML = `
+    <div class="card-title">Tabela de custos</div>
+    <div class="custos-body">
+      <table class="custos-table">
+        <thead><tr><th>Categoria</th><th>Previsto</th><th>Realizado</th><th>Variação</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td>Total</td><td>${fmtBRL(totalPrev)}</td><td>${fmtBRL(totalReal)}</td><td class="${totalCls}">${totalDelta>0?'+':''}${fmtBRL(totalDelta)}</td></tr></tfoot>
+      </table>
+    </div>
+  `;
+}
+
+function buildFooter(){
+  const c = document.getElementById('area-footer');
+  const m = state.meta;
+  c.innerHTML = `<span>Fonte: ${esc(m.fonte)}</span><span>Emitido em ${fmtDateOnlyBR(m.dataEmissao)} às ${esc(m.horaEmissao)} · ${esc(m.geradoPor)}</span>`;
+}
+function fmtDateOnlyBR(iso){
+  if(!iso) return '—';
+  const parts = iso.split('-');
+  if(parts.length !== 3) return iso;
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+function buildReport(){
+  buildHeader();
+  buildReparos();
+  buildStatusCard('area-riscos', 'Principais riscos da pré-parada', state.riscos);
+  buildStatusCard('area-atividades', 'Atividades Realizadas', state.atividadesRealizadas);
+  buildStatusCard('area-lookahead', 'Lookahead', state.lookahead);
+  buildAvanco();
+  buildAndaimes();
+  buildCustos();
+  buildFooter();
+}
+
+// ===== Autofit: garante que o relatório cabe em 1 página, mesmo com listas maiores =====
+function isOverflowing(sheet){
+  // Checa tanto os cards quanto os containers internos com overflow:hidden
+  // (reparos-body, status-list, cmp-chart, andaimes-body, custos-body) —
+  // um card pode "caber" no grid (flex:1 encolhe o filho) enquanto o
+  // conteúdo desse filho já foi cortado silenciosamente por dentro.
+  const areas = sheet.querySelectorAll(
+    '.card, .area-header, .area-footer, .reparos-body, .status-list, .cmp-chart, .andaimes-body, .custos-body'
+  );
+  for(const a of areas){
+    if(a.scrollHeight - a.clientHeight > 1) return true;
+  }
+  return false;
+}
+function autofitSheet(){
+  const sheet = document.getElementById('sheet');
+  let scale = 1;
+  sheet.style.setProperty('--fs-scale', scale);
+  for(let i=0; i<20; i++){
+    if(!isOverflowing(sheet)) break;
+    scale -= 0.04;
+    if(scale < 0.55) break;
+    sheet.style.setProperty('--fs-scale', scale.toFixed(2));
+  }
+}
+
+// ===== Ajuste de escala só para pré-visualização em tela (não afeta impressão) =====
+function fitScreenScale(){
+  const wrap = document.querySelector('.sheet-wrap');
+  const sheet = document.getElementById('sheet');
+  sheet.style.transform = 'none';
+  const availW = wrap.clientWidth - 20;
+  const naturalW = sheet.offsetWidth;
+  const s = Math.min(1, availW / naturalW);
+  sheet.style.transform = `scale(${s})`;
+  wrap.style.marginBottom = (sheet.offsetHeight * (s-1)) + 'px';
+}
+window.addEventListener('resize', () => {
+  if(document.body.classList.contains('mode-report')) fitScreenScale();
+});
+
+// =====================================================================
+// Alternância Editor / Relatório + ações da toolbar
+// =====================================================================
+function switchToReport(){
+  document.body.classList.remove('mode-editor');
+  document.body.classList.add('mode-report');
+  document.getElementById('editor-view').classList.add('hidden');
+  document.getElementById('report-view').classList.remove('hidden');
+  document.getElementById('btn-toggle-view').textContent = 'Voltar a editar';
+  buildReport();
+  requestAnimationFrame(() => { autofitSheet(); fitScreenScale(); });
+}
+function switchToEditor(){
+  document.body.classList.remove('mode-report');
+  document.body.classList.add('mode-editor');
+  document.getElementById('report-view').classList.add('hidden');
+  document.getElementById('editor-view').classList.remove('hidden');
+  document.getElementById('btn-toggle-view').textContent = 'Visualizar relatório';
+}
+document.getElementById('btn-toggle-view').onclick = () => {
+  if(document.body.classList.contains('mode-report')) switchToEditor();
+  else switchToReport();
+};
+
+document.getElementById('btn-print').onclick = () => {
+  buildReport();
+  requestAnimationFrame(() => {
+    autofitSheet();
+    setTimeout(() => window.print(), 30);
+  });
+};
+
+document.getElementById('btn-new').onclick = () => {
+  if(!confirm('Descartar os dados atuais e começar um relatório em branco?')) return;
+  loadState(blankState());
+};
+document.getElementById('btn-load-example').onclick = () => {
+  loadState(JSON.parse(JSON.stringify(EXAMPLE_DATA)));
+};
+
+const fileInput = document.getElementById('file-input');
+document.getElementById('btn-load-prev').onclick = () => fileInput.click();
+fileInput.onchange = async (e) => {
+  const file = e.target.files[0];
+  fileInput.value = '';
+  if(!file) return;
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    loadState(mergeWithDefaults(parsed));
+  } catch(err){
+    alert('Não foi possível ler o arquivo JSON: ' + err.message);
+  }
+};
+
+function suggestedFilename(){
+  const m = state.meta;
+  const turno = m.turno === 'noite' ? 'noite' : 'manha';
+  return `${m.dataEmissao || 'relatorio'}-${turno}.json`;
+}
+
+async function saveJson(){
+  const dataStr = JSON.stringify(state, null, 2);
+  const filename = suggestedFilename();
+
+  // Rodando dentro de uma prévia/artefato do claude.ai: usa a capability de
+  // downloads do host em vez do File System Access API / <a download>, que o
+  // sandbox do preview bloqueia silenciosamente. Fora desse ambiente
+  // (arquivo aberto direto no navegador) `window.claude` não existe e este
+  // bloco é ignorado sem nenhum atraso.
+  if(window.claude && typeof window.claude.use === 'function'){
+    try {
+      const downloads = await window.claude.use('downloads');
+      if(downloads){
+        await downloads.save({ filename, data: dataStr });
+        return;
+      }
+    } catch(err){
+      if(err && err.code === 'declined') return;
+      // qualquer outro erro (indisponível, não habilitado etc.) cai no fallback abaixo
+    }
+  }
+
+  if(window.showSaveFilePicker){
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: 'JSON', accept: {'application/json': ['.json']} }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(dataStr);
+      await writable.close();
+      return;
+    } catch(err){
+      if(err.name === 'AbortError') return;
+      // segue para o fallback de download em caso de erro inesperado da API
+    }
+  }
+  const blob = new Blob([dataStr], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+document.getElementById('btn-save-json').onclick = saveJson;
+
+// ===== Inicialização =====
+loadState(state);
+</script>
+</body>
+</html>
