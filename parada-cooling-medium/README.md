@@ -34,25 +34,29 @@ parada-cooling-medium/
 ├── dados/                                  # um arquivo JSON por emissão (histórico)
 │   └── exemplo-2026-08-26-manha.json
 ├── assets/
-│   └── logo-prio.svg                       # recriação aproximada do mascote (polvo azul) — troque pelo arquivo oficial quando disponível
+│   └── logo-prio.svg                       # ícone oficial da PRIO (extraído do vetor original)
 └── README.md
 ```
 
 ## Layout do relatório
 
 ```
-┌─────────────────┬─────────────────┬─────────────────┐
-│ Reparos          │ Atividades       │ Avanço da parada │
-│ (Preparação x TA)│ realizadas       │ (gráfico Previsto │
-├─────────────────┤──────────────────┤ x Realizado por   │
-│ Principais riscos│ Lookahead        │ dia)               │
-│ da pré-parada    │                  │                    │
-├─────────────────┼──────────────────┤                    │
-│ Andamento andaimes│ Tabela de custos│                    │
-└─────────────────┴──────────────────┴─────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│ Cabeçalho: logo · dados da emissão · legendas · destaque   │
+│ Previsto x Realizado da parada (caixa colorida) · POB      │
+├─────────────────┬──────────────────┬───────────────────────┤
+│ Reparos          │ Atividades       │ Avanço da parada       │
+│ (Preparação x TA)│ realizadas       │ (gráfico Previsto       │
+├─────────────────┤──────────────────┤ x Realizado por         │
+│ Principais riscos│ Lookahead        │ dia)                     │
+│ da pré-parada    │                  │                          │
+├─────────────────┼──────────────────┤                          │
+│ Andamento andaimes│ Tabela de custos│                          │
+└─────────────────┴──────────────────┴───────────────────────────┘
 ```
 
-- **Avanço da parada** (coluna direita): visão macro — % físico concluído do cronograma inteiro da parada, por dia, Previsto x Realizado. É uma curva agregada de todos os reparos somados, útil para ver a tendência geral (atrasado/no plano) rapidamente. Não é calculada automaticamente a partir da tabela de Reparos — é preenchida à parte no formulário (série do gráfico), pois representa o cronograma geral da parada, que pode incluir atividades além dos reparos listados.
+- **Previsto x Realizado da parada** (cabeçalho): o KPI mais importante do relatório fica em destaque logo no topo, numa caixa colorida ao lado do POB — % físico concluído do cronograma inteiro da parada (todos os reparos somados) + indicador de ritmo (Atrasado/Acima do plano/No plano). Não é calculado automaticamente a partir da tabela de Reparos — é preenchido à parte no formulário ("Avanço da parada"), pois representa o cronograma geral da parada, que pode incluir atividades além dos reparos listados.
+- **Avanço da parada** (coluna direita): o gráfico de barras Previsto x Realizado por dia, que detalha a evolução por trás do número em destaque no cabeçalho.
 - **Reparos — Preparação x TA** (coluna esquerda, topo): visão detalhada — % de Preparação e % de execução durante o TA, item a item, agrupado por tipo de reparo.
 - **Atividades realizadas** (coluna central, topo) e **Lookahead** (coluna central, embaixo): listas simples (texto + status), sem %, para o que já foi feito e o que vem a seguir — itens que ainda não viraram (ou não precisam virar) um item detalhado na tabela de Reparos.
 - **Principais riscos da pré-parada** (coluna esquerda, embaixo de Reparos): lista simples (texto + status).
@@ -70,6 +74,5 @@ parada-cooling-medium/
 O relatório usa a paleta roxo/laranja e a fonte Epilogue da skill de marca `prio-pptx-layout` (originalmente feita para decks PowerPoint — essa skill aponta uma skill irmã, `prio-rs-layout`, com paleta verde neon para HTML/relatórios, que não estava disponível neste momento; a aplicação do roxo/laranja aqui foi uma decisão explícita do usuário).
 
 - **Cores de status** (bolinhas verde/amarelo/vermelho, indicador de ritmo Atrasado/Acima do plano/No plano) foram mantidas com o significado semântico de semáforo, independente da marca — trocar essas cores reduziria a legibilidade operacional do relatório.
-- **Mascote (polvo)** não foi incluído: a própria skill orienta usá-lo só em capas/encerramentos/transições, "nunca competindo com conteúdo técnico denso" — este relatório é justamente um conteúdo técnico denso (tabelas e checklists).
 - A fonte Epilogue é carregada via Google Fonts; sem internet no momento de abrir o arquivo, o navegador usa automaticamente a fonte de fallback (Inter/Segoe UI) sem quebrar o layout.
-- O mascote atual (`assets/logo-prio.svg`) é uma recriação aproximada, feita a mão a partir de uma referência visual colada no chat — não é um recorte do arquivo oficial (que só foi enviado como imagem inline, sem anexo). Quando o arquivo oficial estiver disponível, substitua `assets/logo-prio.svg` mantendo o nome (ou ajuste o `<img src>` no HTML se usar outro nome/formato).
+- O ícone do polvo (`assets/logo-prio.svg`, cor "navy" `#2b2f53`, uma das variantes oficiais da marca) foi extraído com fidelidade do vetor original enviado pelo usuário — não é mais uma recriação aproximada. O mesmo path está replicado inline no HTML (constante `LOGO_SVG`, dentro de `relatorio_parada_cooling_medium.html`) para não depender de um arquivo externo; ao trocar o logo, atualize os dois.

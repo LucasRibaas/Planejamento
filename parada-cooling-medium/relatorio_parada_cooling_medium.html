@@ -36,6 +36,7 @@
     --roxo: #9787d4;
     --roxo-escuro: #2c2849;
     --laranja: #f2834b;
+    --laranja-tint: #fbe4d5;
     --verde-lima: #85e34d;
     --azul-claro: #10a9ff;
     --accent: var(--laranja);
@@ -295,6 +296,32 @@
   .header-pob .pob-label { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
   .header-pob .pob-value { font-size: 2em; font-weight: 900; color: var(--roxo-escuro); line-height: 1; margin-top: 0.15em; }
 
+  /* Destaque do Previsto x Realizado geral da parada — promovido para o cabeçalho por ser
+     o KPI mais importante do relatório (pedido explícito do usuário). */
+  .header-avanco {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0 1em;
+    border-left: 1px solid var(--roxo);
+  }
+  .header-avanco .ha-top { display: flex; align-items: center; gap: 0.5em; }
+  .header-avanco .ha-title { font-size: 0.62em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+  .header-avanco .ha-top .pill { font-size: 0.58em; padding: 0.12em 0.55em; }
+  .header-avanco .ha-stats {
+    display: flex;
+    gap: 1.1em;
+    background: var(--laranja-tint);
+    border-radius: 8px;
+    padding: 0.25em 0.9em;
+  }
+  .header-avanco .ha-stat { display: flex; flex-direction: column; align-items: center; }
+  .header-avanco .ha-value { font-size: 1.7em; font-weight: 900; line-height: 1; }
+  .header-avanco .ha-label { font-size: 0.6em; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.1em; }
+  .header-avanco .ha-stat--previsto .ha-value { color: var(--laranja); }
+  .header-avanco .ha-stat--realizado .ha-value { color: var(--roxo-escuro); }
+
   .status-list { display: flex; flex-direction: column; gap: 0.55em; overflow: hidden; flex: 1; min-height: 0; }
   .status-item { display: flex; align-items: flex-start; gap: 0.5em; font-size: 0.92em; line-height: 1.3; }
   .status-item .status-dot { margin-top: 0.35em; width: 0.65em; height: 0.65em; }
@@ -344,15 +371,9 @@
 
   .pill { display: inline-block; padding: 0.15em 0.6em; border-radius: 999px; font-size: 0.72em; font-weight: 700; color: #fff; }
 
-  .avanco-top { display: flex; justify-content: space-between; gap: 0.8em; margin-bottom: 0.7em; flex-wrap: wrap; }
+  .avanco-top { margin-bottom: 0.7em; }
   .avanco-dates { font-size: 0.82em; color: var(--text-secondary); line-height: 1.6; }
   .avanco-dates b { color: var(--text-primary); }
-  .avanco-stats { display: flex; gap: 1.2em; }
-  .avanco-stat { text-align: center; }
-  .avanco-stat .as-label { font-size: 0.66em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
-  .avanco-stat .as-value { font-size: 1.5em; font-weight: 900; }
-  .avanco-stat--previsto .as-value { color: var(--accent); }
-  .avanco-stat--realizado .as-value { color: var(--text-primary); }
 
   .cmp-chart { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; justify-content: space-evenly; }
   .cmp-row { display: flex; align-items: center; gap: 0.6em; }
@@ -535,29 +556,12 @@
 <script>
 // ===== Logo (mascote) embutido inline no JS — funciona sem depender de assets/logo-prio.svg
 // como arquivo externo (relativo), o que evita ícone quebrado ao abrir este HTML fora da pasta
-// original (ex: prévia de Artifact). O arquivo assets/logo-prio.svg guarda a mesma arte como
+// original (ex: prévia de Artifact). Path extraído do vetor original enviado pelo usuário
+// (PRIO_LOGO_POLVO.pdf) via PyMuPDF, cor #2b2f53 (variante "navy" oficial da marca) — não é
+// mais uma recriação à mão. O arquivo assets/logo-prio.svg guarda a mesma arte como
 // referência; ao trocar o logo, atualize os dois. =====
-const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 150" role="img" aria-label="PRIO">
-  <defs>
-    <linearGradient id="headGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6FC3F7"/>
-      <stop offset="100%" stop-color="#1D6FE0"/>
-    </linearGradient>
-    <linearGradient id="armGrad" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#7FE0F5"/>
-      <stop offset="100%" stop-color="#173E8C"/>
-    </linearGradient>
-    <linearGradient id="tentGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#5EB3F0"/>
-      <stop offset="100%" stop-color="#9FEBFF"/>
-    </linearGradient>
-  </defs>
-  <path d="M62,72 C36,80 12,82 6,97 C3,104 9,110 19,106 C42,99 63,89 79,79 C73,75 67,73 62,72 Z" fill="url(#armGrad)"/>
-  <path d="M86,90 C79,106 66,121 56,141 C53,147 61,149 66,143 C79,129 91,113 97,96 C94,93 90,91 86,90 Z" fill="url(#tentGrad)"/>
-  <path d="M105,93 C102,111 100,126 100,141 C100,147 108,147 109,141 C112,123 113,107 113,93 C110,92 108,92 105,93 Z" fill="url(#tentGrad)"/>
-  <path d="M122,89 C124,103 130,116 140,126 C144,130 149,125 145,120 C136,109 130,97 128,86 C126,87 124,88 122,89 Z" fill="url(#tentGrad)"/>
-  <path d="M60,20 Q90,5 130,15 Q165,25 168,55 Q170,80 145,90 Q115,100 85,88 Q60,78 55,50 Q52,30 60,20 Z" fill="url(#headGrad)"/>
-  <circle cx="140" cy="40" r="7" fill="#ffffff"/>
+const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="10.196 6.605 494.864 320.714" role="img" aria-label="PRIO">
+  <path transform="matrix(1,0,0,-1,304.9692,34.199586)" fill="#2b2f53" d="M0 0C9.032 .893 16.56-6.636 15.665-15.668 12.973-34.407-13.917-31.706-12.754-12.751-12.091-6.067-6.684-.661 0 0M198.069-107.155C144.455-72.364 85.069-60.007 37.129-56.689 37.14-27.117 37.166 .093 37.182 15.203 37.19 22.049 31.643 27.595 24.797 27.594-4.019 27.591-75.943 27.568-114.118 27.423-130.345 27.361-146.551 26.069-162.203 21.439-177.396 16.946-190.679 9.771-196.955-6.104-205.114-26.744-200.03-53.185-184.889-66.447-170.156-78.832-152.67-80.038-133.908-83.347-157.673-93.101-179.984-102.598-202.588-111.343-210.032-114.223-228.164-118.398-240.968-119.25-258.032-120.383-281.113-114.601-291.138-111.109-292.918-110.488-294.773-111.801-294.773-113.686V-150.114C-294.773-151.808-293.734-153.329-292.152-153.937-285.413-156.526-266.997-163.154-252.621-164.152-182.915-168.726-149.496-145.961-91.52-115.329-83.722-111.395-75.635-108.915-67.36-107.424-80.145-156.559-117.467-205.038-162.944-238.225-164.824-239.596-164.859-242.405-162.969-243.761-151.192-252.21-138.735-259.771-125.701-266.356-124.02-267.206-121.979-266.982-120.518-265.794-68.232-223.288-31.786-167.828-18.341-108.63-18.314-108.639-18.282-108.648-18.256-108.658-17.891-108.65-17.524-108.659-17.158-108.657 1.455-129.923 28.831-161.968 31.05-193.702 33.509-228.865 26.762-260.417 17.348-288.53 16.588-290.801 18.359-293.119 20.75-292.997 30.159-292.515 50.666-291.307 63.43-289.381 65.15-289.121 66.589-287.94 67.185-286.307 77.088-259.159 85.559-227.667 83.233-193.219 81.069-161.174 70.187-137.653 37.776-104.842 78.317-108.072 127.341-118.669 170.993-146.667 172.886-147.88 175.396-147.382 176.643-145.511L199.038-111.916C200.091-110.337 199.661-108.188 198.069-107.155"/>
 </svg>`;
 
 // ===== Dados de exemplo embutidos (mesmo conteúdo de dados/exemplo-2026-08-26-manha.json) =====
@@ -1064,6 +1068,8 @@ function buildComparisonBar(containerEl, series, maxVal){
 function buildHeader(){
   const c = document.getElementById('area-header');
   const m = state.meta;
+  const a = state.avancoParada;
+  const ritmo = RITMO_INFO[a.ritmo] || RITMO_INFO.no_plano;
   const turnoLabel = m.turno === 'noite' ? 'Noite' : 'Manhã';
   c.innerHTML = `
     <div class="header-bar">
@@ -1084,6 +1090,16 @@ function buildHeader(){
           <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--vermelho"></span>Atrasado</span>
           <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--amarelo"></span>Acima do plano</span>
           <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--verde"></span>No plano</span>
+        </div>
+      </div>
+      <div class="header-avanco">
+        <div class="ha-top">
+          <span class="ha-title">Avanço da parada</span>
+          <span class="pill pill--${ritmo.cls}">${ritmo.label.toUpperCase()}</span>
+        </div>
+        <div class="ha-stats">
+          <div class="ha-stat ha-stat--previsto"><span class="ha-value">${fmtPct(a.previstoPct)}</span><span class="ha-label">Previsto</span></div>
+          <div class="ha-stat ha-stat--realizado"><span class="ha-value">${fmtPct(a.realizadoPct)}</span><span class="ha-label">Realizado</span></div>
         </div>
       </div>
       <div class="header-pob">
@@ -1137,18 +1153,12 @@ function buildReparos(){
 function buildAvanco(){
   const c = document.getElementById('area-avanco');
   const a = state.avancoParada;
-  const ritmo = RITMO_INFO[a.ritmo] || RITMO_INFO.no_plano;
   c.innerHTML = `
-    <div class="card-title">Avanço da parada<span class="card-subtitle">Avanço físico geral do cronograma (todos os reparos) — Previsto x Realizado por dia</span></div>
+    <div class="card-title">Avanço da parada<span class="card-subtitle">Avanço físico geral do cronograma (todos os reparos) — Previsto x Realizado por dia. Números gerais no cabeçalho.</span></div>
     <div class="avanco-top">
       <div class="avanco-dates">
         <div><b>Start Ramp Down:</b> ${fmtDate(a.startRampDown)}</div>
         <div><b>Finish Ramp Up:</b> ${fmtDate(a.finishRampUp)}</div>
-        <div style="margin-top:0.4em"><span class="pill pill--${ritmo.cls}">${ritmo.label.toUpperCase()}</span></div>
-      </div>
-      <div class="avanco-stats">
-        <div class="avanco-stat avanco-stat--previsto"><div class="as-label">Previsto</div><div class="as-value">${fmtPct(a.previstoPct)}</div></div>
-        <div class="avanco-stat avanco-stat--realizado"><div class="as-label">Realizado</div><div class="as-value">${fmtPct(a.realizadoPct)}</div></div>
       </div>
     </div>
     <div class="cmp-chart" id="avanco-chart"></div>

@@ -1,38 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 150" width="220" height="150" role="img" aria-label="PRIO">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10.196 6.605 494.864 320.714" role="img" aria-label="PRIO">
   <!--
-    Recriação aproximada do mascote/marca (polvo azul) a partir da imagem colada pelo usuário
-    no chat — não foi possível salvar o arquivo original (só chegou como imagem inline, sem
-    anexo), então este SVG foi refeito a mão a partir da referência visual, não é um recorte
-    pixel-perfect do arquivo original. Se o arquivo oficial estiver disponível depois, basta
-    substituir este SVG (ou trocar por um .png) mantendo o nome "logo-prio.svg" ou ajustando
-    o <img src> no relatório.
+    Ícone oficial da PRIO, extraído diretamente do vetor original enviado pelo usuário
+    (PRIO_LOGO_POLVO.pdf) via PyMuPDF — path e cor (#2b2f53, variante "navy" da marca)
+    fiéis ao arquivo fonte, não é mais uma recriação à mão. Mesmo conteúdo replicado na
+    constante LOGO_SVG dentro de relatorio_parada_cooling_medium.html (é ela que aparece
+    de fato no relatório; este arquivo é uma cópia de referência).
   -->
-  <defs>
-    <linearGradient id="headGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6FC3F7"/>
-      <stop offset="100%" stop-color="#1D6FE0"/>
-    </linearGradient>
-    <linearGradient id="armGrad" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#7FE0F5"/>
-      <stop offset="100%" stop-color="#173E8C"/>
-    </linearGradient>
-    <linearGradient id="tentGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#5EB3F0"/>
-      <stop offset="100%" stop-color="#9FEBFF"/>
-    </linearGradient>
-  </defs>
-
-  <!-- braço esquerdo, mais largo e com ponta escura -->
-  <path d="M62,72 C36,80 12,82 6,97 C3,104 9,110 19,106 C42,99 63,89 79,79 C73,75 67,73 62,72 Z" fill="url(#armGrad)"/>
-
-  <!-- tentáculos inferiores -->
-  <path d="M86,90 C79,106 66,121 56,141 C53,147 61,149 66,143 C79,129 91,113 97,96 C94,93 90,91 86,90 Z" fill="url(#tentGrad)"/>
-  <path d="M105,93 C102,111 100,126 100,141 C100,147 108,147 109,141 C112,123 113,107 113,93 C110,92 108,92 105,93 Z" fill="url(#tentGrad)"/>
-  <path d="M122,89 C124,103 130,116 140,126 C144,130 149,125 145,120 C136,109 130,97 128,86 C126,87 124,88 122,89 Z" fill="url(#tentGrad)"/>
-
-  <!-- cabeça -->
-  <path d="M60,20 Q90,5 130,15 Q165,25 168,55 Q170,80 145,90 Q115,100 85,88 Q60,78 55,50 Q52,30 60,20 Z" fill="url(#headGrad)"/>
-
-  <!-- olho -->
-  <circle cx="140" cy="40" r="7" fill="#ffffff"/>
+  <path transform="matrix(1,0,0,-1,304.9692,34.199586)" fill="#2b2f53" d="M0 0C9.032 .893 16.56-6.636 15.665-15.668 12.973-34.407-13.917-31.706-12.754-12.751-12.091-6.067-6.684-.661 0 0M198.069-107.155C144.455-72.364 85.069-60.007 37.129-56.689 37.14-27.117 37.166 .093 37.182 15.203 37.19 22.049 31.643 27.595 24.797 27.594-4.019 27.591-75.943 27.568-114.118 27.423-130.345 27.361-146.551 26.069-162.203 21.439-177.396 16.946-190.679 9.771-196.955-6.104-205.114-26.744-200.03-53.185-184.889-66.447-170.156-78.832-152.67-80.038-133.908-83.347-157.673-93.101-179.984-102.598-202.588-111.343-210.032-114.223-228.164-118.398-240.968-119.25-258.032-120.383-281.113-114.601-291.138-111.109-292.918-110.488-294.773-111.801-294.773-113.686V-150.114C-294.773-151.808-293.734-153.329-292.152-153.937-285.413-156.526-266.997-163.154-252.621-164.152-182.915-168.726-149.496-145.961-91.52-115.329-83.722-111.395-75.635-108.915-67.36-107.424-80.145-156.559-117.467-205.038-162.944-238.225-164.824-239.596-164.859-242.405-162.969-243.761-151.192-252.21-138.735-259.771-125.701-266.356-124.02-267.206-121.979-266.982-120.518-265.794-68.232-223.288-31.786-167.828-18.341-108.63-18.314-108.639-18.282-108.648-18.256-108.658-17.891-108.65-17.524-108.659-17.158-108.657 1.455-129.923 28.831-161.968 31.05-193.702 33.509-228.865 26.762-260.417 17.348-288.53 16.588-290.801 18.359-293.119 20.75-292.997 30.159-292.515 50.666-291.307 63.43-289.381 65.15-289.121 66.589-287.94 67.185-286.307 77.088-259.159 85.559-227.667 83.233-193.219 81.069-161.174 70.187-137.653 37.776-104.842 78.317-108.072 127.341-118.669 170.993-146.667 172.886-147.88 175.396-147.382 176.643-145.511L199.038-111.916C200.091-110.337 199.661-108.188 198.069-107.155"/>
 </svg>
