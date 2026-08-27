@@ -10,6 +10,17 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  /* Sem isto, o Chrome/Edge descarta TODAS as cores de fundo (barras de progresso,
+     bolinhas de status, faixas de tabela, pill "ATRASADO") ao imprimir/exportar PDF,
+     a menos que a pessoa marque manualmente "Imprimir gráficos de segundo plano" —
+     opção que fica desmarcada por padrão. Isto força a impressão dessas cores sempre,
+     independente da configuração do navegador de quem for gerar o relatório. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
   :root {
     --surface: #f6f5fb;
     --card: #ffffff;
@@ -252,7 +263,7 @@
     gap: 1.4em;
     height: 100%;
   }
-  .header-logo img { height: 2.6em; display: block; }
+  .header-logo svg { height: 2.6em; width: auto; display: block; }
   .header-titles { flex: 1; min-width: 0; }
   .header-titles .h-sub {
     font-size: 0.85em;
@@ -351,7 +362,7 @@
   .cmp-fill { height: 100%; border-radius: 3px; }
   .cmp-fill--previsto { background: var(--ghost); }
   .cmp-fill--realizado { background: var(--accent); }
-  .cmp-vals { width: 3.6em; flex-shrink: 0; font-size: 0.7em; color: var(--text-muted); line-height: 1.3; text-align: left; }
+  .cmp-vals { width: 4.6em; flex-shrink: 0; font-size: 0.7em; color: var(--text-muted); line-height: 1.3; text-align: left; white-space: nowrap; }
 
   .andaimes-body, .custos-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
   .andaimes-body .cmp-label { width: 6.5em; }
@@ -513,6 +524,33 @@
 </div>
 
 <script>
+// ===== Logo (mascote) embutido inline no JS — funciona sem depender de assets/logo-prio.svg
+// como arquivo externo (relativo), o que evita ícone quebrado ao abrir este HTML fora da pasta
+// original (ex: prévia de Artifact). O arquivo assets/logo-prio.svg guarda a mesma arte como
+// referência; ao trocar o logo, atualize os dois. =====
+const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 150" role="img" aria-label="PRIO">
+  <defs>
+    <linearGradient id="headGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6FC3F7"/>
+      <stop offset="100%" stop-color="#1D6FE0"/>
+    </linearGradient>
+    <linearGradient id="armGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7FE0F5"/>
+      <stop offset="100%" stop-color="#173E8C"/>
+    </linearGradient>
+    <linearGradient id="tentGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5EB3F0"/>
+      <stop offset="100%" stop-color="#9FEBFF"/>
+    </linearGradient>
+  </defs>
+  <path d="M62,72 C36,80 12,82 6,97 C3,104 9,110 19,106 C42,99 63,89 79,79 C73,75 67,73 62,72 Z" fill="url(#armGrad)"/>
+  <path d="M86,90 C79,106 66,121 56,141 C53,147 61,149 66,143 C79,129 91,113 97,96 C94,93 90,91 86,90 Z" fill="url(#tentGrad)"/>
+  <path d="M105,93 C102,111 100,126 100,141 C100,147 108,147 109,141 C112,123 113,107 113,93 C110,92 108,92 105,93 Z" fill="url(#tentGrad)"/>
+  <path d="M122,89 C124,103 130,116 140,126 C144,130 149,125 145,120 C136,109 130,97 128,86 C126,87 124,88 122,89 Z" fill="url(#tentGrad)"/>
+  <path d="M60,20 Q90,5 130,15 Q165,25 168,55 Q170,80 145,90 Q115,100 85,88 Q60,78 55,50 Q52,30 60,20 Z" fill="url(#headGrad)"/>
+  <circle cx="140" cy="40" r="7" fill="#ffffff"/>
+</svg>`;
+
 // ===== Dados de exemplo embutidos (mesmo conteúdo de dados/exemplo-2026-08-26-manha.json) =====
 const EXAMPLE_DATA = {
   meta: {
@@ -636,7 +674,12 @@ function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ESC_MAP[c]); }
 // ===== Helpers de formatação (padrão do relatório de ordens) =====
 function fmt(n){ return Number(n||0).toLocaleString('pt-BR'); }
 function fmtPct(n){ return Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + '%'; }
-function fmtBRL(n){ return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}); }
+function fmtBRL(n){
+  // toLocaleString intercala um espaço não separável (U+00A0) entre "R$" e o valor;
+  // em alguns motores de impressão/PDF esse caractere renderiza como um traço/pipe
+  // visível dependendo do peso da fonte — troca por espaço normal para evitar isso.
+  return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).replace(/\u00A0/g, ' ');
+}
 function fmtDate(iso){
   if(!iso) return '—';
   const d = new Date(iso);
@@ -998,7 +1041,7 @@ function buildHeader(){
   const turnoLabel = m.turno === 'noite' ? 'Noite' : 'Manhã';
   c.innerHTML = `
     <div class="header-bar">
-      <div class="header-logo"><img src="assets/logo-prio.svg" alt="Logo"></div>
+      <div class="header-logo">${LOGO_SVG}</div>
       <div class="header-titles">
         <div class="h-sub">${esc(m.fpso)} · PREPARAÇÃO ${esc(m.preparacao)} · ${fmtDateOnly(m.dataEmissao)} · TURNO ${turnoLabel.toUpperCase()} (${esc(m.horaEmissao)})</div>
         <div class="h-title">PARADA COOLING MEDIUM</div>

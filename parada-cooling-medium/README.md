@@ -52,6 +52,7 @@ Os valores de "Avanço da parada" não são calculados automaticamente a partir 
 - O processo de emissão é manual: não há automação de horário, envio de e-mail ou geração automática de PDF. Alguém do turno preenche e exporta às 08:00/20:00.
 - A tabela de custos vem com categorias de exemplo (mão de obra, materiais, equipamentos, terceiros, outros) — ajuste livremente pelo formulário para o plano de contas real.
 - Se as listas (riscos, atividades, custos etc.) ficarem muito longas, o relatório reduz automaticamente o tamanho da fonte para tentar manter tudo em 1 página; ainda assim, evite listas muito extensas para manter a leitura confortável.
+- As cores de fundo (barras de progresso, bolinhas de status, cabeçalhos de tabela, indicador "ATRASADO") aparecem no PDF **independente de marcar ou não "Imprimir gráficos de segundo plano"** na caixa de diálogo de impressão do navegador — isso é forçado via CSS (`print-color-adjust`), validado gerando o PDF nos dois cenários.
 
 ## Identidade visual
 
