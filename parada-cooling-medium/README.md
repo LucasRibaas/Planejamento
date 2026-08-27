@@ -11,7 +11,7 @@ Relatório visual de 1 página para acompanhar a parada programada de manutenç�
    - **Carregar emissão anterior**: seleciona o último arquivo salvo em `dados/` (ex.: a emissão da noite anterior) e pré-preenche o formulário — só ajuste o que mudou.
    - **Novo em branco**: começa do zero.
    - **Carregar exemplo**: carrega os dados de demonstração, útil para testar o layout.
-3. Preencha/ajuste os campos: cabeçalho, POB, avanço da parada (datas, % previsto/realizado, série do gráfico por dia/atividade), reparos (agrupados por tipo, com % de Preparação e % de TA por item), riscos, andamento de andaimes e tabela de custos. Use os botões **+ Adicionar** / **✕** para incluir ou remover grupos e itens das listas.
+3. Preencha/ajuste os campos: cabeçalho, POB, avanço da parada (datas, % previsto/realizado, série do gráfico por dia/atividade), reparos (agrupados por tipo, com % de Preparação e % de TA por item), riscos, andamento de andaimes (Acesso e Escoramento, cada um com seu próprio % previsto/realizado) e tabela de custos. Use os botões **+ Adicionar** / **✕** para incluir ou remover grupos e itens das listas.
 4. Clique em **Visualizar relatório** para ver o layout final de 1 página.
 5. Clique em **Salvar JSON**:
    - No Chrome/Edge, escolha salvar diretamente dentro da pasta `dados/` com o nome sugerido (`AAAA-MM-DD-manha.json` ou `AAAA-MM-DD-noite.json`).

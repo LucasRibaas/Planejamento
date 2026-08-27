@@ -345,6 +345,7 @@
   .cmp-vals { width: 3.6em; flex-shrink: 0; font-size: 0.7em; color: var(--text-muted); line-height: 1.3; text-align: left; }
 
   .andaimes-body, .custos-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+  .andaimes-body .cmp-label { width: 6.5em; }
 
   table.custos-table { width: 100%; border-collapse: collapse; font-size: 0.82em; }
   table.custos-table th {
@@ -464,8 +465,10 @@
   <div class="ed-section">
     <h2>Andamento montagem de andaimes</h2>
     <div class="ed-grid">
-      <div class="ed-field"><label>Previsto (%)</label><input type="number" step="0.1" id="f-andaimesPrevisto"></div>
-      <div class="ed-field"><label>Realizado (%)</label><input type="number" step="0.1" id="f-andaimesRealizado"></div>
+      <div class="ed-field"><label>Acesso — Previsto (%)</label><input type="number" step="0.1" id="f-andaimesAcessoPrevisto"></div>
+      <div class="ed-field"><label>Acesso — Realizado (%)</label><input type="number" step="0.1" id="f-andaimesAcessoRealizado"></div>
+      <div class="ed-field"><label>Escoramento — Previsto (%)</label><input type="number" step="0.1" id="f-andaimesEscoramentoPrevisto"></div>
+      <div class="ed-field"><label>Escoramento — Realizado (%)</label><input type="number" step="0.1" id="f-andaimesEscoramentoRealizado"></div>
     </div>
   </div>
 
@@ -544,7 +547,10 @@ const EXAMPLE_DATA = {
     { texto: "POB de Caldeiraria Completo", status: "verde" },
     { texto: "Aumento de reparos devido a novos furos", status: "vermelho" }
   ],
-  andaimes: { previstoPct: 30, realizadoPct: 35 },
+  andaimes: {
+    acesso: { previstoPct: 30, realizadoPct: 35 },
+    escoramento: { previstoPct: 20, realizadoPct: 12 }
+  },
   custos: {
     moeda: "BRL",
     linhas: [
@@ -570,7 +576,10 @@ function blankState(){
     avancoParada: { startRampDown: "", finishRampUp: "", previstoPct: 0, realizadoPct: 0, ritmo: "no_plano", serieGrafico: [] },
     reparos: [],
     riscos: [],
-    andaimes: { previstoPct: 0, realizadoPct: 0 },
+    andaimes: {
+      acesso: { previstoPct: 0, realizadoPct: 0 },
+      escoramento: { previstoPct: 0, realizadoPct: 0 }
+    },
     custos: { moeda: "BRL", linhas: [] }
   };
 }
@@ -581,7 +590,10 @@ function mergeWithDefaults(parsed){
     meta: Object.assign({}, base.meta, parsed.meta || {}),
     pob: Object.assign({}, base.pob, parsed.pob || {}),
     avancoParada: Object.assign({}, base.avancoParada, parsed.avancoParada || {}),
-    andaimes: Object.assign({}, base.andaimes, parsed.andaimes || {}),
+    andaimes: {
+      acesso: Object.assign({}, base.andaimes.acesso, (parsed.andaimes && parsed.andaimes.acesso) || {}),
+      escoramento: Object.assign({}, base.andaimes.escoramento, (parsed.andaimes && parsed.andaimes.escoramento) || {})
+    },
     custos: Object.assign({}, base.custos, parsed.custos || {}, { linhas: (parsed.custos && parsed.custos.linhas) || [] }),
     reparos: (parsed.reparos || []).map(g => Object.assign({grupo:'', itens:[]}, g, {
       itens: ((g && g.itens) || []).map(item => Object.assign({codigo:'', preparacaoPct:null, taPct:null}, item))
@@ -849,8 +861,10 @@ function renderEditor(){
   document.getElementById('f-realizadoPct').value = a.realizadoPct ?? 0;
   document.getElementById('f-ritmo').value = a.ritmo || 'no_plano';
 
-  document.getElementById('f-andaimesPrevisto').value = state.andaimes.previstoPct ?? 0;
-  document.getElementById('f-andaimesRealizado').value = state.andaimes.realizadoPct ?? 0;
+  document.getElementById('f-andaimesAcessoPrevisto').value = state.andaimes.acesso.previstoPct ?? 0;
+  document.getElementById('f-andaimesAcessoRealizado').value = state.andaimes.acesso.realizadoPct ?? 0;
+  document.getElementById('f-andaimesEscoramentoPrevisto').value = state.andaimes.escoramento.previstoPct ?? 0;
+  document.getElementById('f-andaimesEscoramentoRealizado').value = state.andaimes.escoramento.realizadoPct ?? 0;
 
   renderSerieList();
   renderReparosEditor();
@@ -884,8 +898,10 @@ function wireStaticInputs(){
   bind('f-realizadoPct', () => state.avancoParada, 'realizadoPct', true);
   document.getElementById('f-ritmo').addEventListener('change', (e)=>{ state.avancoParada.ritmo = e.target.value; });
 
-  bind('f-andaimesPrevisto', () => state.andaimes, 'previstoPct', true);
-  bind('f-andaimesRealizado', () => state.andaimes, 'realizadoPct', true);
+  bind('f-andaimesAcessoPrevisto', () => state.andaimes.acesso, 'previstoPct', true);
+  bind('f-andaimesAcessoRealizado', () => state.andaimes.acesso, 'realizadoPct', true);
+  bind('f-andaimesEscoramentoPrevisto', () => state.andaimes.escoramento, 'previstoPct', true);
+  bind('f-andaimesEscoramentoRealizado', () => state.andaimes.escoramento, 'realizadoPct', true);
 }
 wireStaticInputs();
 
@@ -1045,8 +1061,11 @@ function buildAvanco(){
 function buildAndaimes(){
   const c = document.getElementById('area-andaimes');
   const d = state.andaimes;
-  c.innerHTML = `<div class="card-title">Andamento montagem de andaimes — P:${fmtPct(d.previstoPct)} x R:${fmtPct(d.realizadoPct)}</div><div class="andaimes-body" id="andaimes-chart"></div>`;
-  buildComparisonBar(document.getElementById('andaimes-chart'), [{dia:'Andaimes', atividade:'Montagem', previsto:d.previstoPct, realizado:d.realizadoPct}], 100);
+  c.innerHTML = `<div class="card-title">Andamento montagem de andaimes</div><div class="andaimes-body" id="andaimes-chart"></div>`;
+  buildComparisonBar(document.getElementById('andaimes-chart'), [
+    { dia: 'Acesso', atividade: 'Andaime de acesso', previsto: d.acesso.previstoPct, realizado: d.acesso.realizadoPct },
+    { dia: 'Escoramento', atividade: 'Andaime de escoramento', previsto: d.escoramento.previstoPct, realizado: d.escoramento.realizadoPct }
+  ], 100);
 }
 
 function buildCustos(){
