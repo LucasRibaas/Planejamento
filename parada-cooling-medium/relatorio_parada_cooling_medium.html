@@ -296,31 +296,29 @@
   .header-pob .pob-label { font-size: 0.65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
   .header-pob .pob-value { font-size: 2em; font-weight: 900; color: var(--roxo-escuro); line-height: 1; margin-top: 0.15em; }
 
-  /* Destaque do Previsto x Realizado geral da parada — promovido para o cabeçalho por ser
-     o KPI mais importante do relatório (pedido explícito do usuário). */
-  .header-avanco {
+  /* Destaque do Previsto x Realizado geral da parada — é o KPI mais importante do card
+     "Avanço da parada", precisa saltar aos olhos acima da evolução dia a dia. */
+  .avanco-highlight {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 0.3em;
-    padding: 0 1em;
-    border-left: 1px solid var(--roxo);
-  }
-  .header-avanco .ha-top { display: flex; align-items: center; gap: 0.5em; }
-  .header-avanco .ha-title { font-size: 0.62em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
-  .header-avanco .ha-top .pill { font-size: 0.58em; padding: 0.12em 0.55em; }
-  .header-avanco .ha-stats {
-    display: flex;
-    gap: 1.1em;
+    justify-content: space-between;
+    gap: 0.8em;
     background: var(--laranja-tint);
-    border-radius: 8px;
-    padding: 0.25em 0.9em;
+    border: 1px solid var(--laranja);
+    border-radius: 10px;
+    padding: 0.6em 0.9em;
+    margin-bottom: 0.7em;
+    flex-shrink: 0;
   }
-  .header-avanco .ha-stat { display: flex; flex-direction: column; align-items: center; }
-  .header-avanco .ha-value { font-size: 1.7em; font-weight: 900; line-height: 1; }
-  .header-avanco .ha-label { font-size: 0.6em; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.1em; }
-  .header-avanco .ha-stat--previsto .ha-value { color: var(--laranja); }
-  .header-avanco .ha-stat--realizado .ha-value { color: var(--roxo-escuro); }
+  .avanco-highlight .ah-left { display: flex; flex-direction: column; gap: 0.3em; }
+  .avanco-highlight .ah-tag { font-size: 0.68em; font-weight: 700; color: var(--roxo-escuro); text-transform: uppercase; letter-spacing: 0.05em; }
+  .avanco-highlight .ah-stats { display: flex; gap: 1.3em; }
+  .avanco-highlight .ah-stat { display: flex; flex-direction: column; align-items: center; }
+  .avanco-highlight .ah-value { font-size: 2.3em; font-weight: 900; line-height: 1; }
+  .avanco-highlight .ah-label { font-size: 0.62em; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.15em; }
+  .avanco-highlight .ah-stat--previsto .ah-value { color: var(--laranja); }
+  .avanco-highlight .ah-stat--realizado .ah-value { color: var(--roxo-escuro); }
+  .avanco-sub-label { font-size: 0.72em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.3em; flex-shrink: 0; }
 
   .status-list { display: flex; flex-direction: column; gap: 0.55em; overflow: hidden; flex: 1; min-height: 0; }
   .status-item { display: flex; align-items: flex-start; gap: 0.5em; font-size: 0.92em; line-height: 1.3; }
@@ -382,7 +380,8 @@
   .cmp-track { height: 0.85em; border-radius: 3px; background: var(--surface); overflow: hidden; }
   .cmp-fill { height: 100%; border-radius: 3px; }
   .cmp-fill--previsto { background: var(--ghost); }
-  .cmp-fill--realizado { background: var(--accent); }
+  .cmp-fill--realizado-ok { background: var(--verde); }
+  .cmp-fill--realizado-behind { background: var(--vermelho); }
   .cmp-vals { width: 4.6em; flex-shrink: 0; font-size: 0.7em; color: var(--text-muted); line-height: 1.3; text-align: left; white-space: nowrap; }
 
   .andaimes-body, .custos-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
@@ -1042,8 +1041,9 @@ function buildComparisonBar(containerEl, series, maxVal){
     fPrev.style.width = Math.min(100, (item.previsto/maxVal)*100) + '%';
     tPrev.appendChild(fPrev);
 
+    const onTrack = item.realizado >= item.previsto;
     const tReal = el('div', {class:'cmp-track'});
-    const fReal = el('div', {class:'cmp-fill cmp-fill--realizado'});
+    const fReal = el('div', {class:'cmp-fill ' + (onTrack ? 'cmp-fill--realizado-ok' : 'cmp-fill--realizado-behind')});
     fReal.style.width = Math.min(100, (item.realizado/maxVal)*100) + '%';
     tReal.appendChild(fReal);
 
@@ -1068,8 +1068,6 @@ function buildComparisonBar(containerEl, series, maxVal){
 function buildHeader(){
   const c = document.getElementById('area-header');
   const m = state.meta;
-  const a = state.avancoParada;
-  const ritmo = RITMO_INFO[a.ritmo] || RITMO_INFO.no_plano;
   const turnoLabel = m.turno === 'noite' ? 'Noite' : 'Manhã';
   c.innerHTML = `
     <div class="header-bar">
@@ -1090,16 +1088,6 @@ function buildHeader(){
           <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--vermelho"></span>Atrasado</span>
           <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--amarelo"></span>Acima do plano</span>
           <span class="legend-item"><span class="legend-dot legend-dot--pace legend-dot--verde"></span>No plano</span>
-        </div>
-      </div>
-      <div class="header-avanco">
-        <div class="ha-top">
-          <span class="ha-title">Avanço da parada</span>
-          <span class="pill pill--${ritmo.cls}">${ritmo.label.toUpperCase()}</span>
-        </div>
-        <div class="ha-stats">
-          <div class="ha-stat ha-stat--previsto"><span class="ha-value">${fmtPct(a.previstoPct)}</span><span class="ha-label">Previsto</span></div>
-          <div class="ha-stat ha-stat--realizado"><span class="ha-value">${fmtPct(a.realizadoPct)}</span><span class="ha-label">Realizado</span></div>
         </div>
       </div>
       <div class="header-pob">
@@ -1153,14 +1141,26 @@ function buildReparos(){
 function buildAvanco(){
   const c = document.getElementById('area-avanco');
   const a = state.avancoParada;
+  const ritmo = RITMO_INFO[a.ritmo] || RITMO_INFO.no_plano;
   c.innerHTML = `
-    <div class="card-title">Avanço da parada<span class="card-subtitle">Avanço físico geral do cronograma (todos os reparos) — Previsto x Realizado por dia. Números gerais no cabeçalho.</span></div>
+    <div class="card-title">Avanço da parada<span class="card-subtitle">Avanço físico geral do cronograma (todos os reparos)</span></div>
+    <div class="avanco-highlight">
+      <div class="ah-left">
+        <span class="ah-tag">% geral da parada</span>
+        <span class="pill pill--${ritmo.cls}">${ritmo.label.toUpperCase()}</span>
+      </div>
+      <div class="ah-stats">
+        <div class="ah-stat ah-stat--previsto"><span class="ah-value">${fmtPct(a.previstoPct)}</span><span class="ah-label">Previsto</span></div>
+        <div class="ah-stat ah-stat--realizado"><span class="ah-value">${fmtPct(a.realizadoPct)}</span><span class="ah-label">Realizado</span></div>
+      </div>
+    </div>
     <div class="avanco-top">
       <div class="avanco-dates">
         <div><b>Start Ramp Down:</b> ${fmtDate(a.startRampDown)}</div>
         <div><b>Finish Ramp Up:</b> ${fmtDate(a.finishRampUp)}</div>
       </div>
     </div>
+    <div class="avanco-sub-label">Evolução por dia — Previsto x Realizado</div>
     <div class="cmp-chart" id="avanco-chart"></div>
   `;
   const maxVal = Math.max(100, ...a.serieGrafico.map(s => Math.max(s.previsto, s.realizado)));

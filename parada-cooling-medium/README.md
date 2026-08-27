@@ -42,24 +42,30 @@ parada-cooling-medium/
 
 ```
 ┌───────────────────────────────────────────────────────────┐
-│ Cabeçalho: logo · dados da emissão · legendas · destaque   │
-│ Previsto x Realizado da parada (caixa colorida) · POB      │
+│ Cabeçalho: logo · dados da emissão · legendas · POB        │
 ├─────────────────┬──────────────────┬───────────────────────┤
-│ Reparos          │ Atividades       │ Avanço da parada       │
-│ (Preparação x TA)│ realizadas       │ (gráfico Previsto       │
-├─────────────────┤──────────────────┤ x Realizado por         │
-│ Principais riscos│ Lookahead        │ dia)                     │
-│ da pré-parada    │                  │                          │
-├─────────────────┼──────────────────┤                          │
-│ Andamento andaimes│ Tabela de custos│                          │
+│ Reparos          │ Atividades       │ ┌───────────────────┐ │
+│ (Preparação x TA)│ realizadas       │ │ % geral da parada   │ │
+├─────────────────┤──────────────────┤ │ (caixa em destaque) │ │
+│ Principais riscos│ Lookahead        │ └───────────────────┘ │
+│ da pré-parada    │                  │ Evolução por dia        │
+├─────────────────┼──────────────────┤ (gráfico Previsto x      │
+│ Andamento andaimes│ Tabela de custos│ Realizado)                │
 └─────────────────┴──────────────────┴───────────────────────────┘
 ```
 
-- **Previsto x Realizado da parada** (cabeçalho): o KPI mais importante do relatório fica em destaque logo no topo, numa caixa colorida ao lado do POB — % físico concluído do cronograma inteiro da parada (todos os reparos somados) + indicador de ritmo (Atrasado/Acima do plano/No plano). Não é calculado automaticamente a partir da tabela de Reparos — é preenchido à parte no formulário ("Avanço da parada"), pois representa o cronograma geral da parada, que pode incluir atividades além dos reparos listados.
-- **Avanço da parada** (coluna direita): o gráfico de barras Previsto x Realizado por dia, que detalha a evolução por trás do número em destaque no cabeçalho.
+- **% geral da parada** (topo do card "Avanço da parada", coluna direita): o KPI mais importante do relatório fica numa caixa destacada (fundo colorido, números grandes) logo no topo desse card — % físico concluído do cronograma inteiro da parada (todos os reparos somados) + indicador de ritmo (Atrasado/Acima do plano/No plano). Abaixo dela fica o gráfico "Evolução por dia", que detalha dia a dia o que compõe esse número. Não é calculado automaticamente a partir da tabela de Reparos — é preenchido à parte no formulário ("Avanço da parada"), pois representa o cronograma geral da parada, que pode incluir atividades além dos reparos listados.
 - **Reparos — Preparação x TA** (coluna esquerda, topo): visão detalhada — % de Preparação e % de execução durante o TA, item a item, agrupado por tipo de reparo.
 - **Atividades realizadas** (coluna central, topo) e **Lookahead** (coluna central, embaixo): listas simples (texto + status), sem %, para o que já foi feito e o que vem a seguir — itens que ainda não viraram (ou não precisam virar) um item detalhado na tabela de Reparos.
 - **Principais riscos da pré-parada** (coluna esquerda, embaixo de Reparos): lista simples (texto + status).
+
+## Cor das barras Previsto x Realizado
+
+Nos gráficos de barra (Avanço da parada por dia, e Andamento de andaimes), a barra do **Realizado** muda de cor sozinha, sem precisar preencher status manualmente:
+- **Verde**: Realizado ≥ Previsto (no plano ou à frente).
+- **Vermelho**: Realizado < Previsto (atrasado).
+
+A barra do **Previsto** continua sempre num tom neutro (roxo claro), servindo de referência/meta por trás da barra colorida.
 
 ## Notas
 
