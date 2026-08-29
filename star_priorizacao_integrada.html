@@ -1,0 +1,1312 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>STAR - Priorização Integrada de Projetos</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --panel:#ffffff;
+      --ink:#172033;
+      --mut:#667085;
+      --line:#dbe4f0;
+      --soft:#eef4ff;
+      --blue:#155eef;
+      --blue2:#0f3f9f;
+      --red:#c93636;
+      --amber:#b7791f;
+      --green:#0f766e;
+      --teal:#0e7490;
+      --violet:#6d28d9;
+      --shadow:0 12px 28px rgba(23,32,51,.08);
+      --r:8px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      letter-spacing:0;
+    }
+    button,input,select,textarea{font:inherit}
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:300px minmax(0,1fr);
+    }
+    aside{
+      position:sticky;
+      top:0;
+      height:100vh;
+      overflow:auto;
+      background:#101828;
+      color:#fff;
+      padding:22px;
+      border-right:1px solid rgba(255,255,255,.08);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:22px;
+    }
+    .mark{
+      width:36px;
+      height:36px;
+      display:grid;
+      place-items:center;
+      border-radius:8px;
+      background:#fff;
+      color:#101828;
+      font-weight:900;
+      letter-spacing:0;
+    }
+    .brand h1{font-size:16px;line-height:1.2;margin:0}
+    .brand span{display:block;color:#cbd5e1;font-size:12px;font-weight:400;margin-top:2px}
+    .nav{
+      display:grid;
+      gap:6px;
+      margin:18px 0 24px;
+    }
+    .nav a{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color:#e5e7eb;
+      text-decoration:none;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid transparent;
+      font-size:13px;
+    }
+    .nav a:hover,.nav a.active{
+      background:rgba(255,255,255,.08);
+      border-color:rgba(255,255,255,.14);
+    }
+    .pill{
+      display:inline-grid;
+      place-items:center;
+      min-width:34px;
+      height:22px;
+      padding:0 7px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      font-weight:800;
+      font-size:11px;
+    }
+    .side-card{
+      padding:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      border-radius:8px;
+      margin-top:14px;
+    }
+    .side-card h2{
+      font-size:12px;
+      margin:0 0 10px;
+      text-transform:uppercase;
+      color:#cbd5e1;
+    }
+    .total{
+      display:flex;
+      align-items:flex-end;
+      gap:8px;
+      margin-bottom:8px;
+    }
+    .total b{font-size:42px;line-height:.95}
+    .total span{font-size:13px;color:#cbd5e1;margin-bottom:5px}
+    .classificacao{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:30px;
+      padding:6px 10px;
+      border-radius:8px;
+      font-weight:800;
+      font-size:13px;
+      color:#fff;
+      background:var(--green);
+    }
+    .classificacao.p1{background:var(--red)}
+    .classificacao.p2{background:var(--amber)}
+    .classificacao.p3{background:var(--teal)}
+    .bar{
+      height:9px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      overflow:hidden;
+      margin:12px 0 4px;
+    }
+    .bar i{
+      display:block;
+      height:100%;
+      width:0;
+      background:#5eead4;
+      border-radius:inherit;
+      transition:width .2s ease;
+    }
+    .mini{
+      display:grid;
+      gap:9px;
+      margin-top:12px;
+    }
+    .mini-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+      font-size:12px;
+      color:#e5e7eb;
+    }
+    .mini-row b{font-size:12px;color:#fff}
+    .mini-track{
+      grid-column:1 / -1;
+      height:6px;
+      background:rgba(255,255,255,.12);
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .mini-track i{
+      display:block;
+      height:100%;
+      width:0;
+      background:#93c5fd;
+      border-radius:inherit;
+      transition:width .2s ease;
+    }
+    main{
+      min-width:0;
+      padding:26px;
+    }
+    .top{
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      align-items:flex-start;
+      margin-bottom:18px;
+    }
+    .top h2{
+      font-size:24px;
+      line-height:1.15;
+      margin:0 0 6px;
+    }
+    .top p{
+      margin:0;
+      color:var(--mut);
+      font-size:13px;
+      max-width:760px;
+    }
+    .actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--ink);
+      border-radius:8px;
+      padding:9px 12px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:13px;
+    }
+    .btn.primary{
+      background:var(--blue);
+      border-color:var(--blue);
+      color:#fff;
+    }
+    .btn:hover{filter:brightness(.98)}
+    .grid{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 340px;
+      gap:18px;
+      align-items:start;
+    }
+    .content{
+      display:grid;
+      gap:16px;
+    }
+    section,.panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:8px;
+      box-shadow:var(--shadow);
+    }
+    section{
+      scroll-margin-top:18px;
+      padding:18px;
+    }
+    section header{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+      border-bottom:1px solid var(--line);
+      padding-bottom:12px;
+      margin-bottom:16px;
+    }
+    section h3{
+      margin:0;
+      font-size:18px;
+      line-height:1.2;
+    }
+    section header p{
+      margin:5px 0 0;
+      color:var(--mut);
+      font-size:12.5px;
+      max-width:760px;
+    }
+    .weight{
+      white-space:nowrap;
+      background:var(--soft);
+      color:var(--blue2);
+      border:1px solid #c7d7fe;
+      border-radius:8px;
+      padding:7px 9px;
+      font-weight:900;
+      font-size:12px;
+    }
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .field{
+      display:grid;
+      gap:6px;
+      min-width:0;
+    }
+    label{
+      font-size:12px;
+      color:#344054;
+      font-weight:800;
+    }
+    .hint{
+      color:var(--mut);
+      font-size:11.5px;
+      line-height:1.35;
+    }
+    input,select,textarea{
+      width:100%;
+      border:1px solid #cfd8e6;
+      border-radius:8px;
+      background:#fff;
+      color:var(--ink);
+      padding:10px 11px;
+      min-height:40px;
+      outline:none;
+    }
+    textarea{min-height:94px;resize:vertical}
+    input:focus,select:focus,textarea:focus{
+      border-color:var(--blue);
+      box-shadow:0 0 0 3px rgba(21,94,239,.12);
+    }
+    .wide{grid-column:1 / -1}
+    .q-list{
+      display:grid;
+      gap:12px;
+    }
+    .q{
+      display:grid;
+      grid-template-columns:minmax(220px,1fr) minmax(230px,320px);
+      gap:14px;
+      align-items:center;
+      padding:12px;
+      border:1px solid #edf1f7;
+      border-radius:8px;
+      background:#fbfcff;
+    }
+    .q strong{
+      display:block;
+      font-size:13px;
+      line-height:1.3;
+    }
+    .q span{
+      display:block;
+      color:var(--mut);
+      font-size:11.5px;
+      margin-top:4px;
+      line-height:1.35;
+    }
+    .score-chip{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:72px;
+      height:32px;
+      padding:0 10px;
+      border-radius:8px;
+      background:#eef4ff;
+      color:#1849a9;
+      font-size:12px;
+      font-weight:900;
+    }
+    .section-score{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .result-panel{
+      position:sticky;
+      top:16px;
+      padding:16px;
+    }
+    .result-panel h3{
+      margin:0 0 12px;
+      font-size:16px;
+    }
+    .status-line{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:9px 0;
+      border-bottom:1px solid var(--line);
+      font-size:13px;
+    }
+    .status-line:last-child{border-bottom:0}
+    .status-line span{color:var(--mut)}
+    .status-line b{text-align:right}
+    .alert{
+      display:none;
+      margin-top:12px;
+      padding:10px 11px;
+      border:1px solid #fecaca;
+      background:#fff1f2;
+      color:#991b1b;
+      border-radius:8px;
+      font-size:12px;
+      line-height:1.35;
+      font-weight:700;
+    }
+    .alert.show{display:block}
+    .note{
+      padding:10px 11px;
+      border:1px solid #bfdbfe;
+      background:#eff6ff;
+      color:#1e3a8a;
+      border-radius:8px;
+      font-size:12px;
+      line-height:1.35;
+      font-weight:700;
+      margin-top:12px;
+    }
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .tab{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:8px;
+      padding:9px 12px;
+      cursor:pointer;
+      font-weight:900;
+      color:#344054;
+      font-size:13px;
+    }
+    .tab.active{
+      background:#101828;
+      border-color:#101828;
+      color:#fff;
+    }
+    .tab-pane{display:none}
+    .tab-pane.active{display:block}
+    .gp-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);
+      gap:14px;
+    }
+    .metric-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+      margin:12px 0;
+    }
+    .metric{
+      border:1px solid #e5ebf5;
+      border-radius:8px;
+      padding:12px;
+      background:#fbfcff;
+    }
+    .metric span{
+      display:block;
+      color:var(--mut);
+      font-size:11px;
+      font-weight:800;
+      text-transform:uppercase;
+      margin-bottom:7px;
+    }
+    .metric b{
+      display:block;
+      font-size:18px;
+      line-height:1.1;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+    }
+    th,td{
+      padding:9px 8px;
+      border-bottom:1px solid #edf1f7;
+      text-align:left;
+      vertical-align:top;
+    }
+    th{
+      color:#475467;
+      font-size:11px;
+      text-transform:uppercase;
+      background:#f8fafc;
+    }
+    td.num,th.num{text-align:right}
+    .scorebox{
+      border:1px solid #dbeafe;
+      border-radius:8px;
+      background:#fbfdff;
+      padding:14px;
+    }
+    .scorebox.prov{
+      opacity:.76;
+      filter:grayscale(.25);
+    }
+    .scorebox h4{
+      margin:0 0 10px;
+      font-size:13px;
+      text-transform:uppercase;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .tag{
+      display:inline-flex;
+      min-height:24px;
+      align-items:center;
+      justify-content:center;
+      padding:4px 8px;
+      border-radius:8px;
+      background:#eef2ff;
+      color:#3730a3;
+      font-weight:900;
+      font-size:11px;
+      margin-bottom:10px;
+    }
+    .tag.ok{background:#dcfce7;color:#166534}
+    .tag.wait{background:#fef3c7;color:#92400e}
+    .split{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:6px 10px;
+      font-size:12px;
+      padding:8px 0;
+      border-bottom:1px dashed #e2e8f0;
+    }
+    .split:last-child{border-bottom:0}
+    .split span{color:var(--mut)}
+    .gauge{
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px solid #edf1f7;
+    }
+    .gauge .bar{background:#e2e8f0;margin:8px 0}
+    .gauge .bar i{background:var(--green)}
+    .gauge-labels{
+      display:flex;
+      justify-content:space-between;
+      color:var(--mut);
+      font-size:11px;
+      margin-top:4px;
+    }
+    .inline-check{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      color:#344054;
+      font-weight:800;
+    }
+    .inline-check input{width:18px;height:18px;min-height:18px}
+    .disabled{
+      opacity:.5;
+      pointer-events:none;
+    }
+    .footer-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+    @media (max-width:1120px){
+      .app{grid-template-columns:1fr}
+      aside{position:relative;height:auto}
+      .grid{grid-template-columns:1fr}
+      .result-panel{position:relative;top:auto}
+    }
+    @media (max-width:760px){
+      main{padding:16px}
+      .top{display:grid}
+      .form-grid,.gp-grid,.metric-grid{grid-template-columns:1fr}
+      .q{grid-template-columns:1fr}
+      section header{display:grid}
+      .section-score{justify-content:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="mark">S</div>
+        <h1>STAR Integrado<span>Priorização de projetos offshore</span></h1>
+      </div>
+
+      <nav class="nav">
+        <a href="#dados" class="active">Dados do projeto <span class="pill">Base</span></a>
+        <a href="#seguranca">Segurança <span class="pill" id="navSeg">0/30</span></a>
+        <a href="#regulatorio">Regulatório <span class="pill" id="navReg">0/25</span></a>
+        <a href="#financeiro">Financeiro e Patrimônio <span class="pill" id="navFin">0/20</span></a>
+        <a href="#producao">Produção de Óleo <span class="pill" id="navPat">0/25</span></a>
+      </nav>
+
+      <div class="side-card">
+        <h2>Resultado</h2>
+        <div class="total"><b id="sideTotal">0</b><span>/ 100</span></div>
+        <div class="classificacao p4" id="sideClass">P4 - Baixa</div>
+        <div class="bar"><i id="sideBar"></i></div>
+        <div style="font-size:11px;color:#cbd5e1">Atualizado automaticamente</div>
+      </div>
+
+      <div class="side-card">
+        <h2>Composição</h2>
+        <div class="mini">
+          <div class="mini-row"><span>Segurança</span><b id="miniSeg">0</b><div class="mini-track"><i id="trkSeg"></i></div></div>
+          <div class="mini-row"><span>Regulatório</span><b id="miniReg">0</b><div class="mini-track"><i id="trkReg"></i></div></div>
+          <div class="mini-row"><span>Financeiro/Patrimônio</span><b id="miniFin">0</b><div class="mini-track"><i id="trkFin"></i></div></div>
+          <div class="mini-row"><span>Produção GP</span><b id="miniPat">0</b><div class="mini-track"><i id="trkPat"></i></div></div>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="top">
+        <div>
+          <h2>Matriz complementar de priorização</h2>
+          <p>Estrutura de teste com quatro grupos: Segurança, Regulatório, Financeiro e Patrimônio, e Produção de Óleo. O bloco de Produção segue a proposta da GP: relevância da perda do sistema e benefício/custo, computado apenas após validação.</p>
+        </div>
+        <div class="actions">
+          <button class="btn" id="btnExample" type="button">Carregar exemplo</button>
+          <button class="btn primary" id="btnPrint" type="button">Imprimir / PDF</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="content">
+          <section id="dados">
+            <header>
+              <div>
+                <h3>Dados do projeto</h3>
+                <p>Informações básicas usadas para rastreabilidade e para o cálculo financeiro.</p>
+              </div>
+              <span class="weight">Base</span>
+            </header>
+            <div class="form-grid">
+              <div class="field">
+                <label for="nomeProjeto">Nome do projeto</label>
+                <input id="nomeProjeto" placeholder="Ex.: Troca de selo mecânico K-3302">
+              </div>
+              <div class="field">
+                <label for="unidade">Unidade</label>
+                <select id="unidade">
+                  <option>FPSO Forte</option>
+                  <option>FPSO Frade</option>
+                  <option>FPSO Bravo</option>
+                  <option>Outra unidade</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="disciplina">Disciplina responsável</label>
+                <select id="disciplina">
+                  <option>Planejamento Integrado</option>
+                  <option>Manutenção</option>
+                  <option>Integridade</option>
+                  <option>Operações</option>
+                  <option>Reservatório / Produção</option>
+                  <option>SMS</option>
+                  <option>Regulatório</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="custoProjeto">Custo estimado do projeto (US$)</label>
+                <input id="custoProjeto" type="number" min="0" step="1000" placeholder="0">
+              </div>
+              <div class="field wide">
+                <label for="descricao">Resumo executivo</label>
+                <textarea id="descricao" placeholder="Descreva objetivo, sistema afetado, premissas e evidências principais."></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section id="seguranca">
+            <header>
+              <div>
+                <h3>Aspecto de Segurança</h3>
+                <p>Projetos com impacto direto em pessoas, meio ambiente, barreiras críticas e controle de risco operacional.</p>
+              </div>
+              <div class="section-score">
+                <span class="score-chip" id="scoreSeg">0 / 30</span>
+                <span class="weight">Peso 30</span>
+              </div>
+            </header>
+            <div class="q-list">
+              <div class="q">
+                <div><strong>Qual é a severidade do pior cenário?</strong><span>Considere a consequência realista caso o projeto não seja executado.</span></div>
+                <select data-group="seg" data-score="segSev">
+                  <option value="0">Sem impacto de SMS - 0</option>
+                  <option value="3">Lesão leve ou exposição controlada - 3</option>
+                  <option value="6">Lesão grave, LTI ou exposição relevante - 6</option>
+                  <option value="10" data-veto="sms">Fatalidade, explosão, incêndio, H2S ou grande acidente - 10</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>O projeto recupera ou reforça barreira crítica?</strong><span>Ex.: PSV, F&G, ESD, deluge, contenção, abandono, isolamento.</span></div>
+                <select data-group="seg">
+                  <option value="0">Não se aplica - 0</option>
+                  <option value="3">Barreira de suporte - 3</option>
+                  <option value="5">Barreira importante com degradação parcial - 5</option>
+                  <option value="8" data-veto="sms">Barreira crítica indisponível ou degradada - 8</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>Há incidente, near miss ou recorrência registrada?</strong><span>Use evidências de ICAM, RTA, auditoria, desvios ou histórico operacional.</span></div>
+                <select data-group="seg">
+                  <option value="0">Não há registro - 0</option>
+                  <option value="2">Desvio isolado - 2</option>
+                  <option value="4">Near miss ou recorrência - 4</option>
+                  <option value="5">Incidente materializado com ação corretiva aberta - 5</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>Qual é a abrangência da exposição?</strong><span>Quantidade de pessoas, áreas, turnos ou operações afetadas.</span></div>
+                <select data-group="seg">
+                  <option value="0">Pontual - 0</option>
+                  <option value="1">Equipe pequena ou area restrita - 1</option>
+                  <option value="3">Módulo, turno ou operação recorrente - 3</option>
+                  <option value="4">Unidade inteira ou múltiplas frentes - 4</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>A mitigação precisa ocorrer em janela curta?</strong><span>Prioriza risco que não pode aguardar ciclo normal de planejamento.</span></div>
+                <select data-group="seg">
+                  <option value="0">Pode aguardar ciclo normal - 0</option>
+                  <option value="1">Até 180 dias - 1</option>
+                  <option value="2">Até 90 dias - 2</option>
+                  <option value="3">Imediato ou próxima janela - 3</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <section id="regulatorio">
+            <header>
+              <div>
+                <h3>Aspecto Regulatório</h3>
+                <p>Projetos associados a obrigações legais, normas, licenças, condicionantes, auditorias e compromissos externos.</p>
+              </div>
+              <div class="section-score">
+                <span class="score-chip" id="scoreReg">0 / 25</span>
+                <span class="weight">Peso 25</span>
+              </div>
+            </header>
+            <div class="q-list">
+              <div class="q">
+                <div><strong>Existe obrigação legal, normativa ou condicionante?</strong><span>ANP, IBAMA, Marinha, NR, INMETRO, NORMAM, LO, SGSO ou equivalente.</span></div>
+                <select data-group="reg">
+                  <option value="0">Não há obrigação formal - 0</option>
+                  <option value="2">Recomendação interna ou boa prática - 2</option>
+                  <option value="4">Requisito normativo aplicável - 4</option>
+                  <option value="6">Obrigação formal com evidência externa - 6</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>Qual é o prazo regulatório?</strong><span>Use o prazo externo mais restritivo conhecido.</span></div>
+                <select data-group="reg">
+                  <option value="0">Sem prazo externo - 0</option>
+                  <option value="2">Acima de 90 dias - 2</option>
+                  <option value="4">31 a 90 dias - 4</option>
+                  <option value="6">Até 30 dias - 6</option>
+                  <option value="7" data-veto="reg">Vencido - 7</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>Qual é a consequência do não atendimento?</strong><span>Avalie o impacto regulatório máximo, não apenas a probabilidade.</span></div>
+                <select data-group="reg">
+                  <option value="0">Baixo impacto documental - 0</option>
+                  <option value="2">Apontamento interno ou retrabalho - 2</option>
+                  <option value="4">Não conformidade em auditoria - 4</option>
+                  <option value="6">Multa, notificação ou restrição operacional - 6</option>
+                  <option value="7" data-veto="reg">Embargo, interdição ou perda de licença - 7</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>Existe evidência formal?</strong><span>Auditoria, notificação, condicionante, plano de ação, ofício ou compromisso externo.</span></div>
+                <select data-group="reg">
+                  <option value="0">Não - 0</option>
+                  <option value="1">Registro interno - 1</option>
+                  <option value="2">Evidência formal interna validada - 2</option>
+                  <option value="3">Evidência externa ou compromisso formal - 3</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>A abrangência regulatória afeta quantas operações?</strong><span>Considera unidade, frota ou sistema corporativo.</span></div>
+                <select data-group="reg">
+                  <option value="0">Atividade pontual - 0</option>
+                  <option value="1">Unidade específica - 1</option>
+                  <option value="2">Múltiplas unidades ou processo corporativo - 2</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <section id="financeiro">
+            <header>
+              <div>
+                <h3>Aspecto Financeiro e Patrimônio</h3>
+                <p>Critérios para ordenar projetos pelo uso de capital, custo evitado, maturidade da estimativa e preservação de ativos críticos.</p>
+              </div>
+              <div class="section-score">
+                <span class="score-chip" id="scoreFin">0 / 20</span>
+                <span class="weight">Peso 20</span>
+              </div>
+            </header>
+            <div class="form-grid">
+              <div class="field">
+                <label for="beneficioFinanceiro">Benefício financeiro não produtivo (US$)</label>
+                <input id="beneficioFinanceiro" type="number" min="0" step="1000" placeholder="0">
+              </div>
+              <div class="field">
+                <label for="custoNaoFazer">Custo de não fazer / postergar (US$)</label>
+                <input id="custoNaoFazer" type="number" min="0" step="1000" placeholder="0">
+              </div>
+            </div>
+            <div class="q-list" style="margin-top:12px">
+              <div class="q">
+                <div><strong>Qual é a relação benefício/custo?</strong><span>Calculada com benefício financeiro informado, sem duplicar a lógica de produção da GP.</span></div>
+                <div class="score-chip" id="finBc">0 / 6</div>
+              </div>
+              <div class="q">
+                <div><strong>Qual é o custo de não fazer ou postergar?</strong><span>Inclui multa, retrabalho, manutenção emergencial, OPEX adicional ou perda de disponibilidade não produtiva.</span></div>
+                <div class="score-chip" id="finNaoFazer">0 / 5</div>
+              </div>
+              <div class="q">
+                <div><strong>O projeto cabe no orçamento e na janela de execução?</strong><span>Avalia facilidade relativa de alocação financeira e operacional.</span></div>
+                <select data-group="fin">
+                  <option value="0">Não cabe no ciclo atual - 0</option>
+                  <option value="1">Exige remanejamento relevante - 1</option>
+                  <option value="2">Cabe com ajuste moderado - 2</option>
+                  <option value="4">Cabe no orçamento e janela previstos - 4</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>Qual é o tempo de captura do valor?</strong><span>Payback ou prazo esperado para capturar o benefício.</span></div>
+                <select data-group="fin">
+                  <option value="0">Acima de 24 meses ou não definido - 0</option>
+                  <option value="1">12 a 24 meses - 1</option>
+                  <option value="2">6 a 12 meses - 2</option>
+                  <option value="3">Até 6 meses - 3</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>A estimativa de custo está madura?</strong><span>Grau de confiabilidade para tomada de decisão.</span></div>
+                <select data-group="fin">
+                  <option value="0">Conceitual ou sem base - 0</option>
+                  <option value="1">Orçamento preliminar - 1</option>
+                  <option value="2">Cotação, contrato ou estimativa validada - 2</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>Avaliação financeira econômica</strong><span>Subtotal financeiro antes da comparação com Patrimônio/Integridade.</span></div>
+                <div class="score-chip" id="finEconomico">0 / 20</div>
+              </div>
+            </div>
+
+            <div class="note">A nota final do bloco usa a maior pontuação entre a avaliação financeira econômica e a avaliação de Patrimônio/Integridade convertida para 20 pontos.</div>
+            <div class="q-list" style="margin-top:12px">
+              <div class="q">
+                <div><strong>A falha pode comprometer ativo crítico?</strong><span>Casco, estrutura, riser, duto, sistema essencial, equipamento principal ou vida útil.</span></div>
+                <select data-group="asset">
+                  <option value="0">Não compromete ativo crítico - 0</option>
+                  <option value="2">Ativo auxiliar - 2</option>
+                  <option value="5">Ativo relevante com impacto localizado - 5</option>
+                  <option value="8">Ativo crítico da operação - 8</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>Existe degradação evidenciada?</strong><span>Inspeção, laudo, corrosão, obsolescência, falha recorrente ou vida útil remanescente.</span></div>
+                <select data-group="asset">
+                  <option value="0">Sem evidência - 0</option>
+                  <option value="2">Suspeita técnica - 2</option>
+                  <option value="4">Evidência registrada - 4</option>
+                  <option value="6">Degradação confirmada e evolutiva - 6</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>O sistema tem baixa redundância?</strong><span>Quanto menor a redundância, maior a prioridade patrimonial.</span></div>
+                <select data-group="asset">
+                  <option value="0">Redundância plena - 0</option>
+                  <option value="2">Redundância parcial - 2</option>
+                  <option value="3">Redundância limitada - 3</option>
+                  <option value="5">Sem redundância ou caminho crítico - 5</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>A intervenção evita parada maior ou aproveita janela rara?</strong><span>Considera campanha, shutdown, docagem, mobilização ou janela meteorológica.</span></div>
+                <select data-group="asset">
+                  <option value="0">Não - 0</option>
+                  <option value="1">Baixa vantagem de janela - 1</option>
+                  <option value="2">Janela relevante - 2</option>
+                  <option value="3">Janela crítica ou rara - 3</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>O projeto reduz risco de manutenção emergencial futura?</strong><span>Compara prevenção planejada contra intervenção corretiva emergencial.</span></div>
+                <select data-group="asset">
+                  <option value="0">Não reduz - 0</option>
+                  <option value="1">Redução baixa - 1</option>
+                  <option value="2">Redução moderada - 2</option>
+                  <option value="3">Redução alta - 3</option>
+                </select>
+              </div>
+              <div class="q">
+                <div><strong>Avaliação de Patrimônio/Integridade</strong><span>Subtotal patrimonial bruto e pontuação convertida para o peso do bloco financeiro.</span></div>
+                <div class="score-chip" id="assetScaled">0 / 25 -> 0 / 20</div>
+              </div>
+            </div>
+          </section>
+
+          <section id="producao">
+            <header>
+              <div>
+                <h3>Produção de Óleo - GP</h3>
+                <p>Bloco exclusivo da Gestão da Produção, mantendo a lógica original de relevância da perda do sistema e benefício/custo.</p>
+              </div>
+              <div class="section-score">
+                <span class="score-chip" id="scorePat">0 / 25</span>
+                <span class="weight">Peso 25</span>
+              </div>
+            </header>
+
+            <label class="inline-check" for="impactaProd">
+                <input id="impactaProd" type="checkbox">
+                Este escopo influencia diretamente a produção de óleo
+              </label>
+
+              <div id="gpArea" class="disabled" style="margin-top:14px">
+                <div class="gp-grid">
+                  <div>
+                    <div class="form-grid">
+                      <div class="field">
+                        <label for="fSistema">Sistema impactado</label>
+                        <select id="fSistema"></select>
+                      </div>
+                      <div class="field">
+                        <label for="gpStatus">Status da validação GP</label>
+                        <select id="gpStatus">
+                          <option value="draft">Prévia - não computada</option>
+                          <option value="wait">Aguardando GP</option>
+                          <option value="back">Devolvida para ajuste</option>
+                          <option value="ok">Validada - computada</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="fIncrementoProd">Esse escopo é originador de incremento de produção?</label>
+                        <select id="fIncrementoProd">
+                          <option value="nao">Não</option>
+                          <option value="sim">Sim</option>
+                        </select>
+                        <div class="hint">Campo informativo da Gestão da Produção. Não altera a pontuação da matriz.</div>
+                      </div>
+                      <div class="field">
+                        <label for="fEvit">Perda evitada total (bbl)</label>
+                        <input id="fEvit" type="number" min="0" step="100" placeholder="0">
+                      </div>
+                      <div class="field">
+                        <label for="fCusto">Custo usado no benefício/custo (US$)</label>
+                        <input id="fCusto" type="number" min="0" step="1000" placeholder="0">
+                      </div>
+                      <div class="field">
+                        <label for="fJac">Parcela já ocorrida (bbl)</label>
+                        <input id="fJac" type="number" min="0" step="100" placeholder="0">
+                      </div>
+                      <div class="field">
+                        <label for="fEvitUsd">Perda evitada calculada (US$)</label>
+                        <input id="fEvitUsd" readonly value="-">
+                      </div>
+                      <div class="field wide">
+                        <label for="fMem">Memorial da GP</label>
+                        <textarea id="fMem" placeholder="Premissas, eventos, período, fonte e justificativa da perda evitada."></textarea>
+                      </div>
+                    </div>
+
+                    <div class="metric-grid">
+                      <div class="metric"><span>Perda sistema 12m</span><b id="kBbl">-</b></div>
+                      <div class="metric"><span>Perda sistema US$</span><b id="kUsd">-</b></div>
+                      <div class="metric"><span>% total perdas</span><b id="kPct">-</b></div>
+                    </div>
+
+                    <table>
+                      <thead><tr><th>ID evento</th><th>Descrição</th><th class="num">Ocorr.</th><th class="num">Perda bbl</th></tr></thead>
+                      <tbody id="tbEventos"></tbody>
+                    </table>
+                    <div class="note" id="gpWarn">A pontuação de Produção só entra no grupo após status Validada - computada.</div>
+                  </div>
+
+                  <div class="scorebox prov" id="gpScoreBox">
+                    <h4>Peso GP <span id="gpTotal">0 / 25</span></h4>
+                    <span class="tag wait" id="gpTag">PRÉVIA - NÃO COMPUTADA</span>
+                    <div class="split"><span>Relevância da perda do sistema</span><b id="gpRel">0 / 15</b></div>
+                    <div class="split"><span>Benefício / custo</span><b id="gpBc">0 / 10</b></div>
+                    <div class="split"><span>Cobertura da perda histórica</span><b id="gpCob">0%</b></div>
+                    <div class="split"><span>Perda já ocorrida</span><b id="gpJac">0%</b></div>
+                    <div class="gauge">
+                      <div class="bar"><i id="gpGauge"></i></div>
+                      <div class="gauge-labels"><span>0 Baixa</span><span>25 Crítica</span></div>
+                      <div style="font-size:13px;font-weight:900;margin-top:6px" id="gpClasse">0 - Baixa</div>
+                    </div>
+                    <div class="note">Critérios mantidos: relevância por faixa fixa e benefício/custo.</div>
+                  </div>
+                </div>
+              </div>
+          </section>
+        </div>
+
+        <div class="panel result-panel">
+          <h3>Resumo da decisão</h3>
+          <div class="status-line"><span>Segurança</span><b id="resSeg">0 / 30</b></div>
+          <div class="status-line"><span>Regulatório</span><b id="resReg">0 / 25</b></div>
+          <div class="status-line"><span>Financeiro e Patrimônio</span><b id="resFin">0 / 20</b></div>
+          <div class="status-line"><span>Produção GP</span><b id="resGp">0 / 25</b></div>
+          <div class="status-line"><span>Total</span><b id="resTotal">0 / 100</b></div>
+          <div class="status-line"><span>Classe</span><b id="resClass">P4 - Baixa</b></div>
+          <div class="alert" id="vetoBox"></div>
+          <div class="note" id="tieNote">Desempate sugerido: Segurança, Regulatório, Produção validada, Financeiro/Patrimônio e menor custo.</div>
+          <div class="footer-actions">
+            <button class="btn" type="button" id="btnReset">Limpar</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const PRECO = 75;
+    const SISTEMAS = {
+      comp:{
+        nome:"Compressão de Gás Principal (K-3302)", perda12m:182450, potencial12m:210000, pct:34.2,
+        eventos:[
+          ["EV-2025-0817","Vazamento selo mecânico - K-3302",2,67800],
+          ["EV-2025-0942","Trip por alta vibração - K-3302",3,41200],
+          ["EV-2026-0114","Shutdown parcial do trem de compressão",1,73450]
+        ]
+      },
+      gascomb:{
+        nome:"Gás Combustível (PSV-2201A)", perda12m:64210, potencial12m:58000, pct:12.0,
+        eventos:[
+          ["EV-2025-0623","Abertura espúria PSV-2201A",4,38900],
+          ["EV-2025-1101","Queda de pressão header gás combustível",2,25310]
+        ]
+      },
+      inj:{
+        nome:"Injeção de Água (P-4501)", perda12m:88920, potencial12m:102000, pct:16.7,
+        eventos:[
+          ["EV-2025-0789","Indisponibilidade bomba booster de injeção",3,51400],
+          ["EV-2026-0093","Cavitação / queda de vazão - P-4501",2,37520]
+        ]
+      },
+      fg:{
+        nome:"Fire & Gas - Módulos A/B", perda12m:41870, potencial12m:38000, pct:7.8,
+        eventos:[
+          ["EV-2025-0568","Trips espúrios - detectores UV/IR módulo B",5,27840],
+          ["EV-2025-0871","Parada por votação 2oo3 - falso positivo",2,14030]
+        ]
+      },
+      anc:{
+        nome:"Sistema de Ancoragem", perda12m:2130, potencial12m:2000, pct:.4,
+        eventos:[
+          ["EV-2026-0031","Restrição operacional por inspeção de linha",1,2130]
+        ]
+      }
+    };
+
+    const MAX = { seg:30, reg:25, fin:20, asset:25, pat:25, gp:25 };
+    const $ = id => document.getElementById(id);
+    const fmt = n => Number(n || 0).toLocaleString("pt-BR");
+    const usd = n => "US$ " + (Number(n || 0) >= 1e6 ? (n/1e6).toLocaleString("pt-BR",{maximumFractionDigits:1}) + " M" : fmt(Math.round(n || 0)));
+
+    function faixaProducao(pct){
+      if(pct >= 25) return {f:4, pts:15};
+      if(pct >= 15) return {f:3, pts:11};
+      if(pct >= 8) return {f:2, pts:7};
+      if(pct >= 3) return {f:1, pts:3};
+      return {f:0, pts:1};
+    }
+
+    function sumSelects(group){
+      return Array.from(document.querySelectorAll(`select[data-group="${group}"]`))
+        .reduce((acc, el) => acc + Number(el.value || 0), 0);
+    }
+
+    function scoreFinanceiro(){
+      const custo = Number($("custoProjeto").value || 0);
+      const beneficio = Number($("beneficioFinanceiro").value || 0);
+      const naoFazer = Number($("custoNaoFazer").value || 0);
+      let bc = 0;
+      if(custo > 0 && beneficio > 0){
+        const ratio = beneficio / custo;
+        bc = ratio >= 10 ? 6 : ratio >= 5 ? 5 : ratio >= 2 ? 3 : ratio >= 1 ? 2 : 0;
+      }
+      let nf = 0;
+      if(custo > 0 && naoFazer > 0){
+        const ratio = naoFazer / custo;
+        nf = ratio >= 3 ? 5 : ratio >= 1.5 ? 4 : ratio >= 1 ? 3 : ratio >= .5 ? 2 : 1;
+      }
+      const economico = Math.min(MAX.fin, bc + nf + sumSelects("fin"));
+      const assetRaw = Math.min(MAX.asset, sumSelects("asset"));
+      const assetScaled = Math.round(assetRaw * MAX.fin / MAX.asset);
+      const score = Math.max(economico, assetScaled);
+      $("finBc").textContent = `${bc} / 6`;
+      $("finNaoFazer").textContent = `${nf} / 5`;
+      $("finEconomico").textContent = `${economico} / 20`;
+      $("assetScaled").textContent = `${assetRaw} / 25 -> ${assetScaled} / 20`;
+      return {score, economico, assetRaw, assetScaled};
+    }
+
+    function loadSistema(){
+      const key = $("fSistema").value;
+      const s = SISTEMAS[key];
+      $("kBbl").textContent = fmt(s.perda12m) + " bbl";
+      $("kUsd").textContent = usd(s.perda12m * PRECO);
+      $("kPct").textContent = s.pct.toLocaleString("pt-BR",{maximumFractionDigits:1}) + "%";
+      $("tbEventos").innerHTML = s.eventos.map(ev =>
+        `<tr><td>${ev[0]}</td><td>${ev[1]}</td><td class="num">${ev[2]}</td><td class="num">${fmt(ev[3])}</td></tr>`
+      ).join("");
+    }
+
+    function scoreGp(){
+      const impacta = $("impactaProd").checked;
+      $("gpArea").classList.toggle("disabled", !impacta);
+      if(!impacta){
+        $("fEvitUsd").value = "-";
+        $("gpWarn").textContent = "A pontuação de Produção só entra no grupo após status Validada - computada.";
+        setGpUi(0,0,0,0,0,"off");
+        return {preview:0, computed:0};
+      }
+      const s = SISTEMAS[$("fSistema").value];
+      const ev = Number($("fEvit").value || 0);
+      const custo = Number($("fCusto").value || $("custoProjeto").value || 0);
+      const jac = Math.min(Number($("fJac").value || 0), ev);
+      const status = $("gpStatus").value;
+      $("fEvitUsd").value = ev > 0 ? usd(ev * PRECO) : "-";
+
+      let rel = 0;
+      let bc = 0;
+      $("gpWarn").textContent = "A pontuação de Produção só entra no grupo após status Validada - computada.";
+      if(ev > 0 && ev <= s.potencial12m){
+        rel = faixaProducao(s.pct).pts;
+        if(custo > 0){
+          const ratio = (ev * PRECO) / custo;
+          bc = ratio >= 20 ? 10 : ratio >= 10 ? 7 : ratio >= 5 ? 5 : ratio >= 1 ? 2 : 0;
+        }
+      }else if(ev > s.potencial12m){
+        $("gpWarn").textContent = `Perda evitada (${fmt(ev)} bbl) excede a perda projetada do sistema (${fmt(s.potencial12m)} bbl). Revise as premissas antes da validação.`;
+      }
+      const preview = rel + bc;
+      const computed = status === "ok" ? preview : 0;
+      const cob = ev > 0 ? Math.min(Math.round(ev / s.perda12m * 100), 999) : 0;
+      const jacPct = ev > 0 ? Math.round(jac / ev * 100) : 0;
+      setGpUi(preview, computed, rel, bc, cob, status, jacPct);
+      return {preview, computed};
+    }
+
+    function setGpUi(preview, computed, rel, bc, cob, status, jacPct=0){
+      $("gpTotal").textContent = `${preview} / 25`;
+      $("gpRel").textContent = `${rel} / 15`;
+      $("gpBc").textContent = `${bc} / 10`;
+      $("gpCob").textContent = `${cob}%`;
+      $("gpJac").textContent = `${jacPct}%`;
+      $("gpGauge").style.width = `${Math.min(100, preview / 25 * 100)}%`;
+      const cls = preview >= 19 ? "Crítica" : preview >= 13 ? "Alta" : preview >= 7 ? "Média" : "Baixa";
+      $("gpClasse").textContent = `${preview} - ${cls}`;
+      const tag = $("gpTag");
+      const box = $("gpScoreBox");
+      tag.className = "tag wait";
+      box.classList.add("prov");
+      if(status === "ok"){
+        tag.textContent = "VALIDADA - COMPUTADA";
+        tag.className = "tag ok";
+        box.classList.remove("prov");
+      }else if(status === "wait"){
+        tag.textContent = "AGUARDANDO GP";
+      }else if(status === "back"){
+        tag.textContent = "DEVOLVIDA PARA AJUSTE";
+      }else if(status === "off"){
+        tag.textContent = "SEM IMPACTO DIRETO";
+      }else{
+        tag.textContent = "PRÉVIA - NÃO COMPUTADA";
+      }
+    }
+
+    function hasVeto(){
+      const vetos = [];
+      document.querySelectorAll("select option:checked[data-veto]").forEach(opt => {
+        if(opt.dataset.veto === "sms") vetos.push("Trava SMS acionada");
+        if(opt.dataset.veto === "reg") vetos.push("Trava regulatória acionada");
+      });
+      return [...new Set(vetos)];
+    }
+
+    function classificar(total, vetos){
+      if(vetos.length) return {label:"P1 - Crítica", key:"p1"};
+      if(total >= 85) return {label:"P1 - Crítica", key:"p1"};
+      if(total >= 70) return {label:"P2 - Alta", key:"p2"};
+      if(total >= 50) return {label:"P3 - Média", key:"p3"};
+      return {label:"P4 - Baixa", key:"p4"};
+    }
+
+    function setScore(id, val, max){
+      $(id).textContent = `${val} / ${max}`;
+    }
+
+    function setTrack(id, val, max){
+      $(id).style.width = `${Math.min(100, val / max * 100)}%`;
+    }
+
+    function calc(){
+      const seg = Math.min(MAX.seg, sumSelects("seg"));
+      const reg = Math.min(MAX.reg, sumSelects("reg"));
+      const finData = scoreFinanceiro();
+      const fin = finData.score;
+      const asset = finData.assetRaw;
+      const gp = scoreGp();
+      const pat = gp.computed;
+      const total = seg + reg + fin + pat;
+      const vetos = hasVeto();
+      const classe = classificar(total, vetos);
+
+      setScore("scoreSeg", seg, 30);
+      setScore("scoreReg", reg, 25);
+      setScore("scoreFin", fin, 20);
+      setScore("scorePat", pat, 25);
+
+      $("navSeg").textContent = `${seg}/30`;
+      $("navReg").textContent = `${reg}/25`;
+      $("navFin").textContent = `${fin}/20`;
+      $("navPat").textContent = `${pat}/25`;
+
+      $("miniSeg").textContent = seg;
+      $("miniReg").textContent = reg;
+      $("miniFin").textContent = fin;
+      $("miniPat").textContent = pat;
+      setTrack("trkSeg", seg, 30);
+      setTrack("trkReg", reg, 25);
+      setTrack("trkFin", fin, 20);
+      setTrack("trkPat", pat, 25);
+
+      $("resSeg").textContent = `${seg} / 30`;
+      $("resReg").textContent = `${reg} / 25`;
+      $("resFin").textContent = `${fin} / 20`;
+      $("resGp").textContent = `${gp.computed} / 25`;
+      $("resTotal").textContent = `${total} / 100`;
+      $("resClass").textContent = classe.label;
+
+      $("sideTotal").textContent = total;
+      $("sideClass").textContent = classe.label;
+      $("sideClass").className = `classificacao ${classe.key}`;
+      $("sideBar").style.width = `${Math.min(100,total)}%`;
+
+      const vetoBox = $("vetoBox");
+      vetoBox.classList.toggle("show", vetos.length > 0);
+      vetoBox.textContent = vetos.length ? `${vetos.join(" e ")}. O projeto deve ser tratado como P1 independentemente da nota.` : "";
+    }
+
+    function resetForm(){
+      document.querySelectorAll("input,textarea").forEach(el => {
+        if(el.type === "checkbox") el.checked = false;
+        else if(!el.readOnly) el.value = "";
+      });
+      document.querySelectorAll("select").forEach(el => el.selectedIndex = 0);
+      loadSistema();
+      calc();
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    function loadExample(){
+      $("nomeProjeto").value = "Troca de selo mecânico compressor K-3302";
+      $("unidade").value = "FPSO Forte";
+      $("disciplina").value = "Manutenção";
+      $("custoProjeto").value = 175000;
+      $("descricao").value = "Escopo para recuperar confiabilidade do trem de compressão principal, com histórico de perda de produção e degradação de barreira operacional.";
+      const selects = document.querySelectorAll("select[data-group='seg']");
+      selects[0].value = 6; selects[1].value = 5; selects[2].value = 4; selects[3].value = 3; selects[4].value = 2;
+      const regs = document.querySelectorAll("select[data-group='reg']");
+      regs[0].value = 4; regs[1].value = 2; regs[2].value = 4; regs[3].value = 2; regs[4].value = 1;
+      $("beneficioFinanceiro").value = 620000;
+      $("custoNaoFazer").value = 440000;
+      const fins = document.querySelectorAll("select[data-group='fin']");
+      fins[0].value = 4; fins[1].value = 3; fins[2].value = 2;
+      const assets = document.querySelectorAll("select[data-group='asset']");
+      assets[0].value = 8; assets[1].value = 6; assets[2].value = 5; assets[3].value = 3; assets[4].value = 3;
+      $("impactaProd").checked = true;
+      $("fSistema").value = "comp";
+      $("gpStatus").value = "ok";
+      $("fIncrementoProd").value = "nao";
+      $("fEvit").value = 90000;
+      $("fCusto").value = 175000;
+      $("fJac").value = 45000;
+      $("fMem").value = "Perda evitada baseada nos eventos EV-2025-0817, EV-2025-0942 e EV-2026-0114, com recorrência esperada no trem de compressão.";
+      loadSistema();
+      calc();
+    }
+
+    function init(){
+      const sel = $("fSistema");
+      sel.innerHTML = Object.entries(SISTEMAS).map(([key,s]) => `<option value="${key}">${s.nome}</option>`).join("");
+      loadSistema();
+      document.addEventListener("input", calc);
+      document.addEventListener("change", e => {
+        if(e.target.id === "fSistema") loadSistema();
+        calc();
+      });
+      document.querySelectorAll(".tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
+          btn.classList.add("active");
+          $(btn.dataset.tab).classList.add("active");
+        });
+      });
+      document.querySelectorAll(".nav a").forEach(a => {
+        a.addEventListener("click", () => {
+          document.querySelectorAll(".nav a").forEach(x => x.classList.remove("active"));
+          a.classList.add("active");
+        });
+      });
+      $("btnReset").addEventListener("click", resetForm);
+      $("btnExample").addEventListener("click", loadExample);
+      $("btnPrint").addEventListener("click", () => window.print());
+      calc();
+    }
+
+    init();
+  </script>
+</body>
+</html>
