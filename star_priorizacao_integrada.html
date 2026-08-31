@@ -887,7 +887,7 @@
             <header>
               <div>
                 <h3>Produção de Óleo - GP</h3>
-                <p>Bloco exclusivo da Gestão da Produção, mantendo a lógica original de relevância da perda do sistema e benefício/custo.</p>
+                <p>Bloco exclusivo da Gestão da Produção. Ao marcar impacto direto, escolha se o escopo representa perda evitada ou incremento de produção — cada um abre sua própria calculadora, mas ambos seguem a mesma lógica de relevância do sistema e benefício/custo.</p>
               </div>
               <div class="section-score">
                 <span class="score-chip" id="scorePat">0 / 25</span>
@@ -900,7 +900,7 @@
                 Este escopo influencia diretamente a produção de óleo
               </label>
 
-              <div id="gpArea" class="disabled" style="margin-top:14px">
+              <div id="gpModeArea" class="disabled" style="margin-top:14px">
                 <div class="gp-grid">
                   <div>
                     <div class="form-grid">
@@ -917,33 +917,59 @@
                           <option value="ok">Validada - computada</option>
                         </select>
                       </div>
-                      <div class="field">
-                        <label for="fIncrementoProd">Esse escopo é originador de incremento de produção?</label>
-                        <select id="fIncrementoProd">
-                          <option value="nao">Não</option>
-                          <option value="sim">Sim</option>
-                        </select>
-                        <div class="hint">Campo informativo da Gestão da Produção. Não altera a pontuação da matriz.</div>
-                      </div>
-                      <div class="field">
-                        <label for="fEvit">Perda evitada total (bbl)</label>
-                        <input id="fEvit" type="number" min="0" step="100" placeholder="0">
-                      </div>
-                      <div class="field">
-                        <label for="fCusto">Custo usado no benefício/custo (US$)</label>
-                        <input id="fCusto" type="number" min="0" step="1000" placeholder="0">
-                      </div>
-                      <div class="field">
-                        <label for="fJac">Parcela já ocorrida (bbl)</label>
-                        <input id="fJac" type="number" min="0" step="100" placeholder="0">
-                      </div>
-                      <div class="field">
-                        <label for="fEvitUsd">Perda evitada calculada (US$)</label>
-                        <input id="fEvitUsd" readonly value="-">
-                      </div>
                       <div class="field wide">
-                        <label for="fMem">Memorial da GP</label>
-                        <textarea id="fMem" placeholder="Premissas, eventos, período, fonte e justificativa da perda evitada."></textarea>
+                        <label for="gpMode">Este escopo representa</label>
+                        <select id="gpMode">
+                          <option value="perda">Perda evitada - mitigação de risco à produção atual</option>
+                          <option value="incremento">Incremento de produção - ganho de óleo novo</option>
+                        </select>
+                        <div class="hint">Define qual calculadora de retorno é usada abaixo. Ambas seguem a mesma lógica de relevância do sistema e benefício/custo.</div>
+                      </div>
+                    </div>
+
+                    <div id="gpPanelPerda" class="tab-pane active" style="margin-top:12px">
+                      <div class="form-grid">
+                        <div class="field">
+                          <label for="fEvit">Perda evitada total (bbl)</label>
+                          <input id="fEvit" type="number" min="0" step="100" placeholder="0">
+                        </div>
+                        <div class="field">
+                          <label for="fCusto">Custo usado no benefício/custo (US$)</label>
+                          <input id="fCusto" type="number" min="0" step="1000" placeholder="0">
+                        </div>
+                        <div class="field">
+                          <label for="fJac">Parcela já ocorrida (bbl)</label>
+                          <input id="fJac" type="number" min="0" step="100" placeholder="0">
+                        </div>
+                        <div class="field">
+                          <label for="fEvitUsd">Perda evitada calculada (US$)</label>
+                          <input id="fEvitUsd" readonly value="-">
+                        </div>
+                        <div class="field wide">
+                          <label for="fMem">Memorial da GP</label>
+                          <textarea id="fMem" placeholder="Premissas, eventos, período, fonte e justificativa da perda evitada."></textarea>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="gpPanelIncremento" class="tab-pane" style="margin-top:12px">
+                      <div class="form-grid">
+                        <div class="field">
+                          <label for="fInc">Incremento de produção esperado (bbl)</label>
+                          <input id="fInc" type="number" min="0" step="100" placeholder="0">
+                        </div>
+                        <div class="field">
+                          <label for="fIncCusto">Custo usado no benefício/custo (US$)</label>
+                          <input id="fIncCusto" type="number" min="0" step="1000" placeholder="0">
+                        </div>
+                        <div class="field">
+                          <label for="fIncGanhoUsd">Ganho de produção calculado (US$)</label>
+                          <input id="fIncGanhoUsd" readonly value="-">
+                        </div>
+                        <div class="field wide">
+                          <label for="fMemInc">Memorial da GP</label>
+                          <textarea id="fMemInc" placeholder="Premissas, período, fonte e justificativa do incremento de produção."></textarea>
+                        </div>
                       </div>
                     </div>
 
@@ -963,16 +989,16 @@
                   <div class="scorebox prov" id="gpScoreBox">
                     <h4>Peso GP <span id="gpTotal">0 / 25</span></h4>
                     <span class="tag wait" id="gpTag">PRÉVIA - NÃO COMPUTADA</span>
-                    <div class="split"><span>Relevância da perda do sistema</span><b id="gpRel">0 / 15</b></div>
+                    <div class="split"><span id="gpRelLabel">Relevância da perda do sistema</span><b id="gpRel">0 / 15</b></div>
                     <div class="split"><span>Benefício / custo</span><b id="gpBc">0 / 10</b></div>
-                    <div class="split"><span>Cobertura da perda histórica</span><b id="gpCob">0%</b></div>
-                    <div class="split"><span>Perda já ocorrida</span><b id="gpJac">0%</b></div>
+                    <div class="split"><span id="gpCobLabel">Cobertura da perda histórica</span><b id="gpCob">0%</b></div>
+                    <div class="split" id="gpJacRow"><span>Perda já ocorrida</span><b id="gpJac">0%</b></div>
                     <div class="gauge">
                       <div class="bar"><i id="gpGauge"></i></div>
                       <div class="gauge-labels"><span>0 Baixa</span><span>25 Crítica</span></div>
                       <div style="font-size:13px;font-weight:900;margin-top:6px" id="gpClasse">0 - Baixa</div>
                     </div>
-                    <div class="note">Critérios mantidos: relevância por faixa fixa e benefício/custo.</div>
+                    <div class="note">Critérios mantidos: relevância por faixa fixa e benefício/custo — o retorno usa o mesmo cálculo em ambos os modos.</div>
                   </div>
                 </div>
               </div>
@@ -1095,45 +1121,69 @@
 
     function scoreGp(){
       const impacta = $("impactaProd").checked;
-      $("gpArea").classList.toggle("disabled", !impacta);
+      $("gpModeArea").classList.toggle("disabled", !impacta);
       if(!impacta){
         $("fEvitUsd").value = "-";
+        $("fIncGanhoUsd").value = "-";
         $("gpWarn").textContent = "A pontuação de Produção só entra no grupo após status Validada - computada.";
-        setGpUi(0,0,0,0,0,"off");
+        setGpUi(0,0,0,0,0,"off",0,"perda");
         return {preview:0, computed:0};
       }
-      const s = SISTEMAS[$("fSistema").value];
-      const ev = Number($("fEvit").value || 0);
-      const custo = Number($("fCusto").value || $("custoProjeto").value || 0);
-      const jac = Math.min(Number($("fJac").value || 0), ev);
-      const status = $("gpStatus").value;
-      $("fEvitUsd").value = ev > 0 ? usd(ev * PRECO) : "-";
+      const mode = $("gpMode").value;
+      $("gpPanelPerda").classList.toggle("active", mode === "perda");
+      $("gpPanelIncremento").classList.toggle("active", mode === "incremento");
 
-      let rel = 0;
-      let bc = 0;
-      $("gpWarn").textContent = "A pontuação de Produção só entra no grupo após status Validada - computada.";
-      if(ev > 0 && ev <= s.potencial12m){
-        rel = faixaProducao(s.pct).pts;
-        if(custo > 0){
-          const ratio = (ev * PRECO) / custo;
-          bc = ratio >= 20 ? 10 : ratio >= 10 ? 7 : ratio >= 5 ? 5 : ratio >= 1 ? 2 : 0;
+      const s = SISTEMAS[$("fSistema").value];
+      const status = $("gpStatus").value;
+      let rel = 0, bc = 0, cob = 0, jacPct = 0;
+      let warn = "A pontuação de Produção só entra no grupo após status Validada - computada.";
+
+      if(mode === "perda"){
+        const ev = Number($("fEvit").value || 0);
+        const custo = Number($("fCusto").value || $("custoProjeto").value || 0);
+        const jac = Math.min(Number($("fJac").value || 0), ev);
+        $("fEvitUsd").value = ev > 0 ? usd(ev * PRECO) : "-";
+        if(ev > 0 && ev <= s.potencial12m){
+          rel = faixaProducao(s.pct).pts;
+          if(custo > 0){
+            const ratio = (ev * PRECO) / custo;
+            bc = ratio >= 20 ? 10 : ratio >= 10 ? 7 : ratio >= 5 ? 5 : ratio >= 1 ? 2 : 0;
+          }
+        }else if(ev > s.potencial12m){
+          warn = `Perda evitada (${fmt(ev)} bbl) excede a perda projetada do sistema (${fmt(s.potencial12m)} bbl). Revise as premissas antes da validação.`;
         }
-      }else if(ev > s.potencial12m){
-        $("gpWarn").textContent = `Perda evitada (${fmt(ev)} bbl) excede a perda projetada do sistema (${fmt(s.potencial12m)} bbl). Revise as premissas antes da validação.`;
+        cob = ev > 0 ? Math.min(Math.round(ev / s.perda12m * 100), 999) : 0;
+        jacPct = ev > 0 ? Math.round(jac / ev * 100) : 0;
+      }else{
+        const inc = Number($("fInc").value || 0);
+        const custo = Number($("fIncCusto").value || $("custoProjeto").value || 0);
+        $("fIncGanhoUsd").value = inc > 0 ? usd(inc * PRECO) : "-";
+        if(inc > 0 && inc <= s.potencial12m){
+          rel = faixaProducao(s.pct).pts;
+          if(custo > 0){
+            const ratio = (inc * PRECO) / custo;
+            bc = ratio >= 20 ? 10 : ratio >= 10 ? 7 : ratio >= 5 ? 5 : ratio >= 1 ? 2 : 0;
+          }
+        }else if(inc > s.potencial12m){
+          warn = `Incremento de produção (${fmt(inc)} bbl) excede o potencial de referência do sistema (${fmt(s.potencial12m)} bbl). Revise as premissas antes da validação.`;
+        }
+        cob = inc > 0 ? Math.min(Math.round(inc / s.potencial12m * 100), 999) : 0;
       }
+      $("gpWarn").textContent = warn;
       const preview = rel + bc;
       const computed = status === "ok" ? preview : 0;
-      const cob = ev > 0 ? Math.min(Math.round(ev / s.perda12m * 100), 999) : 0;
-      const jacPct = ev > 0 ? Math.round(jac / ev * 100) : 0;
-      setGpUi(preview, computed, rel, bc, cob, status, jacPct);
+      setGpUi(preview, computed, rel, bc, cob, status, jacPct, mode);
       return {preview, computed};
     }
 
-    function setGpUi(preview, computed, rel, bc, cob, status, jacPct=0){
+    function setGpUi(preview, computed, rel, bc, cob, status, jacPct=0, mode="perda"){
       $("gpTotal").textContent = `${preview} / 25`;
       $("gpRel").textContent = `${rel} / 15`;
       $("gpBc").textContent = `${bc} / 10`;
+      $("gpRelLabel").textContent = mode === "incremento" ? "Relevância do sistema" : "Relevância da perda do sistema";
+      $("gpCobLabel").textContent = mode === "incremento" ? "Incremento vs. potencial do sistema" : "Cobertura da perda histórica";
       $("gpCob").textContent = `${cob}%`;
+      $("gpJacRow").style.display = mode === "incremento" ? "none" : "";
       $("gpJac").textContent = `${jacPct}%`;
       $("gpGauge").style.width = `${Math.min(100, preview / 25 * 100)}%`;
       const cls = preview >= 19 ? "Crítica" : preview >= 13 ? "Alta" : preview >= 7 ? "Média" : "Baixa";
@@ -1262,7 +1312,7 @@
       $("impactaProd").checked = true;
       $("fSistema").value = "comp";
       $("gpStatus").value = "ok";
-      $("fIncrementoProd").value = "nao";
+      $("gpMode").value = "perda";
       $("fEvit").value = 90000;
       $("fCusto").value = 175000;
       $("fJac").value = 45000;
