@@ -991,7 +991,7 @@
                     <span class="tag wait" id="gpTag">PRÉVIA - NÃO COMPUTADA</span>
                     <div class="split"><span id="gpRelLabel">Relevância da perda do sistema</span><b id="gpRel">0 / 15</b></div>
                     <div class="split"><span>Benefício / custo</span><b id="gpBc">0 / 10</b></div>
-                    <div class="split"><span id="gpCobLabel">Cobertura da perda histórica</span><b id="gpCob">0%</b></div>
+                    <div class="split" id="gpCobRow"><span id="gpCobLabel">Cobertura da perda histórica</span><b id="gpCob">0%</b></div>
                     <div class="split" id="gpJacRow"><span>Perda já ocorrida</span><b id="gpJac">0%</b></div>
                     <div class="gauge">
                       <div class="bar"><i id="gpGauge"></i></div>
@@ -1158,16 +1158,15 @@
         const inc = Number($("fInc").value || 0);
         const custo = Number($("fIncCusto").value || $("custoProjeto").value || 0);
         $("fIncGanhoUsd").value = inc > 0 ? usd(inc * PRECO) : "-";
-        if(inc > 0 && inc <= s.potencial12m){
+        // Incremento de produção não é limitado pelo "potencial de perda" do sistema
+        // (essa referência só faz sentido para perda evitada) — pontua diretamente.
+        if(inc > 0){
           rel = faixaProducao(s.pct).pts;
           if(custo > 0){
             const ratio = (inc * PRECO) / custo;
             bc = ratio >= 20 ? 10 : ratio >= 10 ? 7 : ratio >= 5 ? 5 : ratio >= 1 ? 2 : 0;
           }
-        }else if(inc > s.potencial12m){
-          warn = `Incremento de produção (${fmt(inc)} bbl) excede o potencial de referência do sistema (${fmt(s.potencial12m)} bbl). Revise as premissas antes da validação.`;
         }
-        cob = inc > 0 ? Math.min(Math.round(inc / s.potencial12m * 100), 999) : 0;
       }
       $("gpWarn").textContent = warn;
       const preview = rel + bc;
@@ -1181,7 +1180,7 @@
       $("gpRel").textContent = `${rel} / 15`;
       $("gpBc").textContent = `${bc} / 10`;
       $("gpRelLabel").textContent = mode === "incremento" ? "Relevância do sistema" : "Relevância da perda do sistema";
-      $("gpCobLabel").textContent = mode === "incremento" ? "Incremento vs. potencial do sistema" : "Cobertura da perda histórica";
+      $("gpCobRow").style.display = mode === "incremento" ? "none" : "";
       $("gpCob").textContent = `${cob}%`;
       $("gpJacRow").style.display = mode === "incremento" ? "none" : "";
       $("gpJac").textContent = `${jacPct}%`;
