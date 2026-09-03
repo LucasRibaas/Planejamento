@@ -624,6 +624,9 @@
         <p class="sec-sub">Adaptação da matriz Prêmio × Esforço do Plano de Desenvolvimento: no eixo vertical, a mesma pontuação de Prioridade da seção 05 (Segurança, Regulatório, Financeiro e Patrimônio, Produção de Óleo); no eixo horizontal, o Esforço medido em <strong>cama-dia</strong> (POB necessário × duração do escopo), já levantado na seção 10. O tamanho da bolha é o Custo Total; a cor distingue OPEX de CAPEX.</p>
       </div>
       <div class="matrix-note">
+        <b>Escopo revisado — apenas Projetos e Grandes Manutenções.</b> Esta matriz não plota atividades corretivas/preventivas rotineiras, estudos ainda sem fase FEL definida, ou intervenções pontuais de baixo POB — esses ficam fora da visão de portfólio e seguem seu fluxo normal via SAP/STAR. Entram aqui: <strong>Projetos</strong> (CAPEX, fase FEL/PML2 definida, custo ≥ US$ 150k) e <strong>Grandes Manutenções</strong> (OPEX com POB relevante — na ordem de ≥ 400–600 cama-dia — ou vinculadas a Parada Programada, docagem ou campanha).
+      </div>
+      <div class="matrix-note">
         <b>Proposta ilustrativa — pontos de exemplo, não dados reais.</b> Cama-dia mede quanto da capacidade de POB o escopo consome, não a complexidade técnica de execução — diferente do Esforço do Plano de Desenvolvimento, que combina notas de engenharia, ambiental e regulatório. Mantivemos essa simplificação de propósito; ver ressalva abaixo do gráfico.
       </div>
 
@@ -671,28 +674,22 @@
 
           <!-- bubbles -->
           <g>
-            <circle cx="110" cy="305" r="9" fill="var(--cat-capex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Estudo de Viabilidade (Backlog) · 25 pts · ~80 cama-dia · US$ 30k · CAPEX</title></circle>
-            <text x="110" y="325" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Estudo de viabilidade</text>
-
-            <circle cx="160" cy="191" r="11" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Calibração de Medidores Fiscais · 55 pts · ~150 cama-dia · US$ 50k · OPEX</title></circle>
-            <text x="160" y="215" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Medição Fiscal</text>
-
-            <circle cx="210" cy="104" r="16" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Troca de Selo Mecânico · 78 pts · ~230 cama-dia · US$ 175k · OPEX</title></circle>
-            <text x="210" y="83" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Selo mecânico</text>
-
-            <circle cx="350" cy="142" r="22" fill="var(--cat-capex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Retrofit CO2 (Sustentabilidade) · 68 pts · ~420 cama-dia · US$ 600k · CAPEX</title></circle>
+            <circle cx="350" cy="142" r="22" fill="var(--cat-capex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Retrofit CO2 (Sustentabilidade) · 68 pts · ~420 cama-dia · US$ 600k · CAPEX · Projeto</title></circle>
             <text x="350" y="112" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Retrofit CO2</text>
 
-            <circle cx="520" cy="66" r="32" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Campanha de Tanques (Naval) · 88 pts · ~830 cama-dia · US$ 5,9M · OPEX</title></circle>
+            <circle cx="430" cy="115" r="23" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Troca de Turbogerador (TG) · 75 pts · ~600 cama-dia · US$ 800k · OPEX · Grande Manutenção</title></circle>
+            <text x="430" y="157" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Troca de TG</text>
+
+            <circle cx="520" cy="66" r="32" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Campanha de Tanques (Naval) · 88 pts · ~830 cama-dia · US$ 5,9M · OPEX · Grande Manutenção</title></circle>
             <text x="520" y="30" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Campanha de tanques</text>
 
-            <circle cx="590" cy="96" r="28" fill="var(--cat-capex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Adequação Topside — Novo Poço (Desenvolvimento da Produção) · 80 pts · ~980 cama-dia · US$ 3,2M · CAPEX</title></circle>
+            <circle cx="590" cy="96" r="28" fill="var(--cat-capex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Adequação Topside — Novo Poço (Desenvolvimento da Produção) · 80 pts · ~980 cama-dia · US$ 3,2M · CAPEX · Projeto</title></circle>
             <text x="590" y="136" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Adequação p/ novo poço</text>
 
-            <circle cx="700" cy="229" r="24" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Pintura / Preservação (Integridade) · 45 pts · ~1250 cama-dia · US$ 1,1M · OPEX</title></circle>
+            <circle cx="700" cy="229" r="24" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Pintura / Preservação (Integridade) · 45 pts · ~1250 cama-dia · US$ 1,1M · OPEX · Grande Manutenção</title></circle>
             <text x="700" y="262" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Pintura / preservação</text>
 
-            <circle cx="820" cy="58" r="36" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Parada Programada 2027 · 90 pts · ~2600 cama-dia · US$ 8,0M · OPEX</title></circle>
+            <circle cx="820" cy="58" r="36" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Parada Programada 2027 · 90 pts · ~2600 cama-dia · US$ 8,0M · OPEX · Grande Manutenção</title></circle>
             <text x="790" y="20" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Parada Programada</text>
           </g>
         </svg>
@@ -700,8 +697,8 @@
         <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center;padding:14px 4px 4px;border-top:1px solid var(--border-soft);margin-top:10px;font-size:12px;color:var(--ink-soft)">
           <span style="display:flex;align-items:center;gap:6px"><i style="width:11px;height:11px;border-radius:50%;background:var(--cat-opex);display:inline-block"></i>OPEX</span>
           <span style="display:flex;align-items:center;gap:6px"><i style="width:11px;height:11px;border-radius:50%;background:var(--cat-capex);display:inline-block"></i>CAPEX</span>
-          <span style="display:flex;align-items:center;gap:6px"><i style="width:10px;height:10px;border-radius:50%;background:var(--muted);display:inline-block"></i>Custo ≈ US$ 50k</span>
-          <span style="display:flex;align-items:center;gap:6px"><i style="width:20px;height:20px;border-radius:50%;background:var(--muted);display:inline-block"></i>Custo ≈ US$ 1M</span>
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:10px;height:10px;border-radius:50%;background:var(--muted);display:inline-block"></i>Custo ≈ US$ 600k</span>
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:20px;height:20px;border-radius:50%;background:var(--muted);display:inline-block"></i>Custo ≈ US$ 3M</span>
           <span style="display:flex;align-items:center;gap:6px"><i style="width:32px;height:32px;border-radius:50%;background:var(--muted);display:inline-block"></i>Custo ≈ US$ 8M</span>
         </div>
       </div>
@@ -711,7 +708,7 @@
         <ul>
           <li>Cama-dia mede consumo de capacidade de POB, não dificuldade técnica — um escopo simples com muita gente por muito tempo pontua "alto esforço" mesmo sem ser complexo. O Plano de Desenvolvimento resolve isso com notas de engenharia por disciplina; não replicamos esse detalhamento aqui.</li>
           <li>Não plotamos a capacidade de POB/dia do ativo como linha de referência neste gráfico — a unidade não bate (cama-dia é por escopo; capacidade é por mês). Essa comparação já existe no nivelamento da seção 11.</li>
-          <li>Os 8 pontos acima são ilustrativos, para validar a leitura da matriz — não são escopos reais do ciclo atual.</li>
+          <li>Os 6 pontos acima são ilustrativos, para validar a leitura da matriz — não são escopos reais do ciclo atual. Todos representam Projetos ou Grandes Manutenções; itens de baixo esforço (estudos, calibrações pontuais, corretivas de rotina) foram removidos por não se qualificarem no novo escopo.</li>
         </ul>
       </div>
     </section>
