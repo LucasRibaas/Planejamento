@@ -1,0 +1,1174 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planejamento Integrado Operações Topside</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f5f6f8;
+    --surface:#ffffff;
+    --surface-2:#eef1f5;
+    --surface-3:#e4e9ef;
+    --border:#dbe1e8;
+    --border-soft:#e8ecf1;
+    --ink:#12161d;
+    --ink-soft:#48505c;
+    --muted:#7c8798;
+    --accent:#c1780f;
+    --accent-strong:#9c5f0a;
+    --accent-soft:#f7e6cc;
+    --accent-ink:#5c3a06;
+    --accent2:#215f70;
+    --accent2-soft:#dcedf1;
+    --good:#2f8f5b;
+    --good-soft:#e0f2e8;
+    --warn:#c1780f;
+    --warn-soft:#f7e6cc;
+    --crit:#a83a3a;
+    --crit-soft:#f6dede;
+    --cat-opex:#2a78d6;
+    --cat-capex:#eb6834;
+    --shadow:0 1px 2px rgba(18,22,29,.04), 0 8px 24px rgba(18,22,29,.06);
+  }
+  :root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){
+      --bg:#10141a;
+      --surface:#171c24;
+      --surface-2:#1d2430;
+      --surface-3:#242c3a;
+      --border:#2b3341;
+      --border-soft:#232a37;
+      --ink:#e9ebee;
+      --ink-soft:#b6bfcb;
+      --muted:#828da0;
+      --accent:#e2a234;
+      --accent-strong:#f0b657;
+      --accent-soft:#3a2c12;
+      --accent-ink:#f6d999;
+      --accent2:#6bb0c2;
+      --accent2-soft:#1c2f34;
+      --good:#4dbb84;
+      --good-soft:#173626;
+      --warn:#e2a234;
+      --warn-soft:#3a2c12;
+      --crit:#e07a7a;
+      --crit-soft:#3a2020;
+      --cat-opex:#3987e5;
+      --cat-capex:#d95926;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#10141a;
+    --surface:#171c24;
+    --surface-2:#1d2430;
+    --surface-3:#242c3a;
+    --border:#2b3341;
+    --border-soft:#232a37;
+    --ink:#e9ebee;
+    --ink-soft:#b6bfcb;
+    --muted:#828da0;
+    --accent:#e2a234;
+    --accent-strong:#f0b657;
+    --accent-soft:#3a2c12;
+    --accent-ink:#f6d999;
+    --accent2:#6bb0c2;
+    --accent2-soft:#1c2f34;
+    --good:#4dbb84;
+    --good-soft:#173626;
+    --warn:#e2a234;
+    --warn-soft:#3a2c12;
+    --crit:#e07a7a;
+    --crit-soft:#3a2020;
+    --cat-opex:#3987e5;
+    --cat-capex:#d95926;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.45);
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"IBM Plex Sans",-apple-system,"Segoe UI",Arial,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+  h1,h2,h3,h4{
+    font-family:"Archivo",Arial Narrow,Arial,sans-serif;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    text-wrap:balance;
+    margin:0;
+    color:var(--ink);
+  }
+  .mono{font-family:"IBM Plex Mono",SFMono-Regular,Consolas,monospace;}
+  code,.code-chip{
+    font-family:"IBM Plex Mono",SFMono-Regular,Consolas,monospace;
+    font-size:.82em;
+    background:var(--surface-3);
+    border:1px solid var(--border);
+    border-radius:5px;
+    padding:1px 6px;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  a{color:var(--accent2)}
+  :focus-visible{outline:2px solid var(--accent2); outline-offset:2px; border-radius:4px}
+
+  .wrap{max-width:980px; margin:0 auto; padding:0 24px 96px}
+
+  /* Top bar */
+  .topbar{
+    position:sticky; top:0; z-index:20;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(10px) saturate(1.1);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .topbar-inner{
+    max-width:980px; margin:0 auto; padding:12px 24px;
+    display:flex; align-items:center; gap:18px;
+  }
+  .brandmark{
+    display:flex; align-items:center; gap:9px;
+    font-family:"Archivo",sans-serif; font-weight:800; font-size:14px;
+    color:var(--ink); white-space:nowrap;
+  }
+  .brandmark .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .topnav{
+    display:flex; gap:2px; overflow-x:auto; scrollbar-width:none;
+    flex:1;
+  }
+  .topnav::-webkit-scrollbar{display:none}
+  .topnav a{
+    text-decoration:none; color:var(--muted); font-size:12.5px; font-weight:500;
+    padding:8px 10px; border-radius:6px; white-space:nowrap;
+  }
+  .topnav a:hover{color:var(--ink); background:var(--surface-2)}
+
+  /* Header / hero (compact) */
+  header.hero{
+    max-width:980px; margin:0 auto; padding:52px 24px 36px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:"Archivo",sans-serif; font-weight:700; font-size:11.5px;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--accent-strong);
+    margin-bottom:14px;
+  }
+  .eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  header.hero h1{font-size:clamp(28px,4vw,40px); line-height:1.08; max-width:18ch}
+  header.hero p.lede{
+    margin:16px 0 0; max-width:62ch; color:var(--ink-soft); font-size:16px;
+  }
+  .stat-row{
+    display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px;
+    margin-top:32px; border:1px solid var(--border); border-radius:10px; overflow:hidden;
+    background:var(--border);
+  }
+  .stat{background:var(--surface); padding:16px 16px}
+  .stat b{display:block; font-family:"Archivo",sans-serif; font-size:22px; font-weight:800}
+  .stat span{display:block; font-size:11.5px; color:var(--muted); margin-top:4px; letter-spacing:.02em}
+
+  /* Section shell */
+  section{padding:56px 0; border-bottom:1px solid var(--border-soft); scroll-margin-top:70px}
+  section:last-of-type{border-bottom:0}
+  .sec-head{margin-bottom:28px; max-width:70ch}
+  .sec-num{
+    font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--muted); margin-bottom:8px;
+  }
+  section h2{font-size:24px}
+  section .sec-sub{margin:10px 0 0; color:var(--ink-soft); font-size:14.5px; max-width:66ch}
+
+  /* Stepper (process flow) */
+  .stepper{
+    display:grid; grid-template-columns:repeat(7,1fr); gap:0; position:relative;
+  }
+  .step{
+    position:relative; padding:0 10px 0 0; border-left:2px solid var(--border);
+  }
+  .step:first-child{border-left:2px solid transparent}
+  .step-num{
+    width:26px; height:26px; border-radius:50%;
+    background:var(--surface); border:2px solid var(--accent); color:var(--accent-strong);
+    display:grid; place-items:center; font-family:"Archivo",sans-serif; font-weight:800; font-size:12px;
+    margin-left:-14px; margin-bottom:12px;
+  }
+  .step:first-child .step-num{margin-left:0}
+  .step h3{font-size:13px; margin-bottom:6px}
+  .step p{margin:0; font-size:11px; color:var(--ink-soft); line-height:1.45}
+  .step .who{
+    display:inline-block; margin-top:10px; font-size:11px; color:var(--muted);
+    font-weight:500;
+  }
+  @media (max-width:860px){
+    .stepper{grid-template-columns:1fr; gap:22px}
+    .step{border-left:2px solid var(--border); padding-left:18px}
+    .step-num{margin-left:-15px}
+    .step:first-child{padding-left:18px}
+  }
+
+  /* Role cards */
+  .role-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+  .role{
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    padding:16px 14px; box-shadow:var(--shadow);
+  }
+  .role .tag{
+    display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.03em;
+    text-transform:uppercase; color:var(--accent2); background:var(--accent2-soft);
+    padding:3px 8px; border-radius:5px; margin-bottom:10px;
+  }
+  .role h3{font-size:14px; margin-bottom:6px}
+  .role p{margin:0; font-size:12px; color:var(--ink-soft)}
+  @media (max-width:860px){.role-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:520px){.role-grid{grid-template-columns:1fr}}
+
+  /* Tables */
+  .tbl-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow)}
+  table{width:100%; border-collapse:collapse; font-size:13px; background:var(--surface)}
+  th,td{padding:11px 13px; text-align:left; vertical-align:top; border-bottom:1px solid var(--border-soft)}
+  thead th{
+    background:var(--surface-2); font-family:"Archivo",sans-serif; font-weight:700; font-size:11px;
+    text-transform:uppercase; letter-spacing:.04em; color:var(--muted); white-space:nowrap;
+  }
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:var(--surface-2)}
+  td.wide{min-width:220px}
+  .pill{
+    display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600;
+    padding:3px 9px; border-radius:999px; white-space:nowrap;
+  }
+  .pill.confirmed{background:var(--good-soft); color:var(--good)}
+  .pill.assume{background:var(--warn-soft); color:var(--accent-strong)}
+  .pill.gap{background:var(--crit-soft); color:var(--crit)}
+
+  /* Criteria cards */
+  .crit-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+  .crit{
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    padding:16px; display:flex; gap:12px; box-shadow:var(--shadow);
+  }
+  .crit .num{
+    font-family:"Archivo",sans-serif; font-weight:800; font-size:20px; color:var(--accent);
+    flex:none; width:28px;
+  }
+  .crit h4{font-size:14px; margin-bottom:5px}
+  .crit p{margin:0; font-size:12.5px; color:var(--ink-soft)}
+  @media (max-width:760px){.crit-grid{grid-template-columns:1fr}}
+
+  /* Racional info cards */
+  .info-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px}
+  .info-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+  @media (max-width:860px){.info-grid.cols-3{grid-template-columns:1fr}}
+  .info-card .stage-tag{
+    display:inline-flex; font-size:10.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+    color:var(--accent2); background:var(--accent2-soft); padding:3px 8px; border-radius:5px; margin-bottom:10px;
+  }
+  .info-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    padding:18px 20px; box-shadow:var(--shadow);
+  }
+  .info-card h4{
+    font-size:14.5px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border-soft);
+  }
+  .info-card ul{margin:0; padding:0; list-style:none; display:grid; gap:9px}
+  .info-card li{
+    font-size:13px; color:var(--ink-soft); padding-left:16px; position:relative;
+  }
+  .info-card li::before{
+    content:""; position:absolute; left:0; top:7px; width:6px; height:6px; border-radius:50%; background:var(--accent);
+  }
+  @media (max-width:760px){.info-grid{grid-template-columns:1fr}}
+
+  /* Priority matrix */
+  .matrix-note{
+    background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+    color:var(--accent-ink); border-radius:10px; padding:14px 16px; font-size:13px; margin-bottom:22px;
+  }
+  .matrix-note b{font-weight:700}
+  .weight-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px}
+  .weight-card{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px; box-shadow:var(--shadow)}
+  .weight-card h4{font-size:12.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); font-weight:700; margin-bottom:8px}
+  .weight-card b{font-family:"Archivo",sans-serif; font-size:22px}
+  .weight-bar{height:6px; border-radius:999px; background:var(--surface-3); margin-top:10px; overflow:hidden}
+  .weight-bar i{display:block; height:100%; background:var(--accent); border-radius:inherit}
+  .weight-card.veto b{color:var(--crit)}
+  .weight-card.veto .weight-bar i{background:var(--crit)}
+  @media (max-width:760px){.weight-grid{grid-template-columns:repeat(2,1fr)}}
+  .class-scale{display:flex; gap:8px; flex-wrap:wrap; margin-top:6px}
+  .class-chip{
+    font-size:11.5px; font-weight:700; padding:6px 11px; border-radius:8px; color:#fff;
+  }
+
+  /* Gantt / calendar timeline */
+  .gantt{overflow-x:auto; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); background:var(--surface)}
+  .gantt-grid{
+    display:grid; grid-template-columns:190px repeat(8,minmax(64px,1fr));
+    min-width:780px;
+  }
+  .gantt-grid > div{border-bottom:1px solid var(--border-soft); padding:10px 10px; font-size:11.5px; display:flex; align-items:center}
+  .gantt-grid > div.head{
+    background:var(--surface-2); font-family:"Archivo",sans-serif; font-weight:700; font-size:10.5px;
+    text-transform:uppercase; letter-spacing:.03em; color:var(--muted); justify-content:center;
+  }
+  .gantt-grid > div.rowlabel{
+    font-weight:600; color:var(--ink); background:var(--surface); position:sticky; left:0;
+    border-right:1px solid var(--border);
+  }
+  .gantt-grid > div.cell{justify-content:center; position:relative}
+  .bar{
+    position:absolute; inset:8px 2px; border-radius:5px; background:var(--accent2-soft);
+  }
+  .bar.b1{background:var(--accent2-soft)}
+  .bar.b2{background:var(--accent-soft)}
+  .pin{
+    position:absolute; top:-9px; right:-1px; width:18px; height:18px; border-radius:50%;
+    background:var(--accent); color:#fff; font-size:9px; font-weight:800; display:grid; place-items:center;
+    box-shadow:0 0 0 2px var(--surface);
+  }
+  .flag{
+    position:absolute; top:-9px; left:50%; transform:translateX(-50%);
+    font-size:13px;
+  }
+  .gantt-legend{display:flex; gap:18px; flex-wrap:wrap; padding:12px 14px; font-size:11.5px; color:var(--muted); border-top:1px solid var(--border-soft)}
+  .gantt-legend span{display:inline-flex; align-items:center; gap:6px}
+  .gantt-legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+  /* Callout */
+  .callout{border-radius:10px; padding:16px 18px; font-size:13.5px; border:1px solid; margin-top:8px}
+  .callout.gap{background:var(--crit-soft); border-color:color-mix(in srgb, var(--crit) 35%, var(--border)); color:var(--ink)}
+  .callout.gap b{color:var(--crit)}
+  .callout ul{margin:8px 0 0; padding-left:20px}
+  .callout li{margin-bottom:6px}
+  .callout li:last-child{margin-bottom:0}
+
+  footer{max-width:980px; margin:0 auto; padding:40px 24px 60px; color:var(--muted); font-size:12px}
+  footer .rule{height:1px; background:var(--border-soft); margin-bottom:24px}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brandmark"><span class="dot"></span>Planejamento Integrado · Operações Topside</div>
+      <nav class="topnav">
+        <a href="#racional">O que é</a>
+        <a href="#ciclovida">Ciclo de vida</a>
+        <a href="#fluxo">Fluxo</a>
+        <a href="#equipes">Equipes</a>
+        <a href="#calendario">Calendário</a>
+        <a href="#esforco">Esforço</a>
+        <a href="#priorizacao">Priorização</a>
+        <a href="#criterios-priorizacao">Nota da matriz</a>
+        <a href="#papeis">Papéis</a>
+        <a href="#areas">Áreas</a>
+        <a href="#criterios">Critérios</a>
+        <a href="#dados">Dados</a>
+        <a href="#aprovacao">Aprovação</a>
+        <a href="#pendencias">Pendências</a>
+        <a href="#treinamentos">Treinamentos</a>
+      </nav>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="eyebrow">Processo · Diretoria de Operações</div>
+    <h1>Como construímos o Planejamento Integrado de Operações Topside</h1>
+    <p class="lede">Um único rito, aplicado a todos os ativos: transforma a Diretriz Estratégica de cada Gerência Executiva em escopo, prioridade e orçamento. Este documento não é o plano em si — é o <strong>processo</strong> que o sustenta: os inputs que o alimentam, a forma como priorizamos, e o que a companhia recebe como resultado. Horizonte de 1 ano, com todo escopo formalmente vinculado à diretriz estratégica correspondente.</p>
+    <div class="stat-row">
+      <div class="stat"><b>1 ano</b><span>Horizonte do plano</span></div>
+      <div class="stat"><b>8</b><span>Unidades: FPSO Frade, FPSO Forte, FPSO Bravo, Polvo A, FPSO Peregrino, Peregrino A, Peregrino B, Peregrino C</span></div>
+      <div class="stat"><b>12</b><span>Áreas mapeadas no plano</span></div>
+      <div class="stat"><b>Semestral</b><span>Ciclo de construção (emissões de março e setembro)</span></div>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <section id="racional">
+      <div class="sec-head">
+        <h2>O que é o Planejamento Integrado de Operações Topside?</h2>
+        <p class="sec-sub">Instrumento que consolida, em um horizonte de <strong>1 ano</strong>, os Projetos de Modificação de Eficiência Operacional e Adequação Topside para Desenvolvimento da Produção, Grandes Manutenções, Escopos de Integridade Estrutural e Naval, Parada Programada, Medição Fiscal e Sustentabilidade.</p>
+        <p class="sec-sub">O processo de construção ocorre em ciclos semestrais recorrentes, estruturados a partir das emissões realizadas ao final dos meses de março e setembro.</p>
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>Direcionador de Prontidão + Controle de Tarefas</h4>
+          <ul>
+            <li>Tempo para compra de equipamentos e contratação de serviços</li>
+            <li>Dimensionamento e alocação de POB</li>
+            <li>Tempo de maturidade dos escopos</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Filtro / Priorizador de Execução</h4>
+          <ul>
+            <li>Impacto em Segurança</li>
+            <li>Impacto Regulatório</li>
+            <li>Impacto Financeiro e Patrimonial</li>
+            <li>Impacto na Produção de Óleo</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section id="ciclovida">
+      <div class="sec-head">
+        <h2>Ciclo de Vida do Planejamento Integrado</h2>
+        <p class="sec-sub">O Planejamento Integrado é composto por escopos em três estágios de maturidade. <strong>Proposta a validar</strong> — segue a mesma lógica do Plano de Desenvolvimento, adaptada aos critérios do Topside.</p>
+      </div>
+      <div class="info-grid cols-3">
+        <div class="info-card">
+          <span class="stage-tag">Estágio 1</span>
+          <h4>Projetos Firmes e Escopos já Aprovados</h4>
+          <ul>
+            <li>Escopos já priorizados e aprovados pelo Coordenador de Operações</li>
+            <li>Inclui projetos firmes, como projetos de adequação no Topside para projetos de Desenvolvimento da Produção já aprovados</li>
+            <li>Seguem o rito de nivelamento e execução do plano</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <span class="stage-tag">Estágio 2</span>
+          <h4>Escopos Condicionados</h4>
+          <ul>
+            <li>Dependem de evento ou validação de premissa crítica: janela de Parada Programada, aprovação regulatória, disponibilidade de recurso ou orçamento</li>
+            <li>Ex.: campanhas atreladas à Parada Programada</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <span class="stage-tag">Estágio 3</span>
+          <h4>Backlog de Oportunidade</h4>
+          <ul>
+            <li>Escopos que ainda precisam seguir o rito de análise de oportunidade</li>
+            <li>Avaliados quanto à viabilidade e ao potencial de conversão em escopo aprovado</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sec-sub" style="margin-top:16px">Uma vez aprovado, cada escopo segue o rito abaixo — já detalhado na Visão Geral:</div>
+    </section>
+    <section id="fluxo">
+      <div class="sec-head">
+        <div class="sec-num">01 — Visão geral</div>
+        <h2>O processo tem sete etapas</h2>
+        <p class="sec-sub">Da comunicação inicial até o plano oficial divulgado, cada escopo passa pela mesma esteira — independente da área que o solicitou.</p>
+      </div>
+      <div class="stepper">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Comunicação &amp; treinamento</h3>
+          <p>Divulgação do rito para toda a PRIO; treinamento macro e, na sequência, treinamento intensivo por disciplina.</p>
+          <span class="who">Eng. Planejamento / Accenture</span>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Building</h3>
+          <p>Cada engenheiro de disciplina solicita escopo <strong>com base na Diretriz Estratégica já definida para sua Gerência Executiva</strong>, e só então define custo, POB, ano; sincroniza ordens SAP ou importa planilha em massa.</p>
+          <span class="who">Engenheiros de disciplina</span>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Leveling &amp; Challenge</h3>
+          <p>Eng. Planejamento nivela a demanda pela matriz de priorização, pelo POB total disponível e pelo capex disponível, e já consolida o contraponto das propostas de cada área frente à diretriz estratégica da Gerência Executiva. Gera o esboço V0.</p>
+          <span class="who">Eng. Planejamento / Coordenador do Ativo</span>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h3>Workshop com Gerentes Executivos</h3>
+          <p>Depois do crivo do Coordenador de Operações sobre a V0, o Eng. Planejamento do Ativo apresenta o plano ao OIM e a todos os Gerentes Executivos para discussão e alinhamento. Sai daqui uma V0 já aprovada pelos Gerentes.</p>
+          <span class="who">Eng. Planejamento do Ativo / Gerentes Executivos / OIM</span>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <h3>Revisar — aprovação V0</h3>
+          <p>Gerente e Coordenador do Ativo revisam a V0 consolidada e aprovam o avanço do plano.</p>
+          <span class="who">Gerente do Ativo / Coordenador do Ativo</span>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <h3>Ajustes do plano</h3>
+          <p>Ajustes finos no plano aprovado — refinamento de POB, custo e cronograma por área, antes do fechamento.</p>
+          <span class="who">Eng. Planejamento</span>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <h3>Plan Approval — envio do plano</h3>
+          <p>Plano final (VF) é aprovado e enviado, divulgado a todas as áreas.</p>
+          <span class="who">Gerente do Ativo</span>
+        </div>
+      </div>
+    </section>
+    <section id="equipes">
+      <div class="sec-head">
+        <div class="sec-num">02 — Quadro de equipes</div>
+        <h2>Quem responde por cada área, em cada unidade</h2>
+        <p class="sec-sub">Estrutura real de equipe, por Gerência — Cluster Sul (Polvo &amp; TBMT, Peregrino) e Cluster Norte (ABL, Frade/Wahoo). "Coordenação corporativa" é a liderança única da disciplina, transversal a todas as unidades.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+<thead>
+            <tr><th>Gerência</th><th>Área</th><th>Coordenação<br>corporativa</th><th>Polvo &amp; TBMT</th><th>Peregrino</th><th>ABL</th><th>Frade/Wahoo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Gerência</td><td><strong>Operações</strong></td><td>—</td><td>Dirlaine Oliveira<br>João Marcelo Grigolleto</td><td>Rafael Cardoso<br>Carlos Althoff (FPSO)<br>Aristides Basilio (PRG A, B e C)</td><td>José Newton<br>Guilherme Batista</td><td>Nacib Haddad<br>Camilla Ito</td></tr>
+            <tr><td rowspan="9">Engenharia<br><span style="font-weight:400;color:var(--muted)">Lourenço Morucci</span></td><td>Manutenção</td><td>Alex Dantas</td><td>Iancaue Soares</td><td>Samya Estevam (FPSO)<br>Paulo Sá (PRG A, B e C)</td><td>Leonardo Paiva</td><td>Ygor Teixeira</td></tr>
+            <tr><td>Confiabilidade</td><td>Isabella Oliveira</td><td colspan="4">Guilherme Bassalo / Andrey Medeiros (todas as unidades)</td></tr>
+            <tr><td>Suporte Técnico</td><td>Alexandro Felix</td><td colspan="4">—</td></tr>
+            <tr><td>Integridade</td><td>Matheus Lima</td><td>Marcus Loiola</td><td>Jose Pacheco (FPSO)<br>Bruno Schmidt (PRG A, B e C)</td><td>Mauro Arrabal<br>Luiz Eduardo Gonçalves</td><td>Tarcisio Malta</td></tr>
+            <tr><td>Naval</td><td>Matheus Lima</td><td>Maria Eduarda Aquino</td><td>Nathalia Azambuja</td><td>Fernando Kume</td><td>João Tadeu Vidal</td></tr>
+            <tr><td>Planejamento</td><td>Lucas Ribas</td><td>Nicole Bastos</td><td>Marcos Paulo (FPSO &amp; PRG A)<br>Leonardo Simplício (PRG B e C)</td><td>Dyanna Lanna</td><td>Carolina Soares</td></tr>
+            <tr><td>Projetos</td><td>Mariana Silva</td><td>Mariana Silva</td><td>Josimar</td><td>Mariana Silva</td><td>Lenon Reis</td></tr>
+            <tr><td>Construção</td><td>Victor Souza</td><td>Hugo Cantisano</td><td>Abraao Leite (FPSO)<br>Alberto Siqueira (PRG A, B e C)</td><td>Caio Monteiro</td><td>Sergio Ramos</td></tr>
+            <tr><td>Parada Programada</td><td>Antônio Toffano</td><td colspan="4">Thiago Purcino (todas as unidades)</td></tr>
+            <tr><td rowspan="3">Gestão da Produção<br><span style="font-weight:400;color:var(--muted)">Élida Gurgel</span></td><td>Processos</td><td>Daniel Stussi</td><td>Caio Menezes</td><td>Tiago Velasco</td><td>Marcelo Vidal<br>Miguel Base</td><td>Gabriel Ramos</td></tr>
+            <tr><td>Químicos</td><td>Johanna Vaca</td><td>Idianara da Silva</td><td>Thamires Laranjeiras</td><td>Tayane Miranda<br>Aryanne Nascimento</td><td>Yohana Conde</td></tr>
+            <tr><td>Medição Fiscal</td><td>TBD</td><td>Larissa Farias</td><td>Gustavo Tavares</td><td>Joana Augustin</td><td>Vanessa Vieira</td></tr>
+            <tr><td rowspan="3">Sustentabilidade<br><span style="font-weight:400;color:var(--muted)">Thiago Ormonde, Renan Campos, Maria Eduarda</span></td><td>Seg. Processos</td><td>Gabriela Roman</td><td>Lara Batista</td><td>Mariana Orosa<br>Melina Prado</td><td>Clara Leal</td><td>João Antônio</td></tr>
+            <tr><td>Saúde e Seg. Ocup.</td><td>Aline Rodrigues</td><td>Anderson Castro</td><td>Jefferson Pinheiro<br>Ana Augusta</td><td>Tadeu Luiz</td><td>Luiz Heltz</td></tr>
+            <tr><td>Meio Ambiente</td><td>Aline Almeida</td><td colspan="2">Lorena Brandão (Polvo &amp; TBMT + Peregrino)</td><td>—</td><td>—</td></tr>
+            <tr><td rowspan="3">Desenvolvimento da Produção<br><span style="font-weight:400;color:var(--muted)">Iuri Rossi</span></td><td>Projetos</td><td>Iuri</td><td>Debora Costa<br>Felippe</td><td>Debora Costa<br>Lorenzzo</td><td>Rodrigo Braga<br>Pedro Lago</td><td>Vanessa Arivabene<br>Jessica, Bruno</td></tr>
+            <tr><td>Integridade Subsea</td><td>Tiago Pinho</td><td>Caio Amaral</td><td>Rodrigo Azeredo</td><td>Diogo França</td><td>Marisol</td></tr>
+            <tr><td>Integridade Poços</td><td>Vitor Santos</td><td>Rafaela</td><td>Rafaela / Alzira</td><td>Kamylla</td><td>Alzira</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="sec-sub" style="margin-top:10px">Gabriel Romeiro atua como liderança comum às quatro unidades, acima do nível de Gerência — nível hierárquico exato não especificado na planilha de origem.</p>
+    </section>
+    <section id="calendario">
+      <div class="sec-head">
+        <div class="sec-num">03 — Calendário</div>
+        <h2>Linha do tempo consolidada</h2>
+        <p class="sec-sub">Datas reais do Cronograma Plano Integrado 2027. Cada linha abaixo é uma etapa do rito, já com início e fim confirmados.</p>
+      </div>
+      <div class="gantt">
+        <div class="gantt-grid">
+          <div class="head"></div>
+          <div class="head">Ago S4</div>
+          <div class="head">Set S1</div>
+          <div class="head">Set S2</div>
+          <div class="head">Set S3</div>
+          <div class="head">Set S4</div>
+          <div class="head">Out S1</div>
+          <div class="head">Out S2</div>
+          <div class="head">Out S3</div>
+
+          <div class="rowlabel">Comunicação &amp; divulgação<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">25–27/08</span></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+          <div class="rowlabel">Workshop Performance — Passo 1: insumos de evolução de condição<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">27/08</span></div>
+          <div class="cell"><div class="bar b1"></div><span class="pin">27</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+          <div class="rowlabel">Treinamento (macro + intensivo)<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">27/08–02/09</span></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+          <div class="rowlabel">Building — preenchimento<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">31/08–11/09</span></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"><div class="bar b1"></div><span class="pin">11</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+          <div class="rowlabel">Leveling &amp; Challenge<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">14–18/09 · V0/V1</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+          <div class="rowlabel">Workshop Gerencial<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">21–22/09</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+          <div class="rowlabel">Revisar — aprovação V0<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">23–24/09</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"><div class="bar b2"></div></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+          <div class="rowlabel">Ajustes do plano<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">28/09–09/10</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"><div class="bar b1"></div></div>
+          <div class="cell"></div>
+
+          <div class="rowlabel">Plan Approval — envio do plano<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">12/10</span></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"><div class="bar b2"></div><span class="pin">12</span></div>
+          <div class="cell"></div>
+        </div>
+        <div class="gantt-legend">
+          <span><i style="background:var(--accent2-soft)"></i>Rito do plano</span>
+          <span><i style="background:var(--accent-soft)"></i>Aprovação / revisão</span>
+          <span><b class="mono" style="color:var(--accent)">27</b> = 27/08 · workshop Performance — Passo 1 do racional de priorização (seção 05)</span>
+          <span><b class="mono" style="color:var(--accent)">11</b> = 11/09 · fim do Building</span>
+          <span><b class="mono" style="color:var(--accent)">12</b> = 12/10 · envio do plano</span>
+        </div>
+      </div>
+      <p class="sec-sub" style="margin-top:10px">O workshop de 27/08 com o time de Performance é o <strong>Passo 1</strong> do racional de priorização por frente de trabalho (seção 05): define os insumos que mostram a evolução da condição do ativo, conectados às diretrizes estratégicas de cada Gerência Executiva.</p>
+    </section>
+    <section id="esforco">
+      <div class="sec-head">
+        <div class="sec-num">04 — O que está por trás do plano</div>
+        <h2>Matriz Prioridade × Esforço</h2>
+        <p class="sec-sub">Adaptação da matriz Prêmio × Esforço do Plano de Desenvolvimento: no eixo vertical, a mesma pontuação de Prioridade da seção 05 (Segurança, Regulatório, Financeiro e Patrimônio, Produção de Óleo); no eixo horizontal, o Esforço medido em <strong>cama-dia</strong> (POB necessário × duração do escopo), já levantado na seção 10. O tamanho da bolha é o Custo Total; a cor distingue OPEX de CAPEX.</p>
+      </div>
+      <div class="matrix-note">
+        <b>Escopo revisado — apenas Projetos e Grandes Manutenções.</b> Esta matriz não plota atividades corretivas/preventivas rotineiras, estudos ainda sem fase FEL definida, ou intervenções pontuais de baixo POB — esses ficam fora da visão de portfólio e seguem seu fluxo normal via SAP/STAR. Entram aqui: <strong>Projetos</strong> (CAPEX, fase FEL/PML2 definida, custo ≥ US$ 150k) e <strong>Grandes Manutenções</strong> (OPEX com POB relevante — na ordem de ≥ 400–600 cama-dia — ou vinculadas a Parada Programada, docagem ou campanha).
+      </div>
+      <div class="matrix-note">
+        <b>Proposta ilustrativa — pontos de exemplo, não dados reais.</b> Cama-dia mede quanto da capacidade de POB o escopo consome, não a complexidade técnica de execução — diferente do Esforço do Plano de Desenvolvimento, que combina notas de engenharia, ambiental e regulatório. Mantivemos essa simplificação de propósito; ver ressalva abaixo do gráfico.
+      </div>
+
+      <div class="tbl-wrap" style="padding:20px 16px 8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow)">
+        <svg viewBox="0 0 880 460" role="img" aria-label="Matriz de dispersão: Esforço em cama-dia no eixo horizontal, Prioridade no eixo vertical, tamanho da bolha por custo total, cor por OPEX ou CAPEX" style="width:100%;height:auto;font-family:inherit">
+          <!-- quadrant backgrounds -->
+          <rect x="70" y="20" width="393" height="190" fill="var(--good-soft)"></rect>
+          <rect x="463" y="20" width="397" height="190" fill="var(--warn-soft)"></rect>
+          <rect x="70" y="210" width="393" height="190" fill="var(--surface-3)"></rect>
+          <rect x="463" y="210" width="397" height="190" fill="var(--crit-soft)"></rect>
+
+          <!-- priority threshold gridlines (85 / 70 / 50 pts) -->
+          <line x1="70" y1="77" x2="860" y2="77" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"></line>
+          <line x1="70" y1="134" x2="860" y2="134" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"></line>
+          <line x1="70" y1="210" x2="860" y2="210" stroke="var(--border)" stroke-width="1.4"></line>
+          <!-- effort band gridlines -->
+          <line x1="267" y1="20" x2="267" y2="400" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"></line>
+          <line x1="463" y1="20" x2="463" y2="400" stroke="var(--border)" stroke-width="1.4"></line>
+          <line x1="660" y1="20" x2="660" y2="400" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"></line>
+
+          <!-- axes -->
+          <line x1="70" y1="20" x2="70" y2="400" stroke="var(--ink-soft)" stroke-width="1.2"></line>
+          <line x1="70" y1="400" x2="860" y2="400" stroke="var(--ink-soft)" stroke-width="1.2"></line>
+
+          <!-- quadrant annotations -->
+          <text x="86" y="40" font-size="12.5" font-weight="700" fill="var(--good)">Quick win</text>
+          <text x="620" y="200" font-size="12.5" font-weight="700" fill="var(--accent-strong)">Planejar com antecedência</text>
+          <text x="86" y="392" font-size="12.5" font-weight="700" fill="var(--muted)">Oportunista</text>
+          <text x="479" y="392" font-size="12.5" font-weight="700" fill="var(--crit)">Reavaliar / backlog</text>
+
+          <!-- y-axis tick labels -->
+          <text x="62" y="24" text-anchor="end" font-size="11" fill="var(--muted)">100</text>
+          <text x="62" y="81" text-anchor="end" font-size="11" fill="var(--muted)">85</text>
+          <text x="62" y="138" text-anchor="end" font-size="11" fill="var(--muted)">70</text>
+          <text x="62" y="214" text-anchor="end" font-size="11" fill="var(--muted)">50</text>
+          <text x="62" y="404" text-anchor="end" font-size="11" fill="var(--muted)">0</text>
+          <text x="22" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink-soft)" transform="rotate(-90 22 210)">Prioridade (pts) →</text>
+
+          <!-- x-axis band labels -->
+          <text x="168" y="418" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink-soft)">Baixo</text>
+          <text x="365" y="418" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink-soft)">Moderado</text>
+          <text x="561" y="418" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink-soft)">Alto</text>
+          <text x="760" y="418" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink-soft)">Muito alto</text>
+          <text x="465" y="442" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink-soft)">Esforço (cama-dia) →</text>
+
+          <!-- bubbles -->
+          <g>
+            <circle cx="350" cy="142" r="22" fill="var(--cat-capex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Retrofit CO2 (Sustentabilidade) · 68 pts · ~420 cama-dia · US$ 600k · CAPEX · Projeto</title></circle>
+            <text x="350" y="112" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Retrofit CO2</text>
+
+            <circle cx="430" cy="115" r="23" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Troca de Turbogerador (TG) · 75 pts · ~600 cama-dia · US$ 800k · OPEX · Grande Manutenção</title></circle>
+            <text x="430" y="157" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Troca de TG</text>
+
+            <circle cx="520" cy="66" r="32" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Campanha de Tanques (Naval) · 88 pts · ~830 cama-dia · US$ 5,9M · OPEX · Grande Manutenção</title></circle>
+            <text x="520" y="30" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Campanha de tanques</text>
+
+            <circle cx="590" cy="96" r="28" fill="var(--cat-capex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Adequação Topside — Novo Poço (Desenvolvimento da Produção) · 80 pts · ~980 cama-dia · US$ 3,2M · CAPEX · Projeto</title></circle>
+            <text x="590" y="136" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Adequação p/ novo poço</text>
+
+            <circle cx="700" cy="229" r="24" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Pintura / Preservação (Integridade) · 45 pts · ~1250 cama-dia · US$ 1,1M · OPEX · Grande Manutenção</title></circle>
+            <text x="700" y="262" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Pintura / preservação</text>
+
+            <circle cx="820" cy="58" r="36" fill="var(--cat-opex)" fill-opacity="0.82" stroke="var(--surface)" stroke-width="1.5"><title>Parada Programada 2027 · 90 pts · ~2600 cama-dia · US$ 8,0M · OPEX · Grande Manutenção</title></circle>
+            <text x="790" y="20" text-anchor="middle" font-size="10" fill="var(--ink-soft)">Parada Programada</text>
+          </g>
+        </svg>
+
+        <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center;padding:14px 4px 4px;border-top:1px solid var(--border-soft);margin-top:10px;font-size:12px;color:var(--ink-soft)">
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:11px;height:11px;border-radius:50%;background:var(--cat-opex);display:inline-block"></i>OPEX</span>
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:11px;height:11px;border-radius:50%;background:var(--cat-capex);display:inline-block"></i>CAPEX</span>
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:10px;height:10px;border-radius:50%;background:var(--muted);display:inline-block"></i>Custo ≈ US$ 600k</span>
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:20px;height:20px;border-radius:50%;background:var(--muted);display:inline-block"></i>Custo ≈ US$ 3M</span>
+          <span style="display:flex;align-items:center;gap:6px"><i style="width:32px;height:32px;border-radius:50%;background:var(--muted);display:inline-block"></i>Custo ≈ US$ 8M</span>
+        </div>
+      </div>
+
+      <div class="callout gap" style="margin-top:14px">
+        <b>Ressalva desta versão</b>
+        <ul>
+          <li>Cama-dia mede consumo de capacidade de POB, não dificuldade técnica — um escopo simples com muita gente por muito tempo pontua "alto esforço" mesmo sem ser complexo. O Plano de Desenvolvimento resolve isso com notas de engenharia por disciplina; não replicamos esse detalhamento aqui.</li>
+          <li>Não plotamos a capacidade de POB/dia do ativo como linha de referência neste gráfico — a unidade não bate (cama-dia é por escopo; capacidade é por mês). Essa comparação já existe no nivelamento da seção 11.</li>
+          <li>Os 6 pontos acima são ilustrativos, para validar a leitura da matriz — não são escopos reais do ciclo atual. Todos representam Projetos ou Grandes Manutenções; itens de baixo esforço (estudos, calibrações pontuais, corretivas de rotina) foram removidos por não se qualificarem no novo escopo.</li>
+        </ul>
+      </div>
+    </section>
+    <section id="priorizacao">
+      <div class="sec-head">
+        <div class="sec-num">05 — Priorização</div>
+        <h2>Como priorizamos as frentes de trabalho</h2>
+        <p class="sec-sub">Pedido do Gerente Executivo: o plano não deve priorizar escopos ou atividades isoladas — deve priorizar <strong>frentes de trabalho</strong>, entendidas como a evolução da condição do ativo em uma dimensão específica (ex.: Integridade estrutural, Redundância de sistemas). Um racional de 4 passos, iniciado no workshop de 27/08 com o time de Performance, define isso antes de qualquer atividade individual entrar no plano.</p>
+      </div>
+
+      <div class="crit-grid" style="margin-bottom:22px">
+        <div class="crit">
+          <div class="num">1</div>
+          <div>
+            <h4>Insumos de evolução</h4>
+            <p>Definir o que mostra a evolução da condição do ativo em cada frente — conectado às diretrizes estratégicas de cada Gerência Executiva. <span class="pill confirmed" style="vertical-align:middle">definido</span></p>
+          </div>
+        </div>
+        <div class="crit">
+          <div class="num">2</div>
+          <div>
+            <h4>Critério entre frentes</h4>
+            <p>Definir o que faz uma frente (ex.: Integridade) ter prioridade sobre outra (ex.: Redundância). Candidata natural: a matriz abaixo, pontuando a frente em vez do escopo individual. <span class="pill assume" style="vertical-align:middle">a definir</span></p>
+          </div>
+        </div>
+        <div class="crit">
+          <div class="num">3</div>
+          <div>
+            <h4>Nível de entrega</h4>
+            <p>Para cada frente já priorizada, definir o nível de evolução de condição esperado ao longo do ano. <span class="pill assume" style="vertical-align:middle">a definir</span></p>
+          </div>
+        </div>
+        <div class="crit">
+          <div class="num">4</div>
+          <div>
+            <h4>Consolidação da execução</h4>
+            <p>Traduzir o nível definido para cada frente no que precisa ser feito — ex.: 800 cama-dia para zerar um contingenciamento. É aqui que entra o Eng. Planejamento, consolidando todas as atividades Topside.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-sub" style="margin:22px 0 10px"><strong>Passo 1 — insumos de evolução (definido no workshop de Performance):</strong> primeiro as 4 diretrizes estratégicas de Operações; a partir delas, as 5 frentes estratégicas e seus indicadores de evolução da condição do ativo.</div>
+      <div class="crit-grid" style="margin-bottom:22px">
+        <div class="crit"><div class="num">01</div><div><h4>Eficiência na Produção de Óleo</h4><p>Maximizar a produção por meio da acuracidade do planejamento, estabilidade operacional, previsibilidade da produção, execução disciplinada dos projetos e utilização eficiente dos recursos.</p></div></div>
+        <div class="crit"><div class="num">02</div><div><h4>Incremento de Reservas</h4><p>Expandir as reservas reduzindo o custo de incorporação, priorizando soluções de maior retorno e ampliando o horizonte produtivo dos ativos.</p></div></div>
+        <div class="crit"><div class="num">03</div><div><h4>Extensão da Vida Útil</h4><p>Direcionar investimentos, estratégias de manutenção e intervenções com base no ciclo de vida dos ativos, priorizando soluções que ampliem sua vida útil sempre que economicamente justificável.</p></div></div>
+        <div class="crit"><div class="num">04</div><div><h4>Controle dos Riscos Operacionais</h4><p>Manter a operação dentro de níveis aceitáveis de risco, preservando pessoas, meio ambiente, integridade dos ativos e conformidade regulatória.</p></div></div>
+      </div>
+
+      <div class="sec-sub" style="margin-bottom:10px"><strong>5 frentes estratégicas (F01–F05)</strong>, cada uma vinculada a uma diretriz e com indicadores de evolução já assumidos — a maioria ainda sem meta numérica.</div>
+
+      <div style="margin-bottom:18px">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+          <span class="pill confirmed">F01</span>
+          <h4 style="font-size:14.5px;margin:0">Segurança e Conformidade Regulatória</h4>
+          <span class="pill assume">Diretriz 04 · Controle dos Riscos Operacionais</span>
+        </div>
+        <p class="sec-sub" style="margin:0 0 10px">Reduzir de forma material os principais riscos de segurança, integridade e áreas classificadas, mantendo estudos de risco atualizados, barreiras críticas eficazes e planos de recuperação para todas as exposições relevantes. Assegurar conformidade contínua com ANP, classe e demais autoridades, tratando desvios por severidade, antecipando certificações e eliminando recorrências.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Indicador</th><th>Fonte</th><th>Hoje</th><th>Meta 2027</th></tr></thead>
+            <tbody>
+              <tr><td>Ranking GRIS da frota</td><td class="wide">GRIS</td><td>—</td><td>sem meta numérica</td></tr>
+              <tr><td>IARI Integridade Mecânica M5</td><td class="wide">SGI</td><td>—</td><td>sem meta numérica</td></tr>
+              <tr><td>IARI Regulatório M3</td><td class="wide">SAP PM</td><td>—</td><td>sem meta numérica</td></tr>
+              <tr><td>Índice de Atendimento de Recomendação de Incidentes</td><td class="wide">Sem sistema</td><td>—</td><td>sem meta numérica</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+          <span class="pill confirmed">F02</span>
+          <h4 style="font-size:14.5px;margin:0">Confiabilidade e Excelência Operacional</h4>
+          <span class="pill assume">Diretriz 01 · Eficiência na Produção de Óleo</span>
+        </div>
+        <p class="sec-sub" style="margin:0 0 10px">Recuperar e sustentar a confiabilidade dos sistemas críticos de geração, compressão, bombeio e processamento, eliminando vulnerabilidades que ameacem produção, segurança ou continuidade operacional. Executar os planos de manutenção com disciplina — preventivas e corretivas — reduzindo o backlog e o volume de ordens vencidas, destravando o detalhamento que hoje impede a execução, tratando as notas sem ordem e as manutenções acima de 180 dias, e formalizando a avaliação de cada postergação. Sustentar a meta de produção elevando a eficiência operacional e a acuracidade do potencial: atacar as perdas por downtime e o desvio operacional em cada ativo, e reduzir a parcela de desvio ainda não identificada para que toda perda tenha mecanismo de falha conhecido e tratamento definido.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Indicador</th><th>Fonte</th><th>Hoje</th><th>Meta 2027</th></tr></thead>
+            <tbody>
+              <tr><td>Score médio de saúde da frota CONFIA</td><td class="wide">Confia</td><td>—</td><td>sem meta numérica</td></tr>
+              <tr><td>% de Disponibilidade de Equipamentos Críticos C2</td><td class="wide">Confia · Painel de Redundâncias</td><td>—</td><td>sem meta numérica</td></tr>
+              <tr><td>MTBF C2</td><td class="wide">SAP</td><td>—</td><td>sem meta numérica</td></tr>
+              <tr><td>% de Atendimento das Recomendações de Perdas de Produção</td><td class="wide">—</td><td>—</td><td>sem meta numérica</td></tr>
+              <tr><td>% de parâmetros fora do envelope LIGHTHOUSE</td><td class="wide">—</td><td>—</td><td>sem meta numérica</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+          <span class="pill confirmed">F03</span>
+          <h4 style="font-size:14.5px;margin:0">Disciplina de Custos da Operação</h4>
+          <span class="pill assume">Diretriz 01 · Eficiência na Produção de Óleo</span>
+        </div>
+        <p class="sec-sub" style="margin:0 0 10px">Manter CAPEX e OPEX dos projetos dentro da curva orçamentária, com desvios identificados, tratados e acompanhados por ativo.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Indicador</th><th>Fonte</th><th>Hoje</th><th>Meta 2027</th></tr></thead>
+            <tbody>
+              <tr><td>Projetos acima da curva orçamentária de CAPEX</td><td class="wide">Fluxo de Caixa — projetos com Δ previsto positivo ou gasto não orçado; 83 projetos com CAPEX em 2026, 42 mapeados em ativos</td><td>42</td><td>0 (reduzir até 0)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+          <span class="pill confirmed">F04</span>
+          <h4 style="font-size:14.5px;margin:0">Sustentação e Incremento da Produção</h4>
+          <span class="pill assume">Diretriz 02 · Incremento de Reservas</span>
+        </div>
+        <p class="sec-sub" style="margin:0 0 10px">Entregar o portfólio no prazo e dentro da curva: manter a curva S com previsão confiável e atualizada, bem como adequada disciplina financeira de CAPEX e OPEX dos projetos. Priorizar projetos de sustentação e incremento da produção, remoção de gargalos e redução estrutural de custos, considerando valor econômico, risco, prazo de captura e prontidão de execução.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Indicador</th><th>Fonte</th><th>Hoje</th><th>Meta 2027</th></tr></thead>
+            <tbody>
+              <tr><td>Aderência da Curva S do Portfólio de DMP</td><td class="wide">Projetos em Planejamento — nota Actio média dos projetos do campo (16/08/2026)</td><td>71%</td><td>≥ 90% (elevar até ≥ 90%)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-bottom:22px">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+          <span class="pill confirmed">F05</span>
+          <h4 style="font-size:14.5px;margin:0">Gestão do Ciclo de Vida dos Ativos</h4>
+          <span class="pill assume">Diretriz 03 · Extensão da Vida Útil</span>
+        </div>
+        <p class="sec-sub" style="margin:0 0 10px">Gerir degradação, obsolescência e vida remanescente dos ativos com base em criticidade e horizonte econômico, antecipando intervenções necessárias para preservar continuidade e extensão segura da operação.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Indicador</th><th>Fonte</th><th>Hoje</th><th>Meta 2027</th></tr></thead>
+            <tbody>
+              <tr><td>Plano de Recuperação de Equipamentos Obsolescentes</td><td class="wide">Portfólio — a instrumentar</td><td>100% do crítico mapeado</td><td>sem meta numérica</td></tr>
+              <tr><td>Cumprimento das inspeções e recomendações de amarras, risers, casco e mangotes</td><td class="wide">—</td><td>—</td><td>sem meta numérica</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="matrix-note">
+        <b>Matriz de priorização — candidata ao Passo 2.</b> Mesma metodologia oficial do sistema de levantamento de escopo (STAR) — pesos, travas e critério de cada bloco documentados na seção 06. Hoje ela pontua o escopo individual; a proposta discutida com o Gerente Executivo é aplicá-la à frente de trabalho como um todo — a confirmar no workshop de 27/08 (Passo 2).
+      </div>
+      <div class="weight-grid">
+        <div class="weight-card veto"><h4>Segurança</h4><b>30 pts</b><div class="weight-bar"><i style="width:100%"></i></div><p style="font-size:11.5px;color:var(--ink-soft);margin-top:8px">Trava P1 se houver risco de fatalidade</p></div>
+        <div class="weight-card veto"><h4>Regulatório</h4><b>25 pts</b><div class="weight-bar"><i style="width:83%"></i></div><p style="font-size:11.5px;color:var(--ink-soft);margin-top:8px">Trava P1 se houver embargo/interdição</p></div>
+        <div class="weight-card"><h4>Financeiro &amp; Patrimônio</h4><b>20 pts</b><div class="weight-bar"><i style="width:67%"></i></div></div>
+        <div class="weight-card veto"><h4>Produção de Óleo</h4><b>25 pts</b><div class="weight-bar"><i style="width:83%"></i></div><p style="font-size:11.5px;color:var(--ink-soft);margin-top:8px">Só computa após validação da GP · Trava P1 se escopo de Incremento de Produção</p></div>
+      </div>
+      <div class="sec-sub" style="margin-bottom:10px">Classificação final (por frente de trabalho, proposta):</div>
+      <div class="class-scale">
+        <span class="class-chip" style="background:var(--crit)">P1 Crítica · ≥ 85 pts ou trava acionada</span>
+        <span class="class-chip" style="background:var(--warn)">P2 Alta · 70–84</span>
+        <span class="class-chip" style="background:var(--accent2)">P3 Média · 50–69</span>
+        <span class="class-chip" style="background:var(--muted)">P4 Baixa · &lt; 50</span>
+      </div>
+    </section>
+    <section id="criterios-priorizacao">
+      <div class="sec-head">
+        <div class="sec-num">06 — O que está por trás da nota</div>
+        <h2>Critérios que compõem a pontuação</h2>
+        <p class="sec-sub">Regras oficiais da Matriz de Priorização STAR (arquivo de referência <code>star_priorizacao_integrada.html</code>): pesos, travas, critérios de cada bloco e fórmula final — os mesmos 4 blocos e 100 pontos da seção 05.</p>
+        <p class="sec-sub">Nesta matriz, cada critério abaixo hoje é respondido para um escopo individual. Na proposta de priorizar frentes de trabalho (seção 05), a mesma régua passaria a avaliar a frente como um todo — ex.: o pior cenário de risco, o prazo regulatório mais crítico ou a maior perda de produção evitável entre as atividades que a compõem. O critério final de comparação entre frentes (Passo 2) ainda será definido no workshop de 27/08.</p>
+      </div>
+
+      <div class="matrix-note">
+        <b>Travas automáticas.</b> Não dependem da nota total. Quando qualquer condição abaixo é selecionada, o projeto é elevado para <strong>P1 — Crítica</strong>, independente da pontuação.
+      </div>
+      <div class="crit-grid" style="margin-bottom:22px; grid-template-columns:repeat(3,1fr)">
+        <div class="crit">
+          <div class="num">⚠</div>
+          <div>
+            <h4>Trava de Segurança</h4>
+            <p>Fatalidade, explosão, incêndio, H2S ou grande acidente (10 pts no campo) · Barreira crítica indisponível ou degradada (8 pts no campo)</p>
+          </div>
+        </div>
+        <div class="crit">
+          <div class="num">⚠</div>
+          <div>
+            <h4>Trava Regulatória</h4>
+            <p>Prazo regulatório vencido (7 pts no campo) · Embargo, interdição ou perda de licença (7 pts no campo)</p>
+          </div>
+        </div>
+        <div class="crit">
+          <div class="num">⚠</div>
+          <div>
+            <h4>Trava de Produção</h4>
+            <p>Escopo classificado como Incremento de Produção (ganho de óleo novo) — eleva direto a P1, independente da pontuação</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:15.5px;margin:24px 0 8px">1 · Segurança — 30 pts</h3>
+      <p class="sec-sub" style="margin-bottom:10px">Soma simples dos 5 critérios abaixo, limitada a 30 pontos.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Critério</th><th class="wide">Opções</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td>Severidade do pior cenário</td><td class="wide">Sem impacto de SMS · lesão leve · lesão grave · fatalidade/grande acidente</td><td>0 · 3 · 6 · 10</td></tr>
+            <tr><td>Barreira crítica</td><td class="wide">Não se aplica · barreira crítica degradada · barreira crítica indisponível</td><td>0 · 4 · 8</td></tr>
+            <tr><td>Histórico de incidente ou recorrência</td><td class="wide">Sem registro · desvio isolado · ocorrência em outro equipamento do mesmo TAG · incidente com ação aberta</td><td>0 · 2 · 4 · 5</td></tr>
+            <tr><td>Abrangência da exposição</td><td class="wide">Pontual · equipe pequena · módulo/turno/operação recorrente · unidade inteira</td><td>0 · 1 · 3 · 4</td></tr>
+            <tr><td>Urgência da mitigação</td><td class="wide">Ciclo normal · até 180 dias · até 90 dias · imediato/próxima janela</td><td>0 · 1 · 2 · 3</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:15.5px;margin:24px 0 8px">2 · Regulatório — 25 pts</h3>
+      <p class="sec-sub" style="margin-bottom:10px">Soma simples dos 5 critérios abaixo, limitada a 25 pontos.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Critério</th><th class="wide">Opções</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td>Obrigação legal ou normativa</td><td class="wide">Sem obrigação · recomendação interna · requisito aplicável · obrigação formal externa</td><td>0 · 2 · 4 · 6</td></tr>
+            <tr><td>Prazo regulatório</td><td class="wide">Sem prazo · acima de 90 dias · 31 a 90 dias · até 30 dias · vencido</td><td>0 · 2 · 4 · 6 · 7</td></tr>
+            <tr><td>Consequência do não atendimento</td><td class="wide">Baixo impacto · retrabalho · não conformidade · multa/restrição · embargo/interdição</td><td>0 · 2 · 4 · 6 · 7</td></tr>
+            <tr><td>Evidência formal</td><td class="wide">Não · registro interno · evidência interna validada · evidência externa</td><td>0 · 1 · 2 · 3</td></tr>
+            <tr><td>Abrangência regulatória</td><td class="wide">Pontual · unidade específica · múltiplas unidades/processo corporativo</td><td>0 · 1 · 2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:15.5px;margin:24px 0 8px">3 · Financeiro &amp; Patrimônio — 20 pts</h3>
+      <p class="sec-sub" style="margin-bottom:10px">O bloco tem duas avaliações internas — a nota final é <strong>a maior entre as duas</strong>, não a soma.</p>
+
+      <p class="sec-sub" style="margin:16px 0 8px"><strong>3.1 Avaliação Financeira Econômica</strong> — soma até 20 pts:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Critério</th><th class="wide">Regra</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="5">Relação benefício/custo <span style="color:var(--muted);font-weight:400">(até 8)</span></td><td class="wide">≥ 10x</td><td>8</td></tr>
+            <tr><td class="wide">≥ 5x</td><td>6</td></tr>
+            <tr><td class="wide">≥ 2x</td><td>4</td></tr>
+            <tr><td class="wide">≥ 1x</td><td>2</td></tr>
+            <tr><td class="wide">&lt; 1x ou sem dados</td><td>0</td></tr>
+            <tr><td rowspan="6">Custo de não fazer / custo do projeto <span style="color:var(--muted);font-weight:400">(até 5)</span></td><td class="wide">≥ 3x</td><td>5</td></tr>
+            <tr><td class="wide">≥ 1,5x</td><td>4</td></tr>
+            <tr><td class="wide">≥ 1x</td><td>3</td></tr>
+            <tr><td class="wide">≥ 0,5x</td><td>2</td></tr>
+            <tr><td class="wide">&gt; 0 e &lt; 0,5x</td><td>1</td></tr>
+            <tr><td class="wide">Sem dados</td><td>0</td></tr>
+            <tr><td>Tempo de captura do valor <span style="color:var(--muted);font-weight:400">(até 3)</span></td><td class="wide">Acima de 24 meses/indefinido · 12 a 24 meses · 6 a 12 meses · até 6 meses</td><td>0 · 1 · 2 · 3</td></tr>
+            <tr><td>Maturidade da estimativa <span style="color:var(--muted);font-weight:400">(até 4)</span></td><td class="wide">Conceitual · orçamento preliminar · cotação/contrato/estimativa validada</td><td>0 · 2 · 4</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="matrix-note" style="margin:10px 0 0">
+        <b>Ajuste vs. versão anterior.</b> O critério "Orçamento e janela de execução" foi removido da pontuação — ele perguntava se o escopo cabe no orçamento antes de o nivelamento (que decide justamente isso) ter ocorrido, criando uma circularidade. O ajuste ao orçamento/POB é verificado depois, no nivelamento (seção 11), contra o portfólio completo do ciclo. Os 4 pontos foram realocados entre Relação benefício/custo (6→8 pts) e Maturidade da estimativa (2→4 pts): metade reforça o critério que mede valor financeiro direto, metade recai sobre o critério tematicamente mais próximo do que "orçamento" tentava capturar — a confiança no número de custo — sem repetir a circularidade.
+      </div>
+
+      <p class="sec-sub" style="margin:16px 0 8px"><strong>3.2 Avaliação de Patrimônio/Integridade</strong> — bruta até 25 pts, convertida para o bloco financeiro como <code>arredondar(bruta × 20 / 25)</code>:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Critério</th><th class="wide">Opções</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td>Comprometimento de ativo crítico</td><td class="wide">Não compromete · ativo auxiliar · ativo relevante · ativo crítico</td><td>0 · 2 · 5 · 8</td></tr>
+            <tr><td>Degradação evidenciada</td><td class="wide">Sem evidência · suspeita técnica · evidência registrada · degradação confirmada</td><td>0 · 2 · 4 · 6</td></tr>
+            <tr><td>Redundância do sistema</td><td class="wide">Redundância plena · parcial · limitada · sem redundância/caminho crítico</td><td>0 · 2 · 3 · 5</td></tr>
+            <tr><td>Janela rara ou parada maior</td><td class="wide">Não · baixa vantagem · janela relevante · janela crítica/rara</td><td>0 · 1 · 2 · 3</td></tr>
+            <tr><td>Risco de manutenção emergencial futura</td><td class="wide">Não reduz · redução baixa · moderada · alta</td><td>0 · 1 · 2 · 3</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:15.5px;margin:24px 0 8px">4 · Produção de Óleo — GP — 25 pts</h3>
+      <div class="matrix-note" style="margin-bottom:14px">
+        Preserva a lógica da Gestão da Produção: a pontuação só entra no total quando <strong>o escopo influencia diretamente a produção de óleo</strong> e <strong>o status da GP está como "Validada - computada"</strong>. Em prévia, aguardando GP, devolvida para ajuste ou sem impacto direto, a pontuação aparece como referência, mas entra no total como <strong>0</strong>.
+      </div>
+      <div class="matrix-note" style="margin-bottom:14px">
+        <b>Este escopo representa.</b> Ao marcar o impacto na produção, escolhe-se entre <strong>Perda evitada</strong> (mitigação de risco à produção atual) ou <strong>Incremento de Produção</strong> (ganho de óleo novo) — ambos usam a mesma lógica de Relevância e Benefício/Custo abaixo. Selecionar Incremento de Produção aciona a <strong>Trava de Produção</strong> e classifica o escopo direto como P1, independente da pontuação.
+      </div>
+
+      <p class="sec-sub" style="margin:16px 0 8px"><strong>4.1 Relevância da Perda do Sistema</strong> — até 15 pts, pela participação do sistema no total de perdas:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th class="wide">Participação do sistema no total de perdas</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td class="wide">≥ 25%</td><td>15</td></tr>
+            <tr><td class="wide">≥ 15% e &lt; 25%</td><td>11</td></tr>
+            <tr><td class="wide">≥ 8% e &lt; 15%</td><td>7</td></tr>
+            <tr><td class="wide">≥ 3% e &lt; 8%</td><td>3</td></tr>
+            <tr><td class="wide">&lt; 3%</td><td>1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="sec-sub" style="margin:16px 0 8px"><strong>4.2 Benefício/Custo</strong> — até 10 pts. Benefício em US$ = perda evitada em bbl × 75; relação benefício/custo = benefício ÷ custo do projeto:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th class="wide">Relação benefício/custo</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td class="wide">≥ 20x</td><td>10</td></tr>
+            <tr><td class="wide">≥ 10x</td><td>7</td></tr>
+            <tr><td class="wide">≥ 5x</td><td>5</td></tr>
+            <tr><td class="wide">≥ 1x</td><td>2</td></tr>
+            <tr><td class="wide">&lt; 1x ou sem custo informado</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout gap" style="margin-top:14px">
+        <b>Campo informativo e regras de consistência da GP (não pontuam)</b>
+        <ul>
+          <li>Se a perda evitada (ou o incremento de produção) for maior que a perda projetada do sistema, a ferramenta alerta para revisão de premissas.</li>
+          <li>Cobertura da perda histórica (referência) = perda evitada ÷ perda histórica do sistema.</li>
+        </ul>
+      </div>
+
+      <div class="matrix-note" style="margin-top:22px">
+        <b>Fórmula final.</b> Nota final = Segurança + Regulatório + Financeiro e Patrimônio + Produção de Óleo (GP validada) — máximo de 100 pontos. Classificação final P1–P4: ver seção 05.
+      </div>
+
+      <div class="sec-sub" style="margin:16px 0 8px">Regra de desempate, quando duas frentes (ou dois projetos, no critério atual) têm classificação ou pontuação próxima:</div>
+      <div class="crit-grid">
+        <div class="crit"><div class="num">1</div><div><h4>Segurança</h4></div></div>
+        <div class="crit"><div class="num">2</div><div><h4>Regulatório</h4></div></div>
+        <div class="crit"><div class="num">3</div><div><h4>Produção validada pela GP</h4></div></div>
+        <div class="crit"><div class="num">4</div><div><h4>Financeiro/Patrimônio</h4></div></div>
+        <div class="crit"><div class="num">5</div><div><h4>Menor custo para executar</h4></div></div>
+      </div>
+    </section>
+    <section id="papeis">
+      <div class="sec-head">
+        <div class="sec-num">07 — Governança</div>
+        <h2>Papéis e responsabilidades</h2>
+        <p class="sec-sub">Cinco perfis sustentam o rito de ponta a ponta — do lançamento do escopo à aprovação final.</p>
+      </div>
+      <div class="role-grid">
+        <div class="role"><span class="tag">Solicita</span><h3>Engenheiro de disciplina</h3><p>Levanta e cadastra o escopo: dados básicos, POB mensal, custo de material/serviço e responde a priorização.</p></div>
+        <div class="role"><span class="tag">Facilita</span><h3>Eng. Planejamento</h3><p>Dono do processo. Treina, nivela POB/capex, consolida propostas e monta as versões do plano (V0 → VF).</p></div>
+        <div class="role"><span class="tag">Prioriza</span><h3>Coordenador de Operações</h3><p>Avalia a solicitação priorizada contra a diretriz estratégica do ativo e aprova, recusa ou devolve para ajuste.</p></div>
+        <div class="role"><span class="tag">Alinha</span><h3>Gerentes Executivos</h3><p>Participam, junto ao OIM do ativo, do workshop de V0 apresentado pelo Eng. Planejamento do Ativo, para discutir e alinhar o plano com a diretriz estratégica de cada Gerência Executiva.</p></div>
+        <div class="role"><span class="tag">Aprova</span><h3>Gerente do Ativo</h3><p>Revisão final do plano consolidado (POB + custo) antes do envio e divulgação oficial.</p></div>
+      </div>
+    </section>
+    <section id="areas">
+      <div class="sec-head">
+        <div class="sec-num">08 — Quem alimenta o plano</div>
+        <h2>Áreas da PRIO e seus inputs</h2>
+        <p class="sec-sub">Cruzado com os planos de trabalho reais de 2026 de ABL (FPSO Forte), CLUSTER (FPSO Bravo, Polvo A) e FPSO Frade. Linhas <span class="pill confirmed" style="vertical-align:middle">confirmado (2026)</span> foram validadas por esse histórico; as marcadas como <span class="pill assume" style="vertical-align:middle">a validar</span> ainda precisam de confirmação da própria área. Regulatório não aparece como área própria nos dados: suas exigências estão distribuídas entre Naval (classificadoras) e SMS (ANP).</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Área</th><th>Solicitante</th><th class="wide">O que normalmente entra no plano</th><th class="wide">Critério de elegibilidade</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Manutenção e Confiabilidade</td><td>Eng. de Manutenção</td><td class="wide">Ordens preventivas e corretivas (SAP), campanhas de manutenção</td><td class="wide">Sempre que exigir <code>POB terceiro (vendor)</code> — entra independente de ser OPEX ou CAPEX</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>Projetos</td><td>Eng. de Projetos</td><td class="wide">Modificação de Eficiência da Produção; Desenvolvimento da Produção</td><td class="wide">Fase de maturidade mínima <code>PML2</code> (campo real na planilha: <code>Fase FEL</code> ≥ FEL 2 - Básico)</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>Construção</td><td>Eng. de Construção</td><td class="wide">Intervenções estruturais e de turnaround</td><td class="wide">Ordens corretivas <code>M1</code> e <code>M5</code></td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>Integridade</td><td>Eng. de Integridade</td><td class="wide">Inspeções e campanhas de integridade (ENDs, CUI, calibração de válvulas de segurança)</td><td class="wide">Categoria Integridade e Regulatório; risco a barreira crítica</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>Naval</td><td>Eng. de Naval</td><td class="wide">Ordens de campanha naval: tanques, mangotes, vasos de pressão, amarras e casco</td><td class="wide">Exigências das classificadoras (ABS, DNV) e inspeções de classe</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>Medição Fiscal</td><td>Departamento de Medição Fiscal</td><td class="wide">Calibração e testes de medidores fiscais, cromatografia, auditorias de medição</td><td class="wide">Conformidade regulatória de medição fiscal (ANP)</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>Parada Programada</td><td>Eng. de Parada, Eng. de Manutenção, Eng. de Construção, Eng. de Integridade, Eng. de Projetos</td><td class="wide">Consolida escopos de múltiplas disciplinas durante a janela de parada</td><td class="wide">Ordens <code>Z17</code> — entra sempre no plano, sem exceção de priorização</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>SMS — Segurança Ocupacional, Processos, Saúde e Qualidade</td><td>Eng. de SMS</td><td class="wide">Ações corretivas de risco, adequação a barreiras críticas</td><td class="wide">Potencial de lesão/fatalidade ou dano ambiental relevante; inclui exigência normativa ANP (NR, SGSO)</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>Processos e Químicos</td><td>Eng. de Processos e Químicos</td><td class="wide">Otimização de processo, tratamento químico</td><td class="wide">Impacto em confiabilidade de processo ou consumo químico</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>Suporte Técnico</td><td>Eng. de Suporte Técnico</td><td class="wide">Estudos técnicos, otimização comercial de óleo/gás</td><td class="wide">Impacto direto em receita ou eficiência de escoamento</td><td><span class="pill assume">a validar</span></td></tr>
+            <tr><td>Desenvolvimento da Produção</td><td>Eng. de Desenvolvimento da Produção</td><td class="wide">Comissionamento de novos poços; escopos de conexão à planta</td><td class="wide">Categoria Desenvolvimento de Produção; escopo necessário para start-up do poço</td><td><span class="pill confirmed">confirmado (2026)</span></td></tr>
+            <tr><td>Planejamento Integrado</td><td>Eng. de Planejamento</td><td class="wide">Consolidação, nivelamento e versionamento do plano</td><td class="wide">Dono do processo — não solicita escopo próprio</td><td><span class="pill confirmed">papel de processo</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section id="criterios">
+      <div class="sec-head">
+        <div class="sec-num">09 — Regras transversais</div>
+        <h2>Critérios gerais de elegibilidade</h2>
+        <p class="sec-sub">Valem para qualquer área, antes dos critérios específicos de cada uma.</p>
+      </div>
+      <div class="crit-grid">
+        <div class="crit"><div class="num">01</div><div><h4>POB de terceiro (vendor)</h4><p>Se a atividade exige POB terceiro, ela entra no plano — não importa se é OPEX ou CAPEX.</p></div></div>
+        <div class="crit"><div class="num">02</div><div><h4>Linha CAPEX × OPEX</h4><p>Projetos ≥ <code>US$ 150k</code> são tratados como CAPEX; abaixo disso, alocados como OPEX (premissa mantida do ciclo anterior).</p></div></div>
+        <div class="crit"><div class="num">03</div><div><h4>Parada Programada</h4><p>Ordens <code>Z17</code> entram.</p></div></div>
+        <div class="crit"><div class="num">04</div><div><h4>Maturidade de projeto</h4><p>Projetos só entram a partir da fase <code>PML2</code> (equivalente ao campo <code>Fase FEL</code> ≥ FEL 2 - Básico na planilha), e apenas como Eficiência da Produção ou Desenvolvimento da Produção.</p></div></div>
+        <div class="crit"><div class="num">05</div><div><h4>Diretriz estratégica</h4><p>O solicitante já levanta o escopo, no Building, com base na Diretriz Estratégica da sua Gerência Executiva — o vínculo é definido na origem da solicitação, não apenas checado depois na aprovação.</p></div></div>
+      </div>
+    </section>
+    <section id="dados">
+      <div class="sec-head">
+        <div class="sec-num">10 — Levantamento</div>
+        <h2>Dados básicos por escopo</h2>
+        <p class="sec-sub">Campos preenchidos pelo engenheiro de disciplina ao abrir a atividade no sistema de levantamento de escopo, organizados pelas mesmas etapas do formulário.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Etapa do formulário</th><th class="wide">Campos</th></tr></thead>
+          <tbody>
+            <tr><td>Dados Básicos</td><td class="wide">Nome da atividade, solicitante, equipe demandante, categoria do escopo, aplicação (OPEX/CAPEX), equipe executora, fornecedor, localidade funcional, fase FEL, ano, recorrência, ordem de serviço, tipo de ordem, centro de trabalho, terceiro fixo</td></tr>
+            <tr><td>POB Mensal</td><td class="wide">Distribuição de POB (pessoas·dia) mês a mês ao longo do ano do plano</td></tr>
+            <tr><td>Custos</td><td class="wide">Custo de material, custo de serviço, custo total consolidado</td></tr>
+            <tr><td>Priorização</td><td class="wide">Respostas aos critérios de Segurança, Regulatório, Financeiro/Patrimônio e Produção — ver seção 05</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section id="aprovacao">
+      <div class="sec-head">
+        <div class="sec-num">11 — Consolidação</div>
+        <h2>Do escopo priorizado ao plano aprovado</h2>
+        <p class="sec-sub">O Coordenador de Operações confronta prioridade com diretriz estratégica; o resultado é alinhado com os Gerentes Executivos antes de virar plano de POB e custo por ativo/ano.</p>
+      </div>
+      <div class="crit-grid">
+        <div class="crit"><div class="num">→</div><div><h4>Crivo do Coordenador / Gerente</h4><p>Cada solicitação priorizada é avaliada pelo Coordenador de Operações do ativo, que aprova, recusa ou devolve para ajuste com base na prioridade e na diretriz estratégica vinculada.</p></div></div>
+        <div class="crit"><div class="num">→</div><div><h4>Workshop com Gerentes Executivos</h4><p>Com a V0 já aprovada pelo Coordenador, o Eng. Planejamento do Ativo apresenta o plano ao OIM e a todos os Gerentes Executivos para discussão e alinhamento — sai daqui uma V0 também aprovada pelos Gerentes.</p></div></div>
+        <div class="crit"><div class="num">→</div><div><h4>Nivelamento de capacidade</h4><p>O plano aprovado é nivelado contra a capacidade de POB/dia do ativo, sinalizando meses acima da capacidade ou subutilizados.</p></div></div>
+        <div class="crit"><div class="num">→</div><div><h4>Plano de POB + Custo</h4><p>Saída final por ativo/ano: POB total, custo de material e serviço, e a divisão CAPEX × OPEX resultante.</p></div></div>
+        <div class="crit"><div class="num">→</div><div><h4>Versionamento</h4><p>O plano evolui em versões (V0 Leveling &amp; Challenge → V0 aprovada pelo Coordenador e pelos Gerentes → V2 Revisão → VF Oficial), rastreadas ao longo do processo.</p></div></div>
+      </div>
+    </section>
+    <section id="pendencias">
+      <div class="sec-head">
+        <div class="sec-num">12 — Antes da reunião</div>
+        <h2>Pendências abertas</h2>
+        <p class="sec-sub">Pontos que precisam de validação do Diretor ou das áreas antes de o processo virar padrão.</p>
+      </div>
+      <div class="callout gap">
+        <b>2 pendências em aberto</b>
+        <ul>
+          <li>Validar com cada coordenação as linhas marcadas como <span class="pill assume" style="vertical-align:middle">a validar</span> na seção 08 — inputs e critérios foram inferidos do material recebido, não confirmados pela própria área.</li>
+          <li>Definir treinamento dedicado (ou confirmar cobertura pelo dia "Geral" de 02/09) para Medição Fiscal, Parada Programada, Reservatório/Produção (GP) e Desenvolvimento da Produção — ver seção 13.</li>
+        </ul>
+      </div>
+    </section>
+    <section id="treinamentos">
+      <div class="sec-head">
+        <div class="sec-num">13 — Treinamentos por área</div>
+        <h2>Agenda de capacitação, por área</h2>
+        <p class="sec-sub">Cada dia tem uma sessão da manhã e uma da tarde, para públicos diferentes. Dados da Agenda de Treinamentos oficial.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Data</th><th>09h–11h / 11h</th><th>16h–18h</th><th>Responsável</th></tr></thead>
+          <tbody>
+            <tr><td>25/08</td><td class="wide">—</td><td class="wide">Convite Operações</td><td>Eng. Planejamento</td></tr>
+            <tr><td>26/08</td><td class="wide">Convite Engenheiros</td><td class="wide">—</td><td>Eng. Planejamento</td></tr>
+            <tr><td>27/08</td><td class="wide">Convite Livre / Toda a PRIO</td><td class="wide">Time de Bordo / Todos os ativos</td><td>Eng. Planejamento</td></tr>
+            <tr><td>27/08</td><td class="wide">Manutenção e Confiabilidade</td><td class="wide">Integridade e Naval</td><td>Eng. Planejamento</td></tr>
+            <tr><td>28/08</td><td class="wide">Projetos / Processos e Químicos</td><td class="wide">Construção e TA</td><td>Eng. Planejamento / Accenture</td></tr>
+            <tr><td>31/08</td><td class="wide">SMS: Ocupacional, Processos, Saúde e Qualidade</td><td class="wide">Suporte Técnico e Trading</td><td>Eng. Planejamento</td></tr>
+            <tr><td>01/09</td><td class="wide">ADM 3º/4º andar — Comunicação, BPs, TI, Log Marítima e Log Pessoas</td><td class="wide">ADM 3º/4º andar — Comunicação, BPs, TI, Log Marítima e Log Pessoas</td><td>Eng. Planejamento</td></tr>
+            <tr><td>02/09</td><td class="wide">Geral</td><td class="wide">Geral</td><td>Eng. Planejamento</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout gap" style="margin-top:14px">
+        <b>Áreas sem sessão dedicada</b>
+        <p style="margin:8px 0 0;font-size:13px">Conferindo contra as 12 áreas mapeadas na seção 08, quatro não aparecem em nenhum dia específico da agenda: <strong>Medição Fiscal</strong>, <strong>Parada Programada</strong>, <strong>Reservatório/Produção (GP)</strong> e <strong>Desenvolvimento da Produção</strong>. Podem estar cobertas pela sessão "Geral" de 02/09, ou precisar de um horário próprio — a confirmar com o Eng. Planejamento.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <div class="rule"></div>
+    Documento de apoio à reunião de processo — Diretoria de Operações PRIO · rascunho para validação, não é uma versão oficial do plano.
+  </footer>
+
+</body>
+</html>
