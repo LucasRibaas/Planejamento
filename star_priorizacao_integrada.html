@@ -923,7 +923,7 @@
                           <option value="perda">Perda evitada - mitigação de risco à produção atual</option>
                           <option value="incremento">Incremento de produção - ganho de óleo novo</option>
                         </select>
-                        <div class="hint">Define qual calculadora de retorno é usada abaixo. Ambas seguem a mesma lógica de relevância do sistema e benefício/custo.</div>
+                        <div class="hint">Define qual calculadora de retorno é usada abaixo. Ambas seguem a mesma lógica de relevância do sistema e benefício/custo. "Incremento de produção" aciona a Trava de Produção e classifica o escopo automaticamente como P1, independentemente da pontuação.</div>
                       </div>
                     </div>
 
@@ -1212,6 +1212,9 @@
         if(opt.dataset.veto === "sms") vetos.push("Trava SMS acionada");
         if(opt.dataset.veto === "reg") vetos.push("Trava regulatória acionada");
       });
+      if($("impactaProd").checked && $("gpMode").value === "incremento"){
+        vetos.push("Trava de Produção acionada — Escopo de Incremento de Produção");
+      }
       return [...new Set(vetos)];
     }
 
