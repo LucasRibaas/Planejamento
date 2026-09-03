@@ -863,7 +863,7 @@
         <div class="weight-card veto"><h4>Segurança</h4><b>30 pts</b><div class="weight-bar"><i style="width:100%"></i></div><p style="font-size:11.5px;color:var(--ink-soft);margin-top:8px">Trava P1 se houver risco de fatalidade</p></div>
         <div class="weight-card veto"><h4>Regulatório</h4><b>25 pts</b><div class="weight-bar"><i style="width:83%"></i></div><p style="font-size:11.5px;color:var(--ink-soft);margin-top:8px">Trava P1 se houver embargo/interdição</p></div>
         <div class="weight-card"><h4>Financeiro &amp; Patrimônio</h4><b>20 pts</b><div class="weight-bar"><i style="width:67%"></i></div></div>
-        <div class="weight-card"><h4>Produção de Óleo</h4><b>25 pts</b><div class="weight-bar"><i style="width:83%"></i></div><p style="font-size:11.5px;color:var(--ink-soft);margin-top:8px">Só computa após validação da GP</p></div>
+        <div class="weight-card veto"><h4>Produção de Óleo</h4><b>25 pts</b><div class="weight-bar"><i style="width:83%"></i></div><p style="font-size:11.5px;color:var(--ink-soft);margin-top:8px">Só computa após validação da GP · Trava P1 se escopo de Incremento de Produção</p></div>
       </div>
       <div class="sec-sub" style="margin-bottom:10px">Classificação final (por frente de trabalho, proposta):</div>
       <div class="class-scale">
@@ -884,7 +884,7 @@
       <div class="matrix-note">
         <b>Travas automáticas.</b> Não dependem da nota total. Quando qualquer condição abaixo é selecionada, o projeto é elevado para <strong>P1 — Crítica</strong>, independente da pontuação.
       </div>
-      <div class="crit-grid" style="margin-bottom:22px">
+      <div class="crit-grid" style="margin-bottom:22px; grid-template-columns:repeat(3,1fr)">
         <div class="crit">
           <div class="num">⚠</div>
           <div>
@@ -897,6 +897,13 @@
           <div>
             <h4>Trava Regulatória</h4>
             <p>Prazo regulatório vencido (7 pts no campo) · Embargo, interdição ou perda de licença (7 pts no campo)</p>
+          </div>
+        </div>
+        <div class="crit">
+          <div class="num">⚠</div>
+          <div>
+            <h4>Trava de Produção</h4>
+            <p>Escopo classificado como Incremento de Produção (ganho de óleo novo) — eleva direto a P1, independente da pontuação</p>
           </div>
         </div>
       </div>
@@ -977,6 +984,9 @@
       <div class="matrix-note" style="margin-bottom:14px">
         Preserva a lógica da Gestão da Produção: a pontuação só entra no total quando <strong>o escopo influencia diretamente a produção de óleo</strong> e <strong>o status da GP está como "Validada - computada"</strong>. Em prévia, aguardando GP, devolvida para ajuste ou sem impacto direto, a pontuação aparece como referência, mas entra no total como <strong>0</strong>.
       </div>
+      <div class="matrix-note" style="margin-bottom:14px">
+        <b>Este escopo representa.</b> Ao marcar o impacto na produção, escolhe-se entre <strong>Perda evitada</strong> (mitigação de risco à produção atual) ou <strong>Incremento de Produção</strong> (ganho de óleo novo) — ambos usam a mesma lógica de Relevância e Benefício/Custo abaixo. Selecionar Incremento de Produção aciona a <strong>Trava de Produção</strong> e classifica o escopo direto como P1, independente da pontuação.
+      </div>
 
       <p class="sec-sub" style="margin:16px 0 8px"><strong>4.1 Relevância da Perda do Sistema</strong> — até 15 pts, pela participação do sistema no total de perdas:</p>
       <div class="tbl-wrap">
@@ -1009,8 +1019,7 @@
       <div class="callout gap" style="margin-top:14px">
         <b>Campo informativo e regras de consistência da GP (não pontuam)</b>
         <ul>
-          <li>"Esse escopo é originador de incremento de produção?" (Sim/Não) — informativo, não altera a pontuação da matriz.</li>
-          <li>Se a perda evitada for maior que a perda projetada do sistema, a ferramenta alerta para revisão de premissas.</li>
+          <li>Se a perda evitada (ou o incremento de produção) for maior que a perda projetada do sistema, a ferramenta alerta para revisão de premissas.</li>
           <li>Cobertura da perda histórica (referência) = perda evitada ÷ perda histórica do sistema.</li>
         </ul>
       </div>
