@@ -57,6 +57,7 @@
   <label>Data de execução<input type="date" id="dia"></label>
   <label class="chk"><input type="checkbox" id="excl" checked> Excluir encerradas</label>
   <label>Centro de trabalho<select id="fc"><option value="">Todos</option></select></label>
+  <label>Local de instalação<input type="search" id="fl" list="fll" placeholder="digite parte do código ou nome" style="min-width:230px" autocomplete="off"></label><datalist id="fll"></datalist>
   <label>Classificação<select id="fk"><option value="">Todas</option><option value="bi">Break-in</option><option value="an">Antecipada</option><option value="at">Atrasada</option><option value="ok">Conforme baseline</option></select></label>
   <span class="grow"></span>
   <button class="sec" id="csv">Exportar CSV</button>
@@ -143,13 +144,15 @@ function render(){
   // centros disponíveis
   const cts=[...new Set(list.map(o=>o.ct))].sort(), cur=$('fc').value;
   $('fc').innerHTML='<option value="">Todos</option>'+cts.map(c=>`<option ${c===cur?'selected':''}>${esc(c)}</option>`).join('');
-  const fc=$('fc').value, fk=$('fk').value;
-  const shown=list.filter(o=>(!fc||o.ct===fc)&&(!fk||o.k[fk]));
+  const fc=$('fc').value, fk=$('fk').value, fl=$('fl').value.trim().toLowerCase();
+  const okL=o=>!fl||(o.li+' '+o.den).toLowerCase().includes(fl);
+  $('fll').innerHTML=[...new Set(list.map(o=>o.li).filter(Boolean))].sort().map(l=>`<option value="${esc(l)}">`).join('');
+  const shown=list.filter(o=>(!fc||o.ct===fc)&&(!fk||o.k[fk])&&okL(o));
   const sum=a=>a.reduce((s,o)=>s+o.hh,0), r1=n=>Math.round(n*10)/10;
   const kp=[['',shown.length,'Operações'],['',new Set(shown.map(o=>o.ordem)).size,'Ordens'],['',r1(sum(shown)),'HH total'],
     ['bi',shown.filter(o=>o.k.bi).length,'Break-in'],['an',shown.filter(o=>o.k.an).length,'Antecipadas'],['at',shown.filter(o=>o.k.at).length,'Atrasadas']];
   $('kpis').innerHTML=kp.map(([c,v,l])=>`<div class="kpi ${c}"><b>${v}</b><span>${l}</span></div>`).join('');
-  const by={};list.filter(o=>!fk||o.k[fk]).forEach(o=>{const c=by[o.ct||'(sem centro)']??={hh:0,n:0};c.hh+=o.hh;c.n++});
+  const by={};list.filter(o=>(!fk||o.k[fk])&&okL(o)).forEach(o=>{const c=by[o.ct||'(sem centro)']??={hh:0,n:0};c.hh+=o.hh;c.n++});
   const ents=Object.entries(by).sort((a,b)=>b[1].hh-a[1].hh||a[0].localeCompare(b[0])), mx=Math.max(1,...ents.map(e=>e[1].hh));
   $('hhc').hidden=!ents.length;
   $('hhg').innerHTML=ents.map(([c,v])=>`<div class="hhi${fc===c?' sel':''}" data-ct="${esc(c)}" title="Filtrar ${esc(c)}"><div class="t"><b>${esc(c)}</b><b>${r1(v.hh)} HH <span>· ${v.n} op.</span></b></div><div class="bar2"><i style="width:${v.hh/mx*100}%"></i></div></div>`).join('');
@@ -171,6 +174,7 @@ function load(buf){
 }
 $('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>load(r.result);r.readAsArrayBuffer(f)};
 ['dia','excl','fc','fk'].forEach(id=>$(id).addEventListener('change',render));
+$('fl').addEventListener('input',render);
 $('hhg').onclick=e=>{const i=e.target.closest('.hhi');if(!i)return;const c=i.dataset.ct;$('fc').value=$('fc').value===c?'':c;render()};
 $('prt').onclick=()=>window.print();
 $('csv').onclick=()=>{
