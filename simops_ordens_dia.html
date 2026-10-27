@@ -23,6 +23,14 @@
   .kpi{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 16px;min-width:112px}
   .kpi b{display:block;font-size:1.4rem}.kpi span{font-size:.72rem;color:var(--tx2)}
   .kpi.bi b{color:var(--bit)}.kpi.an b{color:#15803d}.kpi.at b{color:#b91c1c}
+  .hhc{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;margin-bottom:14px}
+  .hhc h2{font-size:.72rem;font-weight:700;color:var(--navy);margin-bottom:8px;letter-spacing:.04em;text-transform:uppercase}
+  .hhg{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px 18px}
+  .hhi{cursor:pointer;font-size:.78rem;padding:3px 0}
+  .hhi .t{display:flex;justify-content:space-between;gap:8px}.hhi .t span{color:var(--tx2);font-weight:400}
+  .hhi .bar2{height:5px;border-radius:3px;background:#e2e8f0;margin-top:3px;overflow:hidden}.hhi .bar2 i{display:block;height:100%;background:var(--ac)}
+  .hhi.sel{background:#e0f2fe;border-radius:6px;padding:3px 6px}
+  .hhi:hover b{text-decoration:underline}
   .wrap{background:var(--card);border:1px solid var(--bd);border-radius:12px;overflow:auto}
   table{border-collapse:collapse;width:100%;font-size:.8rem}
   th{position:sticky;top:0;background:var(--navy);color:#fff;text-align:left;padding:8px;white-space:nowrap;font-weight:600}
@@ -56,6 +64,7 @@
 </div>
 
 <div class="kpis" id="kpis"></div>
+<div class="hhc" id="hhc" hidden><h2>HH por centro de trabalho</h2><div class="hhg" id="hhg"></div></div>
 <div class="wrap"><div class="msg" id="msg">Nenhuma planilha carregada.</div><table id="tb" hidden>
 <thead><tr><th class="c">#</th><th>Ordem</th><th class="c">Op.</th><th>Descrição da ordem</th><th>Descrição da operação</th><th class="c">HH</th><th>Centro de trabalho</th><th>Local de instalação</th><th>Classificação</th><th>Detalhe</th></tr></thead>
 <tbody id="rows"></tbody></table></div>
@@ -140,6 +149,10 @@ function render(){
   const kp=[['',shown.length,'Operações'],['',new Set(shown.map(o=>o.ordem)).size,'Ordens'],['',r1(sum(shown)),'HH total'],
     ['bi',shown.filter(o=>o.k.bi).length,'Break-in'],['an',shown.filter(o=>o.k.an).length,'Antecipadas'],['at',shown.filter(o=>o.k.at).length,'Atrasadas']];
   $('kpis').innerHTML=kp.map(([c,v,l])=>`<div class="kpi ${c}"><b>${v}</b><span>${l}</span></div>`).join('');
+  const by={};list.filter(o=>!fk||o.k[fk]).forEach(o=>{const c=by[o.ct||'(sem centro)']??={hh:0,n:0};c.hh+=o.hh;c.n++});
+  const ents=Object.entries(by).sort((a,b)=>b[1].hh-a[1].hh||a[0].localeCompare(b[0])), mx=Math.max(1,...ents.map(e=>e[1].hh));
+  $('hhc').hidden=!ents.length;
+  $('hhg').innerHTML=ents.map(([c,v])=>`<div class="hhi${fc===c?' sel':''}" data-ct="${esc(c)}" title="Filtrar ${esc(c)}"><div class="t"><b>${esc(c)}</b><b>${r1(v.hh)} HH <span>· ${v.n} op.</span></b></div><div class="bar2"><i style="width:${v.hh/mx*100}%"></i></div></div>`).join('');
   const dow=serialToDate(dia).toLocaleDateString('pt-BR',{weekday:'long',timeZone:'UTC'});
   $('sub').textContent=`Execução em ${fmt(Math.floor(dia))} (${dow}) · ${DATA.length} operações na baseline`;
   $('tb').hidden=!shown.length; $('msg').hidden=!!shown.length;
@@ -158,6 +171,7 @@ function load(buf){
 }
 $('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>load(r.result);r.readAsArrayBuffer(f)};
 ['dia','excl','fc','fk'].forEach(id=>$(id).addEventListener('change',render));
+$('hhg').onclick=e=>{const i=e.target.closest('.hhi');if(!i)return;const c=i.dataset.ct;$('fc').value=$('fc').value===c?'':c;render()};
 $('prt').onclick=()=>window.print();
 $('csv').onclick=()=>{
   const s=render.shown||[];if(!s.length)return;
