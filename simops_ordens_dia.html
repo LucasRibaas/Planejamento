@@ -601,7 +601,7 @@ function renderPainel(){
     <div class="pmeta"><div class="r"><b>BASELINE</b><span>${dm(d0)} a ${dm(d1)}</span></div>
       <div class="r"><b>META DIA</b><span><input type="number" min="0" max="100" id="mdia" value="${METAS.dia}">%</span></div>
       <div class="r"><b>META BASELINE</b><span><input type="number" min="0" max="100" id="mbase" value="${METAS.base}">%</span></div></div>`;
-  $('pnk2').innerHTML=[['',nOps,'Operações'],['',nOpsE,'Operações encerradas'],[`ader ${cls(ader,METAS.dia)}`,pcT(ader),`Aderência · ${dueE}/${due.length} até ${fmt(hoje).slice(0,5)}`],['',r1(hhT),'HH da baseline'],['',r1(hhE)+' ('+pcT(pc(hhE,hhT))+')','HH executado'],
+  $('pnk2').innerHTML=[['',r1(hhT),'HH da baseline'],['',r1(hhE)+' ('+pcT(pc(hhE,hhT))+')','HH executado'],
     ['lk',pend,'Pendentes (antes de hoje) →'],['',repr,'Operações reprogramadas']].map(([c,v,l])=>`<div class="kpi ${c}"><b>${v}</b><span>${l}</span></div>`).join('');
   // --- prioridade ---
   const pris=[...new Set([1,2,3,4,5,6,...ords.map(g=>g.p).filter(p=>p!=null)])].sort((a,b)=>a-b);
