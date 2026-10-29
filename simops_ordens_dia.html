@@ -147,7 +147,6 @@
       <div class="pbox"><h3>Execução por tipo de atividade (operações)</h3><table class="pt" id="ttipo"></table>
         <p class="capn" id="tipofonte"></p>
         <details class="cfg"><summary>Classificar tipos de atividade (corretiva / preventiva)</summary><div class="cfgg" id="tcfg"></div></details></div>
-      <div class="pbox"><h3>Execução por tipo de nota (operações)</h3><table class="pt" id="tnota"></table><p class="capn" id="tnotafonte"></p></div>
       <div class="pbox" id="bdisc"><h3>Execução por disciplina (operações / HH)</h3><table class="pt" id="tdisc"></table></div>
     </div>
     <div class="pbox"><div class="chead"><h3 id="chtitle">Aderência diária</h3>
@@ -577,7 +576,7 @@ function renderPainel(){
   const passT=o=>!PTORD||(PTORD.startsWith('g:')?grupoOp(o)===PTORD.slice(2):o.tord===PTORD.slice(2));
   const PD=DATA.filter(passT);
   $('pfilinfo').textContent=PTORD?`Filtro ativo: ${PD.length} de ${DATA.length} operações`:'';
-  if(!PD.length){$('pnk').innerHTML='<div class="msg">Nenhuma operação para esse filtro.</div>';['pnk2','tpri','ttipo','tnota','tdisc','pchart'].forEach(i=>$(i).innerHTML='');return}
+  if(!PD.length){$('pnk').innerHTML='<div class="msg">Nenhuma operação para esse filtro.</div>';['pnk2','tpri','ttipo','tdisc','pchart'].forEach(i=>$(i).innerHTML='');return}
   const E=o=>o.st==='ENCERRADA', hoje=Math.floor(isoToSerial($('hoje').value)||0);
   // --- ordens ---
   const ord={};PD.forEach(o=>{const g=ord[o.ordem]??={n:0,e:0,p:null};g.n++;if(E(o))g.e++;if(o.p!=null)g.p=g.p==null?o.p:Math.min(g.p,o.p)});
@@ -619,13 +618,6 @@ function renderPainel(){
   $('tcfg').parentElement.hidden=HASTORD;
   $('tipofonte').textContent=HASTORD?'Fonte: coluna “Tipo de ordem” (ZPRE e ZROU = preventivas, ZCOR = corretivas).':'Coluna “Tipo de ordem” não encontrada: usando o código de “Tipo de Atividade”.';
   $('tcfg').innerHTML=Object.entries(codes).sort().map(([c,v])=>`<b>${esc(c)}</b><span>${v.n} op.</span><span title="${esc(v.s)}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(v.s)}</span><select data-c="${esc(c)}">${GRUPOS.map(g=>`<option${g===porAtiv(c)?' selected':''}>${g}</option>`).join('')}</select>`).join('');
-  // --- tipo de nota ---
-  const nt={};PD.forEach(o=>{const k=o.tnota||'Sem tipo de nota',g=nt[k]??={n:0,e:0,dn:0,de:0};g.n++;if(E(o))g.e++;if(o.prog!=null&&o.prog<=hoje){g.dn++;if(E(o))g.de++}});
-  let tn='<tr><th>Tipo de nota</th><th>Operações</th><th>Executadas</th><th>% Execução</th><th title="encerradas ÷ programadas até Hoje">Aderência</th></tr>';
-  Object.entries(nt).sort((a,b)=>(a[0]==='Sem tipo de nota')-(b[0]==='Sem tipo de nota')||b[1].n-a[1].n).forEach(([k,g])=>tn+=`<tr><td>${esc(k)}</td><td>${g.n}</td><td>${g.e}</td><td>${badge(pc(g.e,g.n))}</td><td>${badge(pc(g.de,g.dn))}</td></tr>`);
-  $('tnota').innerHTML=tn+`<tr class="tot"><td>Total</td><td>${nOps}</td><td>${nOpsE}</td><td>${badge(pc(nOpsE,nOps))}</td><td>${badge(ader)}</td></tr>`;
-  const tnV=PD.filter(o=>o.tnota).length;
-  $('tnotafonte').textContent=!HASTNOTA?'Coluna “Tipo de Nota” não encontrada na aba BASELINE.':!tnV?'A coluna “Tipo de Nota” está vazia na planilha carregada: todas as operações aparecem como “Sem tipo de nota”.':(tnV<nOps?`${nOps-tnV} operação(ões) sem tipo de nota preenchido.`:'Fonte: coluna “Tipo de Nota”.');
   // --- disciplina ---
   $('bdisc').hidden=!CAP;
   if(CAP){const by={};CAP.discs.forEach(x=>by[x.code]={name:x.name,n:0,e:0,hh:0,hhe:0,dn:0,de:0});let ou={n:0,e:0,hh:0,hhe:0,dn:0,de:0};
