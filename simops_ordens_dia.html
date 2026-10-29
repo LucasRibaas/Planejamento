@@ -588,7 +588,7 @@ function renderPainel(){
   $('sub').textContent='Painel geral da baseline';
   $('pnsub').textContent=`BASELINE ${dm(d0)} a ${dm(d1)} · ${PD.length} operações · atualizado até Hoje = ${fmt(hoje)}`;
   // --- execução do dia (Data Prog. = hoje) ---
-  const dh=PD.filter(o=>o.prog===hoje), pDia=dh.length?pc(dh.filter(E).length,dh.length):null;
+  const dAnt=hoje-1, dh=PD.filter(o=>o.prog===dAnt), pDia=dh.length?pc(dh.filter(E).length,dh.length):null;
   const hhT=PD.reduce((s,o)=>s+o.hh,0), hhE=PD.filter(E).reduce((s,o)=>s+o.hh,0);
   const nOps=PD.length, nOpsE=PD.filter(E).length;
   const pend=PD.filter(o=>!E(o)&&official(o)!=null&&official(o)<hoje).length, repr=PD.filter(o=>o.rep!=null&&o.rep!==o.prog).length;
@@ -597,7 +597,7 @@ function renderPainel(){
   $('pnk').innerHTML=`<div class="pcard"><span>Ordens totais</span><b>${nOrd}</b></div>
     <div class="pcard"><span>Encerradas</span><b>${nEnc}</b><small>${nPar?nPar+' parcial(is) não contam':''}</small></div>
     <div class="pcard ${cls(pEx,METAS.base)}"><span>% Execução</span><b>${pcT(pEx)}</b><small>meta baseline ${METAS.base}%</small></div>
-    <div class="pcard ${cls(pDia,METAS.dia)}"><span>Execução do dia</span><b>${pcT(pDia)}</b><small>${dh.length?dh.filter(E).length+' de '+dh.length+' operações de '+fmt(hoje).slice(0,5):'sem operações em '+fmt(hoje).slice(0,5)} · meta ${METAS.dia}%</small></div>
+    <div class="pcard ${cls(pDia,METAS.dia)}"><span>Execução do dia anterior</span><b>${pcT(pDia)}</b><small>${dh.length?dh.filter(E).length+' de '+dh.length+' operações de '+fmt(dAnt).slice(0,5):'sem operações em '+fmt(dAnt).slice(0,5)} · meta ${METAS.dia}%</small></div>
     <div class="pmeta"><div class="r"><b>BASELINE</b><span>${dm(d0)} a ${dm(d1)}</span></div>
       <div class="r"><b>META DIA</b><span><input type="number" min="0" max="100" id="mdia" value="${METAS.dia}">%</span></div>
       <div class="r"><b>META BASELINE</b><span><input type="number" min="0" max="100" id="mbase" value="${METAS.base}">%</span></div></div>`;
