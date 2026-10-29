@@ -113,6 +113,14 @@
   .seg{display:inline-flex;border:1px solid var(--navy);border-radius:99px;overflow:hidden}
   .seg button{font:inherit;font-size:.78rem;font-weight:600;padding:5px 16px;border:0;cursor:pointer;background:#fff!important;color:var(--navy)!important;border-radius:0!important}
   .seg button.on{background:var(--navy)!important;color:#fff!important}
+  .bcard{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 16px;margin-bottom:10px}
+  .bcard h3{font-size:.74rem;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+  .bnums{display:flex;flex-wrap:wrap;gap:8px 28px;align-items:flex-end}
+  .bnums div{min-width:120px}.bnums b{display:block;font-size:1.35rem}.bnums span{font-size:.72rem;color:var(--tx2)}
+  .bnums .op{font-size:1.2rem;color:var(--tx2);padding-bottom:2px;min-width:0}
+  .bnums .res b.neg{color:#b91c1c}.bnums .res b.pos{color:#15803d}
+  .bcard details{margin-top:8px;font-size:.76rem}.bcard summary{cursor:pointer;color:var(--navy);font-weight:600}
+  .bcard table.pt{margin-top:6px;max-width:640px}
   @media print{body{background:#fff;padding:0}.bar,.foot .noprint{display:none}.wrap{border:0;overflow:visible}th{position:static}
     @page{size:landscape;margin:10mm}table{font-size:9pt}tr{break-inside:avoid}}
 </style>
@@ -181,6 +189,7 @@
     <button class="sec" id="bcsv">Exportar mudanças (CSV)</button>
     <button id="bcopy">Copiar coluna REPROGRAMADO</button>
   </div>
+  <div class="bcard" id="bcard" hidden></div>
   <p class="bhint" id="bhint"></p>
   <div class="board" id="board"></div>
 </div>
@@ -436,6 +445,22 @@ function renderBoard(){
       <div class="cards">${cards||'<div class="empty">solte uma ordem aqui</div>'}</div></div>`;
   }
   $('board').innerHTML=h;
+  // --- card: HH disponível × HH pendente (dias exibidos; independe dos filtros) ---
+  if(CAP){
+    const rows=CAP.discs.map(x=>({code:x.code,name:x.name,disp:0,prog:0,pend:0}));const R=Object.fromEntries(rows.map(r=>[r.code,r]));let est=false,outrosP=0;
+    for(let d=s0;d<=s1;d++){const c=capFor(d);if(c.est)est=true;c.by.forEach(x=>{R[x.code].disp+=x.disp;R[x.code].prog+=x.prog})}
+    DATA.forEach(o=>{if(o.st==='ENCERRADA'||official(o)==null||official(o)>=s0)return;const dc=CAP.map[o.ct.toUpperCase()];if(dc&&R[dc])R[dc].pend+=o.hh;else outrosP+=o.hh});
+    const S=k=>rows.reduce((s,r)=>s+r[k],0), disp=S('disp'), pend=S('pend'), prog=S('prog'), saldo=disp-prog-pend;
+    $('bcard').hidden=false;
+    $('bcard').innerHTML=`<h3>HH disponível × HH pendente · ${fmt(s0).slice(0,5)} a ${fmt(s1).slice(0,5)}</h3>
+      <div class="bnums"><div><b>${r1(disp)}</b><span>HH disponível${est?' *':''}</span></div><span class="op">−</span>
+        <div><b>${r1(pend)}</b><span>HH pendente (antes de ${fmt(s0).slice(0,5)})</span></div><span class="op">−</span>
+        <div><b>${r1(prog)}</b><span>HH programado nos dias</span></div><span class="op">=</span>
+        <div class="res"><b class="${saldo<0?'neg':'pos'}">${r1(saldo)}</b><span>${saldo<0?'HH faltando':'HH de saldo'} · pendente + programado = ${disp?Math.round((pend+prog)/disp*100):'—'}% do disponível</span></div></div>
+      <details><summary>Ver por disciplina</summary><table class="pt"><tr><th>Disciplina</th><th>Disponível</th><th>Pendente</th><th>Programado</th><th>Saldo</th></tr>
+      ${rows.map(r=>{const s=r.disp-r.pend-r.prog;return `<tr><td title="${esc(r.name)}">${esc(r.code)}</td><td>${r1(r.disp)}</td><td>${r1(r.pend)}</td><td>${r1(r.prog)}</td><td style="color:${s<0?'#b91c1c':'#15803d'};font-weight:700">${r1(s)}</td></tr>`}).join('')}</table></details>
+      <p class="capn">Soma dos dias exibidos, todas as disciplinas do mapa (independe dos filtros).${outrosP?` ${r1(outrosP)} HH pendentes em centros sem disciplina no mapa não entram.`:''}${est?' * Há dias sem HH disponível informado: usado o último dia informado.':''}</p>`;
+  }else $('bcard').hidden=true;
   const mv=Object.keys(MOVES).length, mo=new Set(Object.keys(MOVES).map(k=>k.split('|')[0])).size;
   $('bhint').textContent=`Arraste o cartão (ordem) para outro dia ou altere a data nele. Mostrando ${fmt(s0)} a ${fmt(s1)}, sem encerradas; a coluna “Pendentes” traz as ordens não executadas antes de ${fmt(s0)} (arraste para um dia). `+(CAP?'Barras: HH programado / disponível por disciplina (considera todas as ordens do dia; * = sem HH disponível informado, usado o último dia). ':'')+(mv?`Mudanças pendentes: ${mo} ordem(ns) / ${mv} operação(ões) — ainda não gravadas na planilha.`:'Nenhuma mudança pendente.');
 }
