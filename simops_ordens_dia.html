@@ -146,7 +146,7 @@
 <div id="vPainel">
   <div class="msg" id="pnmsg">Carregue a planilha para ver o painel.</div>
   <div id="pn" hidden>
-    <div class="pfil"><label>Tipo de ordem<select id="ptord"></select></label><span id="pfilinfo"></span></div>
+    <div class="pfil"><label>Tipo de ordem<select id="ptord"></select></label><label>Tipo de nota<select id="ptnota"></select></label><span id="pfilinfo"></span></div>
     <div class="ptitle"><h2>SAP — Consolidado das execuções</h2><p id="pnsub"></p></div>
     <div class="pk" id="pnk"></div>
     <div class="pk2" id="pnk2"></div>
@@ -160,7 +160,7 @@
     <div class="pbox"><div class="chead"><h3 id="chtitle">Aderência diária</h3>
       <div class="seg" role="group" aria-label="Visão do gráfico"><button type="button" data-m="ord" class="on">Ordens</button><button type="button" data-m="ops">Operações</button></div></div>
       <div id="pchart"></div></div>
-    <p class="foot">Base: aba BASELINE inteira (use “Tipo de ordem” acima para filtrar o painel; os demais filtros da barra superior não se aplicam aqui). Cores dos percentuais: verde ≥ meta baseline, amarelo ≥ meta dia, vermelho abaixo. Ordem executada = todas as suas operações encerradas; a prioridade da ordem é a mais crítica (menor P.) entre as operações. Período, programação e execução diária (por operações e por ordens) usam a “Data Prog.” (baseline original), não o “Reprogramado”.</p>
+    <p class="foot">Base: aba BASELINE inteira (use “Tipo de ordem” e “Tipo de nota” acima para filtrar o painel; os demais filtros da barra superior não se aplicam aqui). Cores dos percentuais: verde ≥ meta baseline, amarelo ≥ meta dia, vermelho abaixo. Ordem executada = todas as suas operações encerradas; a prioridade da ordem é a mais crítica (menor P.) entre as operações. Período, programação e execução diária (por operações e por ordens) usam a “Data Prog.” (baseline original), não o “Reprogramado”.</p>
   </div>
 </div>
 <div id="vLista" hidden>
@@ -595,7 +595,7 @@ async function exportWorkbook(){
 $('xl').onclick=exportWorkbook;
 
 // ======== Painel inicial (indicadores) ========
-let METAS={dia:81,base:90}, TIPOS={}, CHM='ord', PTORD='';
+let METAS={dia:81,base:90}, TIPOS={}, CHM='ord', PTORD='', PTNOTA='';
 try{Object.assign(METAS,JSON.parse(localStorage.getItem('simops_metas')||'{}'));TIPOS=JSON.parse(localStorage.getItem('simops_tipos')||'{}')||{};CHM=localStorage.getItem('simops_chm')||'ord'}catch(e){}
 const saveCfg=()=>{try{localStorage.setItem('simops_metas',JSON.stringify(METAS));localStorage.setItem('simops_tipos',JSON.stringify(TIPOS))}catch(e){}};
 const GRUPOS=['Corretivas','Preventivas','Sem classificação'];
@@ -616,9 +616,13 @@ function renderPainel(){
   const cur=PTORD;
   $('ptord').innerHTML='<option value="">Todos</option>'+(grs.length?'<optgroup label="Grupo">'+grs.map(g=>`<option value="g:${esc(g)}">${esc(g)}</option>`).join('')+'</optgroup>':'')+(cds.length?'<optgroup label="Código (Tipo de ordem)">'+cds.map(c=>`<option value="c:${esc(c)}">${esc(c)}</option>`).join('')+'</optgroup>':'');
   $('ptord').value=[...$('ptord').options].some(o=>o.value===cur)?cur:'';PTORD=$('ptord').value;
-  const passT=o=>!PTORD||(PTORD.startsWith('g:')?grupoOp(o)===PTORD.slice(2):o.tord===PTORD.slice(2));
+  const tns=[...new Set(DATA.map(o=>o.tnota).filter(Boolean))].sort(), semN=DATA.some(o=>!o.tnota);
+  $('ptnota').innerHTML='<option value="">Todos</option>'+tns.map(n=>`<option value="n:${esc(n)}">${esc(n)}</option>`).join('')+(semN?'<option value="s:">Sem tipo de nota</option>':'');
+  $('ptnota').value=[...$('ptnota').options].some(o=>o.value===PTNOTA)?PTNOTA:'';PTNOTA=$('ptnota').value;
+  const passN=o=>!PTNOTA||(PTNOTA==='s:'?!o.tnota:o.tnota===PTNOTA.slice(2));
+  const passT=o=>(!PTORD||(PTORD.startsWith('g:')?grupoOp(o)===PTORD.slice(2):o.tord===PTORD.slice(2)))&&passN(o);
   const PD=DATA.filter(passT);
-  $('pfilinfo').textContent=PTORD?`Filtro ativo: ${PD.length} de ${DATA.length} operações`:'';
+  $('pfilinfo').textContent=(PTORD||PTNOTA)?`Filtro ativo: ${PD.length} de ${DATA.length} operações`:'';
   if(!PD.length){$('pnk').innerHTML='<div class="msg">Nenhuma operação para esse filtro.</div>';['pnk2','tpri','ttipo','tdisc','pchart'].forEach(i=>$(i).innerHTML='');return}
   const E=o=>o.st==='ENCERRADA', hoje=Math.floor(isoToSerial($('hoje').value)||0);
   // --- ordens ---
@@ -696,6 +700,7 @@ function renderPainel(){
 }
 $('pn').addEventListener('change',e=>{
   if(e.target.id==='ptord'){PTORD=e.target.value;renderPainel();return}
+  if(e.target.id==='ptnota'){PTNOTA=e.target.value;renderPainel();return}
   if(e.target.id==='mdia'||e.target.id==='mbase'){const v=Math.max(0,Math.min(100,+e.target.value||0));METAS[e.target.id==='mdia'?'dia':'base']=v;saveCfg();renderPainel()}
   else if(e.target.dataset&&e.target.dataset.c){TIPOS[e.target.dataset.c]=e.target.value;saveCfg();renderPainel();$('pn').querySelector('details.cfg').open=true}});
 $('pn').addEventListener('click',e=>{const b=e.target.closest('.seg button');if(!b)return;CHM=b.dataset.m;try{localStorage.setItem('simops_chm',CHM)}catch(x){}renderPainel()});
