@@ -107,6 +107,10 @@
   .pb.g{background:#dcfce7;color:#14532d}.pb.y{background:#fef3c7;color:#92400e}.pb.r{background:#fee2e2;color:#7f1d1d}.pb.n{background:#f1f5f9;color:var(--tx2)}
   details.cfg{margin-top:8px;font-size:.76rem;color:var(--tx2)}details.cfg summary{cursor:pointer;color:var(--navy);font-weight:600}
   .cfgg{display:grid;grid-template-columns:50px 70px 1fr 130px;gap:4px 8px;margin-top:6px;align-items:center}.cfgg select{font:inherit;font-size:.74rem}
+  .chead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}.chead h3{margin:0}
+  .seg{display:inline-flex;border:1px solid var(--navy);border-radius:99px;overflow:hidden}
+  .seg button{font:inherit;font-size:.78rem;font-weight:600;padding:5px 16px;border:0;cursor:pointer;background:#fff!important;color:var(--navy)!important;border-radius:0!important}
+  .seg button.on{background:var(--navy)!important;color:#fff!important}
   @media print{body{background:#fff;padding:0}.bar,.foot .noprint{display:none}.wrap{border:0;overflow:visible}th{position:static}
     @page{size:landscape;margin:10mm}table{font-size:9pt}tr{break-inside:avoid}}
 </style>
@@ -143,8 +147,9 @@
       <div class="pbox"><h3>Execução por tipo de nota (operações)</h3><table class="pt" id="tnota"></table><p class="capn" id="tnotafonte"></p></div>
       <div class="pbox" id="bdisc"><h3>Execução por disciplina (operações / HH)</h3><table class="pt" id="tdisc"></table></div>
     </div>
-    <div class="pbox"><h3>Aderência diária — por operações (encerradas ÷ programadas na “Data Prog.”)</h3><div id="pchart"></div></div>
-    <div class="pbox" style="margin-top:14px"><h3>Aderência diária — por ordens (ordens com todas as operações do dia encerradas ÷ ordens com operação programada no dia)</h3><div id="pchart2"></div></div>
+    <div class="pbox"><div class="chead"><h3 id="chtitle">Aderência diária</h3>
+      <div class="seg" role="group" aria-label="Visão do gráfico"><button type="button" data-m="ord" class="on">Ordens</button><button type="button" data-m="ops">Operações</button></div></div>
+      <div id="pchart"></div></div>
     <p class="foot">Base: aba BASELINE inteira, sem filtros. Cores dos percentuais: verde ≥ meta baseline, amarelo ≥ meta dia, vermelho abaixo. Ordem executada = todas as suas operações encerradas; a prioridade da ordem é a mais crítica (menor P.) entre as operações. Período, programação e execução diária (por operações e por ordens) usam a “Data Prog.” (baseline original), não o “Reprogramado”.</p>
   </div>
 </div>
@@ -545,8 +550,8 @@ async function exportWorkbook(){
 $('xl').onclick=exportWorkbook;
 
 // ======== Painel inicial (indicadores) ========
-let METAS={dia:81,base:90}, TIPOS={};
-try{Object.assign(METAS,JSON.parse(localStorage.getItem('simops_metas')||'{}'));TIPOS=JSON.parse(localStorage.getItem('simops_tipos')||'{}')||{}}catch(e){}
+let METAS={dia:81,base:90}, TIPOS={}, CHM='ord';
+try{Object.assign(METAS,JSON.parse(localStorage.getItem('simops_metas')||'{}'));TIPOS=JSON.parse(localStorage.getItem('simops_tipos')||'{}')||{};CHM=localStorage.getItem('simops_chm')||'ord'}catch(e){}
 const saveCfg=()=>{try{localStorage.setItem('simops_metas',JSON.stringify(METAS));localStorage.setItem('simops_tipos',JSON.stringify(TIPOS))}catch(e){}};
 const GRUPOS=['Corretivas','Preventivas','Sem classificação'];
 const defTipo=c=>c==='Z12'?'Corretivas':c==='Z09'?'Preventivas':'Sem classificação';   // sem a coluna “Tipo de ordem”: padrão por código de atividade (ajustável)
@@ -638,12 +643,15 @@ function renderPainel(){
   };
   const opsS=d=>{const ds=DATA.filter(o=>o.prog===d);return {n:ds.length,e:ds.filter(E).length}};
   const ordS=d=>{const g={};DATA.forEach(o=>{if(o.prog===d){const k=g[o.ordem]??=[0,0];k[0]++;if(E(o))k[1]++}});const v=Object.values(g);return {n:v.length,e:v.filter(k=>k[0]===k[1]).length}};   // ordem do dia = tem operação programada no dia; executada = todas essas operações encerradas
-  $('pchart').innerHTML=mk(opsS,'operações');
-  $('pchart2').innerHTML=mk(ordS,'ordens');
+  const mod=CHM==='ops'?'ops':'ord';
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===mod));
+  $('chtitle').textContent=mod==='ord'?'Aderência diária — por ordens (ordens com todas as operações do dia encerradas ÷ ordens com operação programada no dia)':'Aderência diária — por operações (encerradas ÷ programadas na “Data Prog.”)';
+  $('pchart').innerHTML=mk(mod==='ord'?ordS:opsS,mod==='ord'?'ordens':'operações');
 }
 $('pn').addEventListener('change',e=>{
   if(e.target.id==='mdia'||e.target.id==='mbase'){const v=Math.max(0,Math.min(100,+e.target.value||0));METAS[e.target.id==='mdia'?'dia':'base']=v;saveCfg();renderPainel()}
   else if(e.target.dataset&&e.target.dataset.c){TIPOS[e.target.dataset.c]=e.target.value;saveCfg();renderPainel();$('pn').querySelector('details.cfg').open=true}});
+$('pn').addEventListener('click',e=>{const b=e.target.closest('.seg button');if(!b)return;CHM=b.dataset.m;try{localStorage.setItem('simops_chm',CHM)}catch(x){}renderPainel()});
 $('pnk2').addEventListener('click',e=>{if(e.target.closest('.kpi.lk')){VIEW='pend';refresh()}});
 
 // data padrão: amanhã
