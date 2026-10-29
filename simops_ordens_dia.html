@@ -142,8 +142,9 @@
         <details class="cfg"><summary>Classificar tipos de atividade (corretiva / preventiva)</summary><div class="cfgg" id="tcfg"></div></details></div>
       <div class="pbox" id="bdisc"><h3>Execução por disciplina (operações / HH)</h3><table class="pt" id="tdisc"></table></div>
     </div>
-    <div class="pbox"><h3>Execução diária da baseline (operações encerradas ÷ programadas na “Data Prog.”)</h3><div id="pchart"></div></div>
-    <p class="foot">Base: aba BASELINE inteira, sem filtros. Cores dos percentuais: verde ≥ meta baseline, amarelo ≥ meta dia, vermelho abaixo. Ordem executada = todas as suas operações encerradas; a prioridade da ordem é a mais crítica (menor P.) entre as operações. Período, programação e execução diária usam a “Data Prog.” (baseline original), não o “Reprogramado”.</p>
+    <div class="pbox"><h3>Aderência diária — por operações (encerradas ÷ programadas na “Data Prog.”)</h3><div id="pchart"></div></div>
+    <div class="pbox" style="margin-top:14px"><h3>Aderência diária — por ordens (ordens com todas as operações do dia encerradas ÷ ordens com operação programada no dia)</h3><div id="pchart2"></div></div>
+    <p class="foot">Base: aba BASELINE inteira, sem filtros. Cores dos percentuais: verde ≥ meta baseline, amarelo ≥ meta dia, vermelho abaixo. Ordem executada = todas as suas operações encerradas; a prioridade da ordem é a mais crítica (menor P.) entre as operações. Período, programação e execução diária (por operações e por ordens) usam a “Data Prog.” (baseline original), não o “Reprogramado”.</p>
   </div>
 </div>
 <div id="vLista" hidden>
@@ -609,22 +610,28 @@ function renderPainel(){
     Object.entries(by).forEach(([c,g])=>td+=`<tr><td title="${esc(g.name)}">${c}</td><td>${g.n}</td><td>${g.e}</td><td>${badge(pc(g.e,g.n),METAS.base)}</td><td>${badge(pc(g.de,g.dn),METAS.base)}</td><td>${r1(g.hhe)}/${r1(g.hh)}</td></tr>`);
     if(ou.n)td+=`<tr><td title="Centros sem disciplina no mapa">Outros</td><td>${ou.n}</td><td>${ou.e}</td><td>${badge(pc(ou.e,ou.n),METAS.base)}</td><td>${badge(pc(ou.de,ou.dn),METAS.base)}</td><td>${r1(ou.hhe)}/${r1(ou.hh)}</td></tr>`;
     $('tdisc').innerHTML=td}
-  // --- gráfico diário ---
+  // --- gráficos diários (operações e ordens) ---
   const days=[];for(let d=d0;d<=d1;d++)days.push(d);
+  const mk=(S,unit)=>{
   const W=Math.max(640,days.length*58),H=230,L0=34,B=34,T=22,bw=Math.min(34,(W-L0)/days.length-14), ph=H-B-T;
   const x=i=>L0+(i+.5)*((W-L0)/days.length), y=v=>T+ph*(1-v/100);
   let sv=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W+40}px;font-family:inherit" role="img" aria-label="Execução diária">`;
   [0,25,50,75,100].forEach(v=>sv+=`<line x1="${L0}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#e2e8f0"/><text x="${L0-6}" y="${y(v)+3}" font-size="9" text-anchor="end" fill="#64748b">${v}%</text>`);
-  days.forEach((d,i)=>{const ds=DATA.filter(o=>o.prog===d),e=ds.filter(E).length,p=pc(e,ds.length),fut=d>hoje;
+  days.forEach((d,i)=>{const st=S(d),e=st.e,n=st.n,p=pc(e,n),fut=d>hoje;
     const col=fut?'#cbd5e1':(p==null?'#cbd5e1':p>=METAS.dia?'#16a34a':'#dc2626');
-    if(p!=null)sv+=`<rect x="${x(i)-bw/2}" y="${y(fut?0:p)}" width="${bw}" height="${fut?0:ph*p/100}" rx="3" fill="${col}"><title>${fmt(d)}: ${e} de ${ds.length} operações (${p}%)</title></rect>`;
+    if(p!=null)sv+=`<rect x="${x(i)-bw/2}" y="${y(fut?0:p)}" width="${bw}" height="${fut?0:ph*p/100}" rx="3" fill="${col}"><title>${fmt(d)}: ${e} de ${n} ${unit} (${p}%)</title></rect>`;
     sv+=`<text x="${x(i)}" y="${y(fut?0:(p||0))-4}" font-size="10" font-weight="700" text-anchor="middle" fill="#1e293b">${fut||p==null?'':p+'%'}</text>
       <text x="${x(i)}" y="${H-B+13}" font-size="10" text-anchor="middle" fill="#1e293b">${fmt(d).slice(0,5)}</text>
-      <text x="${x(i)}" y="${H-B+25}" font-size="9" text-anchor="middle" fill="#64748b">${ds.length?e+'/'+ds.length:'—'}</text>`});
-  const pts=[];let cp=0,ce=0;days.forEach((d,i)=>{const ds=DATA.filter(o=>o.prog===d);cp+=ds.length;ce+=ds.filter(E).length;if(d<=hoje&&cp)pts.push([x(i),y(ce/cp*100),Math.round(ce/cp*100)])});
+      <text x="${x(i)}" y="${H-B+25}" font-size="9" text-anchor="middle" fill="#64748b">${n?e+'/'+n:'—'}</text>`});
+  const pts=[];let cp=0,ce=0;days.forEach((d,i)=>{const st=S(d);cp+=st.n;ce+=st.e;if(d<=hoje&&cp)pts.push([x(i),y(ce/cp*100),Math.round(ce/cp*100)])});
   if(pts.length){sv+=`<polyline points="${pts.map(p=>p[0]+','+p[1]).join(' ')}" fill="none" stroke="#1f3a5f" stroke-width="2"/>`+pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#1f3a5f"><title>Aderência acumulada: ${p[2]}%</title></circle>`).join('')}
   sv+=`<line x1="${L0}" x2="${W}" y1="${y(METAS.dia)}" y2="${y(METAS.dia)}" stroke="#0ea5e9" stroke-dasharray="5 4" stroke-width="1.5"/><text x="${W-2}" y="${y(METAS.dia)-4}" font-size="10" font-weight="700" text-anchor="end" fill="#0369a1">Meta dia ${METAS.dia}%</text></svg>`;
-  $('pchart').innerHTML=sv+'<p class="capn">Verde: dia com execução ≥ meta do dia · vermelho: abaixo · cinza: dia ainda não chegou (depois de “Hoje”). Abaixo de cada data: executadas/programadas. Linha azul-escura: aderência acumulada (encerradas ÷ programadas até o dia).</p>';
+  return sv+'<p class="capn">Verde: dia com execução ≥ meta do dia · vermelho: abaixo · cinza: dia ainda não chegou (depois de “Hoje”). Abaixo de cada data: executadas/programadas. Linha azul-escura: aderência acumulada (encerradas ÷ programadas até o dia).</p>';
+  };
+  const opsS=d=>{const ds=DATA.filter(o=>o.prog===d);return {n:ds.length,e:ds.filter(E).length}};
+  const ordS=d=>{const g={};DATA.forEach(o=>{if(o.prog===d){const k=g[o.ordem]??=[0,0];k[0]++;if(E(o))k[1]++}});const v=Object.values(g);return {n:v.length,e:v.filter(k=>k[0]===k[1]).length}};   // ordem do dia = tem operação programada no dia; executada = todas essas operações encerradas
+  $('pchart').innerHTML=mk(opsS,'operações');
+  $('pchart2').innerHTML=mk(ordS,'ordens');
 }
 $('pn').addEventListener('change',e=>{
   if(e.target.id==='mdia'||e.target.id==='mbase'){const v=Math.max(0,Math.min(100,+e.target.value||0));METAS[e.target.id==='mdia'?'dia':'base']=v;saveCfg();renderPainel()}
