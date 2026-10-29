@@ -189,6 +189,7 @@
     <button class="sec" id="bcsv">Exportar mudanças (CSV)</button>
     <button id="bcopy">Copiar coluna REPROGRAMADO</button>
   </div>
+  <div class="bcard" id="bmes" hidden></div>
   <div class="bcard" id="bcard" hidden></div>
   <p class="bhint" id="bhint"></p>
   <div class="board" id="board"></div>
@@ -460,7 +461,24 @@ function renderBoard(){
       <details><summary>Ver por disciplina</summary><table class="pt"><tr><th>Disciplina</th><th>Disponível</th><th>Pendente</th><th>Programado</th><th>Saldo</th></tr>
       ${rows.map(r=>{const s=r.disp-r.pend-r.prog;return `<tr><td title="${esc(r.name)}">${esc(r.code)}</td><td>${r1(r.disp)}</td><td>${r1(r.pend)}</td><td>${r1(r.prog)}</td><td style="color:${s<0?'#b91c1c':'#15803d'};font-weight:700">${r1(s)}</td></tr>`}).join('')}</table></details>
       <p class="capn">Soma dos dias exibidos, todas as disciplinas do mapa (independe dos filtros).${outrosP?` ${r1(outrosP)} HH pendentes em centros sem disciplina no mapa não entram.`:''}${est?' * Há dias sem HH disponível informado: usado o último dia informado.':''}</p>`;
-  }else $('bcard').hidden=true;
+    // --- fechamento do mês: de Hoje até o último dia do mês, por disciplina ---
+    const hj=Math.floor(isoToSerial($('hoje').value)||0), hd=serialToDate(hj), eom=Math.floor(Date.UTC(hd.getUTCFullYear(),hd.getUTCMonth()+1,0)/ONE+25569), nd=eom-hj+1;
+    const M=CAP.discs.map(x=>({code:x.code,name:x.name,disp:0,pend:0,prog:0}));const MR=Object.fromEntries(M.map(r=>[r.code,r]));let est2=false,outP=0,outG=0;
+    for(let d=hj;d<=eom;d++){if(!(d in CAP.disp))est2=true;M.forEach(r=>r.disp+=dispOf(r.code,d))}
+    DATA.forEach(o=>{if(o.st==='ENCERRADA'||official(o)==null||official(o)>eom)return;const dc=CAP.map[o.ct.toUpperCase()],pe=official(o)<hj;
+      if(dc&&MR[dc])MR[dc][pe?'pend':'prog']+=o.hh;else if(pe)outP+=o.hh;else outG+=o.hh});
+    const calc=M.map(r=>{const need=r.pend+r.prog,saldo=r.disp-need,dia=nd?r.disp/nd:0;return {...r,need,saldo,occ:r.disp?need/r.disp*100:(need?999:0),dias:dia?need/dia:0,st:saldo<0?'no':(r.disp&&need>=.9*r.disp?'warn':'ok')}});
+    const T=k=>calc.reduce((s,r)=>s+r[k],0), tn=calc.filter(r=>r.st==='no');
+    const tot={disp:T('disp'),pend:T('pend'),prog:T('prog'),need:T('need')}, tsaldo=tot.disp-tot.need;
+    const lbl={ok:'<span class="pb g">Cumpre</span>',warn:'<span class="pb y">No limite</span>',no:'<span class="pb r">Não cumpre</span>'};
+    $('bmes').hidden=false;
+    $('bmes').innerHTML=`<h3>Fechamento do mês · ${fmt(hj).slice(0,5)} a ${fmt(eom).slice(0,5)} (${nd} dia${nd>1?'s':''}) — dá para cumprir?</h3>
+      <p style="font-size:.86rem;margin-bottom:8px">${tn.length?`<b style="color:#b91c1c">${tn.length} de ${calc.length} disciplinas não cumprem o mês:</b> ${tn.map(r=>`${esc(r.code)} (faltam ${r1(-r.saldo)} HH)`).join(', ')}.`:'<b style="color:#15803d">Todas as disciplinas cumprem o mês com o HH disponível.</b>'} Total: ${r1(tot.need)} HH a executar (pendente + programado) contra ${r1(tot.disp)} HH disponíveis → ${tsaldo<0?'faltam <b style="color:#b91c1c">'+r1(-tsaldo)+'</b>':'sobram <b style="color:#15803d">'+r1(tsaldo)+'</b>'} HH.</p>
+      <table class="pt"><tr><th>Disciplina</th><th title="HH disponível somado de Hoje até o fim do mês">HH disponível</th><th title="Ordens não encerradas com data anterior a Hoje">HH pendente</th><th title="HH programado de Hoje até o fim do mês">HH programado</th><th>A executar</th><th>Saldo</th><th>Ocupação</th><th title="Dias de capacidade necessários, contra os dias que restam">Dias necessários</th><th>Situação</th></tr>
+      ${calc.map(r=>`<tr><td title="${esc(r.name)}">${esc(r.code)}</td><td>${r1(r.disp)}</td><td>${r1(r.pend)}</td><td>${r1(r.prog)}</td><td>${r1(r.need)}</td><td style="color:${r.saldo<0?'#b91c1c':'#15803d'};font-weight:700">${r1(r.saldo)}</td><td>${r.occ>=999?'—':Math.round(r.occ)+'%'}</td><td>${r1(r.dias)} / ${nd}</td><td>${lbl[r.st]}</td></tr>`).join('')}
+      <tr class="tot"><td>Total</td><td>${r1(tot.disp)}</td><td>${r1(tot.pend)}</td><td>${r1(tot.prog)}</td><td>${r1(tot.need)}</td><td style="color:${tsaldo<0?'#b91c1c':'#15803d'}">${r1(tsaldo)}</td><td>${tot.disp?Math.round(tot.need/tot.disp*100)+'%':'—'}</td><td></td><td>${tsaldo<0?lbl.no:lbl.ok}</td></tr></table>
+      <p class="capn">Disponível = soma dos HH disponíveis de cada dia (Hoje incluído) até o fim do mês. A executar = pendentes (antes de Hoje) + programadas até o fim do mês, sem encerradas. “Dias necessários” = A executar ÷ HH disponível por dia. Independe dos filtros; muda conforme você move as ordens no quadro.${outP+outG?` Centros sem disciplina no mapa não entram (${r1(outP)} HH pendentes, ${r1(outG)} HH programados).`:''}${est2?' Dias sem HH disponível informado usam o último dia informado.':''}</p>`;
+  }else{$('bcard').hidden=true;$('bmes').hidden=true}
   const mv=Object.keys(MOVES).length, mo=new Set(Object.keys(MOVES).map(k=>k.split('|')[0])).size;
   $('bhint').textContent=`Arraste o cartão (ordem) para outro dia ou altere a data nele. Mostrando ${fmt(s0)} a ${fmt(s1)}, sem encerradas; a coluna “Pendentes” traz as ordens não executadas antes de ${fmt(s0)} (arraste para um dia). `+(CAP?'Barras: HH programado / disponível por disciplina (considera todas as ordens do dia; * = sem HH disponível informado, usado o último dia). ':'')+(mv?`Mudanças pendentes: ${mo} ordem(ns) / ${mv} operação(ões) — ainda não gravadas na planilha.`:'Nenhuma mudança pendente.');
 }
