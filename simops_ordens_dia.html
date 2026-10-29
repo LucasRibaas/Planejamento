@@ -95,6 +95,7 @@
   .pmeta .r{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:3px 0}.pmeta b{color:var(--navy)}
   .pmeta input{width:62px;font:inherit;font-weight:700;color:#dc2626;border:1px solid var(--bd);border-radius:6px;padding:2px 4px;text-align:right}
   .pk2{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+  .pk2 .kpi.ader.ok b{color:#15803d}.pk2 .kpi.ader.no b{color:#b91c1c}
   .pk2 .kpi b{font-size:1.15rem}.pk2 .kpi.lk{cursor:pointer;border-color:#fcd34d;background:#fffbeb}
   .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px;margin-bottom:14px}
   .pbox{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;overflow:auto}
@@ -587,11 +588,10 @@ function renderPainel(){
     <div class="pcard"><span>Encerradas</span><b>${nEnc}</b><small>${nPar?nPar+' parcial(is) não contam':''}</small></div>
     <div class="pcard ${cls(pEx,METAS.base)}"><span>% Execução</span><b>${pcT(pEx)}</b><small>meta baseline ${METAS.base}%</small></div>
     <div class="pcard ${cls(pDia,METAS.dia)}"><span>Execução do dia</span><b>${pcT(pDia)}</b><small>${dh.length?dh.filter(E).length+' de '+dh.length+' operações de '+fmt(hoje).slice(0,5):'sem operações em '+fmt(hoje).slice(0,5)} · meta ${METAS.dia}%</small></div>
-    <div class="pcard ${cls(ader,METAS.dia)}"><span>Aderência de execução</span><b>${pcT(ader)}</b><small>${dueE} de ${due.length} operações programadas até ${fmt(hoje).slice(0,5)} · meta ${METAS.dia}%</small></div>
     <div class="pmeta"><div class="r"><b>BASELINE</b><span>${dm(d0)} a ${dm(d1)}</span></div>
       <div class="r"><b>META DIA</b><span><input type="number" min="0" max="100" id="mdia" value="${METAS.dia}">%</span></div>
       <div class="r"><b>META BASELINE</b><span><input type="number" min="0" max="100" id="mbase" value="${METAS.base}">%</span></div></div>`;
-  $('pnk2').innerHTML=[['',nOps,'Operações'],['',nOpsE,'Operações encerradas'],['',r1(hhT),'HH da baseline'],['',r1(hhE)+' ('+pcT(pc(hhE,hhT))+')','HH executado'],
+  $('pnk2').innerHTML=[['',nOps,'Operações'],['',nOpsE,'Operações encerradas'],[`ader ${cls(ader,METAS.dia)}`,pcT(ader),`Aderência · ${dueE}/${due.length} até ${fmt(hoje).slice(0,5)}`],['',r1(hhT),'HH da baseline'],['',r1(hhE)+' ('+pcT(pc(hhE,hhT))+')','HH executado'],
     ['lk',pend,'Pendentes (antes de hoje) →'],['',repr,'Operações reprogramadas']].map(([c,v,l])=>`<div class="kpi ${c}"><b>${v}</b><span>${l}</span></div>`).join('');
   // --- prioridade ---
   const pris=[...new Set([1,2,3,4,5,6,...ords.map(g=>g.p).filter(p=>p!=null)])].sort((a,b)=>a-b);
